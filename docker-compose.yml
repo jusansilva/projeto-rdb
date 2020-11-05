@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    command: sh -c "./node_modules/.bin/ts-node-dev --watch src --respawn -- src/v1/ports/http/index.ts"
+    environment:
+      - MONGO_URI='mongodb://mongo:27017/admin'
+      - MONGO_DATABASE=api-fleury-support
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/docs
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/var/opt/mongo/data
+
+volumes:
+  mongo-data:

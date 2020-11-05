@@ -1,0 +1,24 @@
+{
+  "name": "projeto-rdb",
+  "version": "1.0.0",
+  "description": "projeto de analise de arquivos e geração de automação",
+  "main": "src/index.js",
+  "scripts": {
+    "build-doc": "snowboard html -o docs api.apib",
+    "build": "tsc",
+    "start": "node dist/ports/http/index.js",
+    "dev": "ts-node-dev --watch src --fork --respawn -- src/v1/ports/http/index.ts",
+    "test": "echo 'no tests defined yet.'",
+    "lint": "eslint .",
+    "lint:api": "snowboard lint api.apib",
+    "eslint": "eslint --no-error-on-unmatched-pattern $(git diff --name-only origin/develop)",
+    "debug": "tsc && node dist/ports/http/index.js"
+  },
+  "author": "Jusan Magno",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.10.12",
+    "ts-node-dev": "^1.0.0"
+  }
+}
