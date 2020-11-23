@@ -1,16 +1,15 @@
 import * as mongoose from "mongoose";
-import { Logger } from "fleury-digital-commons";
-import { DataBaseEnv } from "../../adapters/suport-danone/envs";
+import { DataBaseEnv } from "../../adapters/envs";
 import { Server } from "../../config/server";
 
 const startServer = async () => {
-  Logger.info("Initializing Application Server");
+  console.log("Initializing Application Server");
   await Server.init();
 };
 
 const connectDataBse = async () => {
   try {
-    Logger.info("Connecting to Database!");
+    console.log("Connecting to Database!");
     await mongoose.connect(DataBaseEnv.URI, {
       dbName: DataBaseEnv.DATABASE,
       useCreateIndex: true,
@@ -18,9 +17,9 @@ const connectDataBse = async () => {
       useUnifiedTopology: true,
       autoCreate: true,
     });
-    Logger.info("Database Connected!");
+    console.log("Database Connected!");
   } catch (error) {
-    Logger.error(error);
+    console.error(error);
     return error;
   }
 };
