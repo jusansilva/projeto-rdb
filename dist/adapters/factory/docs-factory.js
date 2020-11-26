@@ -8,13 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocsFactory = void 0;
 const typedi_1 = require("typedi");
-const factory_1 = require("../../../config/factory");
-const appointment_business_1 = require("../../../business/logic/appointment-business");
+const factory_1 = require("../../config/factory");
+const logic_1 = require("../../business/logic");
 const repositories_1 = require("../repositories");
 const delegate_1 = require("../../../business/delegate");
 let DocsFactory = class DocsFactory {
     build() {
-        return new appointment_business_1.DocsBusiness(typedi_1.default.get(repositories_1.DocsRepository), new delegate_1.DocsBusinessDelegate());
+        return new logic_1.DocsBusiness(typedi_1.default.get(repositories_1.DocsRepository), new delegate_1.DocsBusinessDelegate());
     }
 };
 DocsFactory = __decorate([
