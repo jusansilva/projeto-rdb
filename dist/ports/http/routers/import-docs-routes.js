@@ -15,7 +15,7 @@ const ImportDocs = express_1.Router();
 exports.ImportDocs = ImportDocs;
 ImportDocs.route("/v1/import").post((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return yield ;
+        return yield "to aqui";
     }
     catch (error) {
     }

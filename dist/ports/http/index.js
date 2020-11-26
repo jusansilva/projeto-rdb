@@ -9,8 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose = require("mongoose");
-const envs_1 = require("../../adapters/envs");
 const server_1 = require("../../config/server");
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Initializing Application Server");
@@ -19,13 +17,13 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
 const connectDataBse = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("Connecting to Database!");
-        yield mongoose.connect(envs_1.DataBaseEnv.URI, {
-            dbName: envs_1.DataBaseEnv.DATABASE,
-            useCreateIndex: true,
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            autoCreate: true,
-        });
+        // await mongoose.connect(DataBaseEnv.URI, {
+        //   dbName: DataBaseEnv.DATABASE,
+        //   useCreateIndex: true,
+        //   useNewUrlParser: true,
+        //   useUnifiedTopology: true,
+        //   autoCreate: true,
+        // });
         console.log("Database Connected!");
     }
     catch (error) {
