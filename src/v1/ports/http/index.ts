@@ -10,13 +10,13 @@ const startServer = async () => {
 const connectDataBse = async () => {
   try {
     console.log("Connecting to Database!");
-    // await mongoose.connect(DataBaseEnv.URI, {
-    //   dbName: DataBaseEnv.DATABASE,
-    //   useCreateIndex: true,
-    //   useNewUrlParser: true,
-    //   useUnifiedTopology: true,
-    //   autoCreate: true,
-    // });
+    await mongoose.connect(DataBaseEnv.URI, {
+      dbName: DataBaseEnv.DATABASE,
+      useCreateIndex: true,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      autoCreate: true,
+    });
     console.log("Database Connected!");
   } catch (error) {
     console.error(error);

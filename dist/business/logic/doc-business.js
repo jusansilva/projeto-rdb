@@ -11,19 +11,19 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocBusiness = void 0;
 const typedi_1 = require("typedi");
+const doc_repository_1 = require("v1/adapters/repositories/doc-repository");
 let DocBusiness = class DocBusiness {
     constructor(repository) {
         this.repository = repository;
     }
 };
 DocBusiness = __decorate([
-    typedi_1.Service,
+    typedi_1.Service(),
     __param(0, typedi_1.Inject()),
-    __metadata("design:paramtypes", [typeof (_a = typeof DocRepository !== "undefined" && DocRepository) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [doc_repository_1.DocRepository])
 ], DocBusiness);
 exports.DocBusiness = DocBusiness;
 //# sourceMappingURL=doc-business.js.map

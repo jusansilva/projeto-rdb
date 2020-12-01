@@ -4,7 +4,7 @@ interface DataBaseEnv {
 }
 
 const DataBaseEnv: DataBaseEnv = {
-  URI: process.env.MONGO_URI || 'mongodb:kamino.mongodb.umbler.com:53225',
+  URI: process.env.MONGO_URI || 'mongodb://ssmsolutions:Ssmsolutions_20@geonosis.mongodb.umbler.com:48797/ssmsolutions_db',
   DATABASE: process.env.MONGO_DATABASE || 'ssmsolutions_db',
 };
 
