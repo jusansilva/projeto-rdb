@@ -2,16 +2,16 @@ import { GenericFactory } from "../adapter-factory";
 import { DocsFacade } from "../../business/facade";
 import Container, { Service } from "typedi";
 import { FactoryName } from "../../config/factory";
-import { DocsBusiness } from "../../business/logic";
-import { DocsRepository } from "../repositories";
-import { DocsBusinessDelegate } from "../../../business/delegate";
+import { DocBusiness } from "../../business/logic";
+import { DocRepository } from "../repositories";
+import { DocsBusinessDelegate } from "../../business/delegate";
 
 
-@Service(FactoryName.BusinessSuportDanone)
+@Service(FactoryName.BusinessDoc)
 export class DocsFactory implements GenericFactory<DocsFacade> {
   build(): DocsFacade {
-    return new DocsBusiness(
-      Container.get(DocsRepository),
+    return new DocBusiness(
+      Container.get(DocRepository),
       new DocsBusinessDelegate()
     );
   }

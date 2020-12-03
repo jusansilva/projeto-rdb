@@ -9,6 +9,4 @@ export class DocBusiness {
     @Inject() protected readonly repository: DocRepository,
   ) { }
 
-
-
 }
