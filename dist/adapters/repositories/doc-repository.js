@@ -10,9 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocRepository = void 0;
+const model_1 = require("./model");
 class DocRepository {
     find(req) {
         return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const find = model_1.DocModel.find();
+                return find;
+            }
+            catch (err) {
+            }
         });
     }
 }

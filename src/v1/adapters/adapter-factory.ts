@@ -1,3 +1,3 @@
-export interface GenericFactory<T> {
+export interface Factory<T> {
   build: () => T;
 }

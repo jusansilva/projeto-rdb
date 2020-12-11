@@ -13,9 +13,14 @@ exports.v1 = exports.AppRouters = void 0;
 const index_1 = require("./routers/index");
 Object.defineProperty(exports, "v1", { enumerable: true, get: function () { return index_1.v1; } });
 const express = require("express");
+const bodyParser = require("body-parser");
 class AppRouters {
     static load(app) {
         return __awaiter(this, void 0, void 0, function* () {
+            app.use(bodyParser.json());
+            app.use(bodyParser.urlencoded({
+                extended: true
+            }));
             app.use(express.static("docs"));
             app.use(index_1.v1);
         });

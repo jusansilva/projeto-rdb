@@ -6,3 +6,4 @@ export * from './linha-repository';
 export * from './sbe-gps-repository';
 export * from './sbe-repository';
 export * from './viajem-repository';
+export * from './bilhetagem-import-repository';

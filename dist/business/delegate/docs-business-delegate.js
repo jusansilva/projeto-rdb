@@ -20,20 +20,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocsBusinessDelegate = void 0;
 const typedi_1 = require("typedi");
-const factory_1 = require("../../../config/factory");
-const factory_2 = require("../../../adapters/factory");
+const factory_1 = require("../../config/factory");
+const factory_2 = require("../factory");
 class DocsBusinessDelegate {
     constructor() {
         this.factory = new factory_2.DocsFactory();
     }
-    import(file) {
+    import(dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.factory.build().import(file);
+            return this.factory.build().import(dto);
         });
     }
 }
 __decorate([
-    typedi_1.Inject(factory_1.FactoryName.BusinessSuportDanone),
+    typedi_1.Inject(factory_1.FactoryName.BusinessDoc),
     __metadata("design:type", Object)
 ], DocsBusinessDelegate.prototype, "factory", void 0);
 exports.DocsBusinessDelegate = DocsBusinessDelegate;

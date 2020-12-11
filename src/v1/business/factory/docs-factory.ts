@@ -1,18 +1,13 @@
-import { GenericFactory } from "../adapter-factory";
-import { DocsFacade } from "../../business/facade";
 import Container, { Service } from "typedi";
 import { FactoryName } from "../../config/factory";
-import { DocBusiness } from "../../business/logic";
-import { DocRepository } from "../repositories";
-import { DocsBusinessDelegate } from "../../business/delegate";
+import { Factory } from "../../adapters/adapter-factory";
+import { DocsFacade } from "v1/adapters/facade";
+import { DocBusiness } from "../logic";
 
 
 @Service(FactoryName.BusinessDoc)
-export class DocsFactory implements GenericFactory<DocsFacade> {
+export class DocsFactory implements Factory<DocsFacade> {
   build(): DocsFacade {
-    return new DocBusiness(
-      Container.get(DocRepository),
-      new DocsBusinessDelegate()
-    );
+    return Container.get(DocBusiness);
   }
 }

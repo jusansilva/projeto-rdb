@@ -8,22 +8,53 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocBusiness = void 0;
 const typedi_1 = require("typedi");
-const doc_repository_1 = require("v1/adapters/repositories/doc-repository");
+const fs = require("fs");
 let DocBusiness = class DocBusiness {
-    constructor(repository) {
-        this.repository = repository;
+    constructor(container) {
+    }
+    import(dto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const docStream = fs.readFileSync(dto.data, { encoding: 'utf8' });
+                const docObj = docStream.replace(/["]/g, '');
+                const obj = docObj.split(/\n/);
+                const retun = [];
+                for (let i = 0; i < obj.length; i++) {
+                    let test = obj[i].split(',');
+                    retun.push(test);
+                }
+                // const retur = obj.map(a => JSON.stringify(a));
+                console.log(retun);
+                // .pipe(csv.parse({ headers: true }))
+                // .on('error', error => console.error(error))
+                // .on('data', row => {
+                //    obj = row
+                //    console.log(obj);
+                //    return obj
+                // })
+                // .on('end', (rowCount: number) => console.log(`Parsed ${rowCount} rows`));
+                return obj[0];
+            }
+            catch (err) {
+            }
+        });
     }
 };
 DocBusiness = __decorate([
     typedi_1.Service(),
-    __param(0, typedi_1.Inject()),
-    __metadata("design:paramtypes", [doc_repository_1.DocRepository])
+    __metadata("design:paramtypes", [typedi_1.ContainerInstance])
 ], DocBusiness);
 exports.DocBusiness = DocBusiness;
 //# sourceMappingURL=doc-business.js.map

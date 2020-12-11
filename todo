@@ -1,0 +1,12 @@
+criar endpoint de importação de dados
+analise de demanda
+ - passajeiro por faixa
+ - passageiros, viagem, carros, bordo, receita
+
+analise por linha
+-passageiro por linha
+-IPC por linha
+-passageiro por cordenadas
+
+analise por carros
+-filtro por data, linha, carro

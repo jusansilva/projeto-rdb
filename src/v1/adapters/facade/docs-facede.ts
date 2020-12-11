@@ -1,5 +1,5 @@
-import { Request } from "express";
+import { ImportDto, BilhetagemDto } from "../dtos/import-dto";
 
 export interface DocsFacade {
-  import: (file: Request) => Promise<DocsImportResponse>;
+  import: (dto: ImportDto) => Promise<BilhetagemDto>;
 }

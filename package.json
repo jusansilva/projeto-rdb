@@ -18,7 +18,10 @@
   "license": "MIT",
   "dependencies": {
     "@types/node": "^14.14.9",
+    "csv-parse": "^4.14.1",
+    "csv-parser": "^3.0.0",
     "express": "^4.17.1",
+    "fast-csv": "^4.3.6",
     "mongoose": "^5.10.15",
     "ts-node-dev": "^1.0.0",
     "typedi": "^0.8.0",

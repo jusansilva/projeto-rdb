@@ -1,13 +1,15 @@
 import { Router, Request, Response } from "express";
+import { DocsControlles } from "../controllers";
+import Container from "typedi";
+import { ImportRequest } from "../../../adapters/request";
 
 const ImportDocs = Router();
-ImportDocs.route("/v1/import").post(async(req: Request, res: Response) => {
-  try {
-      return await "to aqui";
-  } catch (error) {
-      
-  }
-});
+const controller = Container.get(DocsControlles);
 
+ImportDocs.route("/v1/import").post((req: Request, res: Response, next) => {
+ Promise.resolve().then(function () {
+      return controller.importData(req.body, res);
+  }).catch(next)
+});
 
 export { ImportDocs };
