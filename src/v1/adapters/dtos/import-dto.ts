@@ -13,3 +13,15 @@ export interface BilhetagemDto {
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+export interface GpsImportDto {
+    data_final: string;
+    AVL: string;
+    carro: string;
+    latitude: string;
+    longitude: string;
+    ponto_notavel: string;
+    desc_ponto_notavel: string;
+    linha: string;
+    sentido: string;
+}
