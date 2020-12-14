@@ -54,7 +54,7 @@ export class DocBusiness {
       const docGps = fs.readFileSync(path, { encoding: 'utf-8' });
       const gpsLinhas = docGps.split(/\n/);
       const gpsDto: GpsImportDto[] = [];
-      for (let i = 0; i > gpsLinhas.length; j++) {
+      for (let i = 0; i > gpsLinhas.length; i++) {
         const gpsArray = docGps[i].split("\t");
         gpsDto.push({
           data_final: gpsArray[0],

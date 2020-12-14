@@ -21,33 +21,96 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocBusiness = void 0;
 const typedi_1 = require("typedi");
 const fs = require("fs");
+const repositories_1 = require("../../adapters/repositories");
 let DocBusiness = class DocBusiness {
     constructor(container) {
+        this.bilhetagemRepository = container.get(repositories_1.BilhetagemImportRepository);
     }
     import(dto) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const docStream = fs.readFileSync(dto.data, { encoding: 'utf8' });
-                const docObj = docStream.replace(/["]/g, '');
-                const obj = docObj.split(/\n/);
-                const retun = [];
-                for (let i = 0; i < obj.length; i++) {
-                    let test = obj[i].split(',');
-                    retun.push(test);
+                switch (dto.type) {
+                    case 'bilhetagem':
+                        const bilhetagem = yield this.formatDocBilhetagem(dto.data);
+                        const createDocument = [];
+                        for (let i = 0; i < bilhetagem.length; i++) {
+                            console.log(i);
+                            createDocument.push(yield this.bilhetagemRepository.create(Object.assign(Object.assign({}, bilhetagem[i]), { updatedAt: new Date, createdAt: new Date })));
+                        }
+                        const documentDto = createDocument.map(create => this.parseDto(create));
+                        return documentDto[documentDto.length];
+                    case 'gps':
+                        const gpsDoc = yield this.formatDocGps(dto.data);
+                    default:
+                        break;
                 }
-                // const retur = obj.map(a => JSON.stringify(a));
-                console.log(retun);
-                // .pipe(csv.parse({ headers: true }))
-                // .on('error', error => console.error(error))
-                // .on('data', row => {
-                //    obj = row
-                //    console.log(obj);
-                //    return obj
-                // })
-                // .on('end', (rowCount: number) => console.log(`Parsed ${rowCount} rows`));
-                return obj[0];
             }
             catch (err) {
+                console.log(err);
+                throw err;
+            }
+        });
+    }
+    parseDto(model) {
+        return {
+            carro: model.carro,
+            linha: model.linha,
+            data: model.data,
+            cartaoId: model.cartaoId,
+            transacao: model.transacao,
+            sentido: model.sentido
+        };
+    }
+    formatDocGps(path) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const docGps = fs.readFileSync(path, { encoding: 'utf-8' });
+                const gpsLinhas = docGps.split(/\n/);
+                const gpsDto = [];
+                for (let i = 0; i > gpsLinhas.length; j++) {
+                    const gpsArray = docGps[i].split("\t");
+                    gpsDto.push({
+                        data_final: gpsArray[0],
+                        AVL: gpsArray[2],
+                        carro: gpsArray[3],
+                        latitude: gpsArray[4],
+                        longitude: gpsArray[5],
+                        ponto_notavel: gpsArray[6],
+                        desc_ponto_notavel: gpsArray[7],
+                        linha: gpsArray[8],
+                        sentido: gpsArray[9]
+                    });
+                }
+                return gpsDto;
+            }
+            catch (err) {
+                throw err;
+            }
+        });
+    }
+    formatDocBilhetagem(path) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const doc = fs.readFileSync(path, { encoding: 'utf8' });
+                const documentArray = doc.replace(/["]/g, '').split(/\n/);
+                const arrayDocument = [];
+                for (let i = 0; i < documentArray.length; i++) {
+                    let dados = documentArray[i].split(',');
+                    if (dados[8] !== undefined) {
+                        arrayDocument.push({
+                            carro: dados[8],
+                            linha: dados[16],
+                            data: dados[6],
+                            cartaoId: dados[23],
+                            transacao: dados[24],
+                            sentido: dados[25],
+                        });
+                    }
+                }
+                return arrayDocument;
+            }
+            catch (error) {
+                throw error;
             }
         });
     }

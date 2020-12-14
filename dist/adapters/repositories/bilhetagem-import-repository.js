@@ -9,25 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DocsControlles = void 0;
-const delegate_1 = require("../../../business/delegate");
-class DocsControlles {
-    constructor() {
-        this.delegate = new delegate_1.DocsBusinessDelegate();
-    }
-    importData(req, res) {
+exports.BilhetagemImportRepository = void 0;
+const bilhetagem_import_model_1 = require("./model/bilhetagem-import-model");
+class BilhetagemImportRepository {
+    create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const imp = yield this.delegate.import(req);
-                res.json(imp);
-                return imp;
+                const bilhetagem = bilhetagem_import_model_1.BilhetagemImportModel.create(dto);
+                return bilhetagem;
             }
-            catch (err) {
-                console.log(err);
-                throw err;
+            catch (error) {
+                throw error;
             }
         });
     }
 }
-exports.DocsControlles = DocsControlles;
-//# sourceMappingURL=docs-controllers.js.map
+exports.BilhetagemImportRepository = BilhetagemImportRepository;
+//# sourceMappingURL=bilhetagem-import-repository.js.map

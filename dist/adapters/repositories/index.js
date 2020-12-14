@@ -18,4 +18,5 @@ __exportStar(require("./linha-repository"), exports);
 __exportStar(require("./sbe-gps-repository"), exports);
 __exportStar(require("./sbe-repository"), exports);
 __exportStar(require("./viajem-repository"), exports);
+__exportStar(require("./bilhetagem-import-repository"), exports);
 //# sourceMappingURL=index.js.map
