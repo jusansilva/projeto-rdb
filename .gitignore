@@ -1,0 +1,6 @@
+node_modules
+dist
+uploads
+gps.txt
+*.nc
+*.DS_store
