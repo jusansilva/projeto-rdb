@@ -14,9 +14,10 @@ export class DocBusiness {
     this.bilhetagemRepository = container.get(BilhetagemImportRepository);
     this.gpsRepository = container.get(GpsImportRepository)
   }
+
   public async import(dto: ImportDto): Promise<string> {
-          break;
-      }
+
+    try {
 
 
     } catch (err) {
@@ -24,6 +25,7 @@ export class DocBusiness {
       throw err;
     }
   }
+
 
   public async find(date?: string, carro?: string): Promise<RelationshipDto[]> {
     try {
