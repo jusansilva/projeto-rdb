@@ -16,9 +16,26 @@ export class DocBusiness {
   }
 
   public async import(dto: ImportDto): Promise<string> {
-
     try {
-
+      switch (dto.type) {
+        case 'bilhetagem':
+          const bilhetagem = await this.formatDocBilhetagem(dto.data);
+          const createDocument = [];
+          for (let i = 0; i < bilhetagem.length; i++) {
+            console.log(i);
+            createDocument.push(await this.bilhetagemRepository.create({...bilhetagem[i], updatedAt: new Date, createdAt: new Date }));
+          }
+          const documentDto = createDocument.map(create => this.parseDto(create));
+          return "documento criado";
+        case 'gps':
+          const gpsDoc = await this.formatDocGps(dto.data);
+          for(let i = 0; i < gpsDoc.length; i++){
+            await this.gpsRepository.create({...gpsDoc[i], updatedAt: new Date, createdAt: new Date })
+          }
+          return "documento criado"
+        default:
+          break;
+      }
 
     } catch (err) {
       console.log(err)
