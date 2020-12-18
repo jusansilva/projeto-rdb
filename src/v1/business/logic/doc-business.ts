@@ -14,37 +14,7 @@ export class DocBusiness {
     this.bilhetagemRepository = container.get(BilhetagemImportRepository);
     this.gpsRepository = container.get(GpsImportRepository)
   }
-
   public async import(dto: ImportDto): Promise<string> {
-    try {
-      switch (dto.type) {
-        case 'bilhetagem':
-          const bilhetagem = await this.formatDocBilhetagem(dto.data);
-          const createDocument: IBilhetagemImportModel[] = [];
-          console.log('starting save');
-          for (let i = 0; i < bilhetagem.length; i++) {
-            console.log(i, bilhetagem.length);
-            createDocument.push(await this.bilhetagemRepository.create({ ...bilhetagem[i], updatedAt: new Date, createdAt: new Date }))
-          }
-          console.log('end save')
-          const documentDto = createDocument.map(create => this.parseDto(create))
-          return "arquivo criado ";
-        case 'gps':
-          const gpsDoc = await this.formatDocGps(dto.data);
-          const createGpsImport: IGpsImportModel[] = [];
-          console.log('starting save');
-          for (let i = 1417371; i < gpsDoc.length; i++) {
-            if (gpsDoc[i].AVL !== undefined) {
-              console.log(i, gpsDoc.length);
-              createGpsImport.push(await this.gpsRepository.create({ ...gpsDoc[i], updatedAt: new Date, createdAt: new Date }))
-            }
-
-          }
-          console.log('end save')
-          return "arquivo criado ";
-
-        default:
-          throw "Tipo de arquivo nao suportado!";
           break;
       }
 
