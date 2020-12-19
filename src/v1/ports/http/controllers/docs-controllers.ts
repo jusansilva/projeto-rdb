@@ -18,7 +18,7 @@ export class DocsControlles {
 
       public async getRelatioship(req: GetRelationshipRequest, res: Response): Promise<RelationshipDto[]> {
             try {
-                  const {date, carro} = req
+                  const {date, carro} = req;
                   const find = await this.delegate.find(date, carro);
                   res.json(find);
                   return find;
@@ -27,4 +27,17 @@ export class DocsControlles {
                   throw err;
             }
       }
+
+      public async saveRelatioship(req: GetRelationshipRequest, res: Response): Promise<string> {
+            try {
+                  const {date, carro} = req;
+                  const save = await this.delegate.saveRelatioship(date, carro);
+                  res.json(save);
+                  return save;
+            } catch (err) {
+                  
+            }
+      }
+
+
 }

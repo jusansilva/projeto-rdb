@@ -7,7 +7,7 @@
     "build-doc": "snowboard html -o docs api.apib",
     "build": "tsc",
     "start": "npm install ; tsc ; node dist/ports/http/index.js",
-    "dev": "yarn build & nodemon src/v1/ports/http/index.ts",
+    "dev": "yarn build ; nodemon src/v1/ports/http/index.ts",
     "test": "echo 'no tests defined yet.'",
     "lint": "eslint .",
     "lint:api": "snowboard lint api.apib",

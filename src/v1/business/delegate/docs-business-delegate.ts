@@ -16,4 +16,8 @@ export class DocsBusinessDelegate implements DocsFacade {
   async find(date?: string, carro?:string): Promise<RelationshipDto[]>{
     return this.factory.build().find(date, carro);
   }
+
+  async saveRelatioship(date?: string, carro?: string):Promise<string>{
+    return this.factory.build().saveRelatioship(date, carro);
+  }
 }

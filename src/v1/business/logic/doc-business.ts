@@ -1,18 +1,20 @@
 import { Container, Service, ContainerInstance } from "typedi";
 import * as fs from "fs";
 import { ImportDto, BilhetagemDto, GpsImportDto, RelationshipDto } from "../../adapters/dtos/import-dto";
-import { BilhetagemImportRepository, GpsImportRepository } from "../../adapters/repositories";
+import { BilhetagemImportRepository, GpsImportRepository, RelationshipRepository } from "../../adapters/repositories";
 import { IBilhetagemImportModel } from "v1/adapters/repositories/model/bilhetagem-import-model";
-import { IGpsImportModel, GpsImportModel } from "v1/adapters/repositories/model";
+import { IRelationshipModel } from "v1/adapters/repositories/model";
 
 
 @Service()
 export class DocBusiness {
   protected readonly bilhetagemRepository: BilhetagemImportRepository;
   protected readonly gpsRepository: GpsImportRepository;
+  protected readonly realationshipRepository: RelationshipRepository;
   constructor(container: ContainerInstance) {
     this.bilhetagemRepository = container.get(BilhetagemImportRepository);
     this.gpsRepository = container.get(GpsImportRepository)
+    this.realationshipRepository = container.get(RelationshipRepository);
   }
 
   public async import(dto: ImportDto): Promise<string> {
@@ -23,14 +25,14 @@ export class DocBusiness {
           const createDocument = [];
           for (let i = 0; i < bilhetagem.length; i++) {
             console.log(i);
-            createDocument.push(await this.bilhetagemRepository.create({...bilhetagem[i], updatedAt: new Date, createdAt: new Date }));
+            createDocument.push(await this.bilhetagemRepository.create({ ...bilhetagem[i], updatedAt: new Date, createdAt: new Date }));
           }
           const documentDto = createDocument.map(create => this.parseDto(create));
           return "documento criado";
         case 'gps':
           const gpsDoc = await this.formatDocGps(dto.data);
-          for(let i = 0; i < gpsDoc.length; i++){
-            await this.gpsRepository.create({...gpsDoc[i], updatedAt: new Date, createdAt: new Date })
+          for (let i = 0; i < gpsDoc.length; i++) {
+            await this.gpsRepository.create({ ...gpsDoc[i], updatedAt: new Date, createdAt: new Date })
           }
           return "documento criado"
         default:
@@ -46,13 +48,23 @@ export class DocBusiness {
 
   public async find(date?: string, carro?: string): Promise<RelationshipDto[]> {
     try {
+      const relationship = await this.realationshipRepository.find(date, carro);
+      return relationship;
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+  }
+
+  public async saveRelatioship(date: string, carro: string): Promise<string> {
+    try {
       console.log(date, carro, "começou a pesquisa");
       const bilhetagem = await this.bilhetagemRepository.find(date, carro);
       console.log(bilhetagem);
       const gps = await this.gpsRepository.find(date, carro);
       console.log(gps);
       console.log("terminou a pesquisa");
-      const relationship: RelationshipDto[] = bilhetagem.map(bilhetagem => {
+      const relationship: any = await  bilhetagem.map( bilhetagem => {
         for (let i = 0; i < gps.length; i++) {
           if (bilhetagem.carro === gps[i].carro && bilhetagem.linha === gps[i].linha) {
             let bDate = this.dateString2Date(bilhetagem.data.replace("/", "-"));
@@ -60,7 +72,8 @@ export class DocBusiness {
             if (gDate.getDate() === bDate.getDate()) {
               if (bDate.getHours() == gDate.getHours()) {
                 if (bDate.getMinutes() > gDate.getMinutes() - 1 && bDate.getMinutes() < gDate.getMinutes() + 1) {
-                  console.log({
+                  return this.realationshipRepository.create(
+                  {
                     data_gps: gps[i].data,
                     linha: bilhetagem.linha,
                     AVL: gps[i].AVL,
@@ -71,19 +84,7 @@ export class DocBusiness {
                     longitude: gps[i].longitude,
                     ponto_notavel: gps[i].ponto_notavel,
                     desc_ponto_notavel: gps[i].desc_ponto_notavel
-                  });
-                  return {
-                    data_gps: gps[i].data,
-                    linha: bilhetagem.linha,
-                    AVL: gps[i].AVL,
-                    cartaoId: bilhetagem.cartaoId,
-                    transacao: bilhetagem.transacao,
-                    sentido: bilhetagem.sentido,
-                    latitude: gps[i].latitude,
-                    longitude: gps[i].longitude,
-                    ponto_notavel: gps[i].ponto_notavel,
-                    desc_ponto_notavel: gps[i].desc_ponto_notavel
-                  }
+                  })
                 }
               }
             }
@@ -91,11 +92,14 @@ export class DocBusiness {
         }
       })
 
-      return relationship;
-    } catch (error) {
+      return relationship.length.toString();
 
+    } catch (error) {
+        console.log(error);
+        throw error;
     }
   }
+
 
   public parseDto(model: IBilhetagemImportModel): BilhetagemDto {
     return {

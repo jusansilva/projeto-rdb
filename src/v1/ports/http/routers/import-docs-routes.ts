@@ -16,7 +16,13 @@ ImportDocs.route("/v1/import",  upload.single("import")).post((req: Request, res
 
 ImportDocs.route("/v1/relacao").get((req: Request, res: Response, next) => {
   Promise.resolve().then(function(){
-      return controller.getRelatioship(req, res);
+      return controller.getRelatioship(req.params, res);
+  })
+})
+
+ImportDocs.route("/v1/relacao/cron").get((req: Request, res: Response, next) => {
+  Promise.resolve().then(function(){
+    return controller.saveRelatioship(req.params, res);
   })
 })
 

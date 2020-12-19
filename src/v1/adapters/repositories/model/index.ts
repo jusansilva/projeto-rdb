@@ -7,3 +7,4 @@ export * from './sbe-model';
 export * from './sbegps-model';
 export * from './viagem-model';
 export * from './gps-import-model';
+export * from "./relationship-model";
