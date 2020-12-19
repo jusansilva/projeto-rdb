@@ -35,7 +35,8 @@ export class DocsControlles {
                   res.json(save);
                   return save;
             } catch (err) {
-                  
+                  console.log(err);
+                  throw err;
             }
       }
 
