@@ -58,45 +58,53 @@ export class DocBusiness {
 
   public async saveRelatioship(date: string, carro: string): Promise<string> {
     try {
-      console.log(date, carro, "começou a pesquisa");
-      const bilhetagem = await this.bilhetagemRepository.find(date, carro);
-      console.log(bilhetagem);
-      const gps = await this.gpsRepository.find(date, carro);
-      console.log(gps);
-      console.log("terminou a pesquisa");
-      const relationship: any = await  bilhetagem.map( bilhetagem => {
+
+      console.log("começou a pesquisa bilhetagem");
+      const bilhetagem = await this.bilhetagemRepository.findRelationship(date, carro);
+      console.log("bilhetagem concluida");
+
+
+
+      for (let a = 0; a < bilhetagem.length; a++) {
+        console.log("gps pesquisando")
+        let gps = await this.gpsRepository.find(date, bilhetagem[a].carro);
+        console.log(gps);
+        console.log("gps finalizado")
         for (let i = 0; i < gps.length; i++) {
-          if (bilhetagem.carro === gps[i].carro && bilhetagem.linha === gps[i].linha) {
-            let bDate = this.dateString2Date(bilhetagem.data.replace("/", "-"));
-            let gDate = this.dateString2Date(gps[i].data.replace("/", "-"));
-            if (gDate.getDate() === bDate.getDate()) {
+          if (bilhetagem[a].carro === gps[i].carro) {
+            let bDate = this.dateString2Date(bilhetagem[a].data.trim().replace("/", "-"));
+            let gDate = this.dateString2Date(gps[i].data_final.trim().replace("/", "-"));
+            if (gDate?.getDate() === bDate?.getDate()) {
               if (bDate.getHours() == gDate.getHours()) {
                 if (bDate.getMinutes() > gDate.getMinutes() - 1 && bDate.getMinutes() < gDate.getMinutes() + 1) {
-                  return this.realationshipRepository.create(
-                  {
-                    data_gps: gps[i].data,
-                    linha: bilhetagem.linha,
-                    AVL: gps[i].AVL,
-                    cartaoId: bilhetagem.cartaoId,
-                    transacao: bilhetagem.transacao,
-                    sentido: bilhetagem.sentido,
-                    latitude: gps[i].latitude,
-                    longitude: gps[i].longitude,
-                    ponto_notavel: gps[i].ponto_notavel,
-                    desc_ponto_notavel: gps[i].desc_ponto_notavel
-                  })
+                  console.log(`criou carro: ${bilhetagem[a].carro} com AVL: ${gps[i].AVL}`);
+                  await this.realationshipRepository.create(
+                    {
+                      data_gps: gps[i].data_final,
+                      carro: bilhetagem[a].carro,
+                      linha: bilhetagem[a].linha,
+                      AVL: gps[i].AVL,
+                      cartaoId: bilhetagem[a].cartaoId,
+                      transacao: bilhetagem[a].transacao,
+                      sentido: bilhetagem[a].sentido,
+                      latitude: gps[i].latitude,
+                      longitude: gps[i].longitude,
+                      ponto_notavel: gps[i].ponto_notavel,
+                      desc_ponto_notavel: gps[i].desc_ponto_notavel
+                    })
                 }
               }
             }
           }
         }
-      })
+      }
+      console.log('terminou')
 
-      return relationship.length.toString();
+      return "dados estao sendo processados";
 
     } catch (error) {
-        console.log(error);
-        throw error;
+      console.log(error);
+      throw error;
     }
   }
 
@@ -163,9 +171,15 @@ export class DocBusiness {
     }
   }
 
-  public dateString2Date(dateString) {
-    var dt = dateString.split(/\-|\s/);
-    return new Date(dt.slice(0, 3).join('-') + ' ' + dt[3]);
+  public dateString2Date(dateString, convert = false) {
+    var dt: string[] = dateString?.split(/\-|\s/g);
+    let time;
+    if (dt.length > 3) {
+      time = dt[3];
+    } else {
+      time = dt[2];
+    }
+    return new Date(dt.slice(0, 2).join('-') + ' ' + time);
   }
 
 

@@ -1,9 +1,9 @@
-import { IBilhetagemImportModel, BilhetagemImportModel } from "./model/bilhetagem-import-model";
+import { IBilhetagemImportModel, BilhetagemImportModel, GpsImportModel } from "./model";
 import { BilhetagemDto } from "../dtos/import-dto";
 
 export class BilhetagemImportRepository {
-    
-    public async create(dto: BilhetagemDto ): Promise<IBilhetagemImportModel> {
+
+    public async create(dto: BilhetagemDto): Promise<IBilhetagemImportModel> {
         try {
             const bilhetagem = BilhetagemImportModel.create(dto);
             return bilhetagem;
@@ -12,21 +12,53 @@ export class BilhetagemImportRepository {
         }
     }
 
-    public async find(data?: string, carro?: string ): Promise<IBilhetagemImportModel[]> {
+    public async find(data?: string, carro?: string): Promise<IBilhetagemImportModel[]> {
         try {
-            if(data !== undefined && carro !== undefined){
-                return BilhetagemImportModel.find({"data": data, "carro":carro});
+            if (data !== undefined && carro !== undefined) {
+                return BilhetagemImportModel.find({ "data": data, "carro": carro });
             }
-            if(data !== undefined ){
-                return BilhetagemImportModel.find({"data": data});
+            if (data !== undefined && carro === undefined) {
+                return BilhetagemImportModel.find({ "data": data });
             }
-            if(carro !== undefined){
-                return BilhetagemImportModel.find({"carro":carro});
+            if (carro !== undefined && data === undefined) {
+                return BilhetagemImportModel.find({ "carro": carro });
             }
             return BilhetagemImportModel.find({});
 
         } catch (err) {
             throw err
+        }
+    }
+
+    public async findRelationship(date?: string, carro?: string): Promise<any[]> {
+        try {
+            const gpsModel = GpsImportModel
+
+            if (date !== undefined && carro !== undefined) {
+                return BilhetagemImportModel.aggregate([
+                    {
+                        "date":date, "carro": carro
+                    },
+                    {
+                        $lookup: {
+                            from: gpsModel.collection.carro,
+                            localField: 'carro',
+                            foreignField: 'carro',
+                            as: 'relatioship'
+                        }
+                    }]);
+            }
+            if (date !== undefined) {
+                return BilhetagemImportModel.find({ "data": date });
+            }
+            if (carro !== undefined) {
+                return BilhetagemImportModel.find({ "carro": carro });
+            }
+            return BilhetagemImportModel.find({});
+
+
+        } catch (err) {
+
         }
     }
 }

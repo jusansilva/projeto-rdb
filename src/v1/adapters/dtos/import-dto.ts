@@ -30,6 +30,7 @@ export interface GpsImportDto {
 
 export interface RelationshipDto {
     data_gps: string;
+    carro?: string;
     linha: string;
     AVL: string;
     cartaoId?: string;

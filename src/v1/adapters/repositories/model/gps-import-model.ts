@@ -3,7 +3,7 @@ import * as mongoose from "mongoose";
 export interface IGpsImportModel extends mongoose.Document {
   carro?: string;
   linha?: string;
-  data?: string;
+  data_final?: string;
   AVL?: string;
   cartaoId?: string;
   transacao?: string;

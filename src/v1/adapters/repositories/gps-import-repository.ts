@@ -12,18 +12,18 @@ export class GpsImportRepository {
         }
     }
 
-    public async find(data?: string, carro?: string ): Promise<IGpsImportModel[]> {
+    public async find(data?: string, carro?: string, skip: number = 0): Promise<IGpsImportModel[]> {
         try {
             if(data !== undefined && carro !== undefined){
-                return GpsImportModel.find({"data": data, "carro":carro});
+                return await GpsImportModel.find({"data": data, "carro":carro}).skip(skip);
             }
-            if(data !== undefined){
-                return GpsImportModel.find({"data": data});
+            if(data !== undefined && carro === undefined){
+                return await GpsImportModel.find({"data": data});
             }
-            if(carro !== undefined){
-                return GpsImportModel.find({"carro":carro});
+            if(carro !== undefined && data === undefined){
+                return await  GpsImportModel.find({"carro":carro}).skip(skip);
             }
-            return GpsImportModel.find({});
+            return await GpsImportModel.find().skip(skip);
 
         } catch (err) {
             throw err
