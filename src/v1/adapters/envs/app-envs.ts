@@ -4,7 +4,7 @@ interface AppEnvs {
 }
 
 const AppEnvs: AppEnvs = {
-    port: Number(process.env.PORT) || 3000,
+    port: Number(process.env.PORTA) || 8080,
     host: process.env.HOST || "localhost"
 };
 
