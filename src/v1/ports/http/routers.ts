@@ -11,7 +11,7 @@ export class AppRouters {
     app.use(bodyParser.urlencoded({
       extended: true
     }));
-    app.use(express.static('src/views'));
+    app.use(express.static('dist/views'));
     app.use(express.static("docs"));
     app.use(v1);
     app.use(Healht);

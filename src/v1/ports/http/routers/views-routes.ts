@@ -6,12 +6,12 @@ const upload = multer({ dest: 'uploads/' })
 
 const ViewsRouter = Router();
 
-ViewsRouter.route("/").post((req: Request, res: Response, next) => {
+ViewsRouter.route("/").get((req: Request, res: Response, next) => {
       return res.send("to aqui");
 });
 
 ViewsRouter.route("/login").get(async (req: Request, res: Response, next) => {
-  return await res.sendFile("/Users/jusanmagno/projetos/Projeto RDB/src/views/login.html")
+  return await res.sendFile("/Users/jusanmagno/projetos/Projeto RDB/dist/views/login.html")
 })
 
 ViewsRouter.route("/doc", upload.single("import")).get(async (req: Request, res: Response, next) => {

@@ -1,0 +1,1 @@
+{"version":3,"file":"docs-factory.js","sourceRoot":"","sources":["../../../../src/v1/business/factory/docs-factory.ts"],"names":[],"mappings":";;;;;;;;;AAAA,mCAA4C;AAC5C,kDAAmD;AAGnD,oCAAuC;AAIvC,IAAa,WAAW,GAAxB,MAAa,WAAW;IACtB,KAAK;QACH,OAAO,gBAAS,CAAC,GAAG,CAAC,mBAAW,CAAC,CAAC;IACpC,CAAC;CACF,CAAA;AAJY,WAAW;IADvB,gBAAO,CAAC,qBAAW,CAAC,WAAW,CAAC;GACpB,WAAW,CAIvB;AAJY,kCAAW"}
