@@ -33,7 +33,9 @@ export class DocBusiness {
           const gpsDoc = await this.formatDocGps(dto.data);
           for (let i = 0; i < gpsDoc.length; i++) {
             await this.gpsRepository.create({ ...gpsDoc[i], updatedAt: new Date, createdAt: new Date })
+            console.log(i);
           }
+          console.log("documento criado totalmente")
           return "documento criado"
         default:
           break;
@@ -66,14 +68,16 @@ export class DocBusiness {
 
 
       for (let a = 0; a < bilhetagem.length; a++) {
+        console.log(`rodando ${a} de ${bilhetagem.length}`)
         console.log("gps pesquisando")
         let gps = await this.gpsRepository.find(date, bilhetagem[a].carro);
-        console.log(gps);
         console.log("gps finalizado")
+        let bDate;
+        let gDate;
         for (let i = 0; i < gps.length; i++) {
           if (bilhetagem[a].carro === gps[i].carro) {
-            let bDate = this.dateString2Date(bilhetagem[a].data.trim().replace("/", "-"));
-            let gDate = this.dateString2Date(gps[i].data_final.trim().replace("/", "-"));
+            bDate = this.dateString2Date(bilhetagem[a].data.trim().replace("/", "-"));
+            gDate = this.dateString2Date(gps[i].data_final.trim().replace("/", "-"));
             if (gDate?.getDate() === bDate?.getDate()) {
               if (bDate.getHours() == gDate.getHours()) {
                 if (bDate.getMinutes() > gDate.getMinutes() - 1 && bDate.getMinutes() < gDate.getMinutes() + 1) {
