@@ -22,7 +22,6 @@ class AppRouters {
             app.use(bodyParser.urlencoded({
                 extended: true
             }));
-            app.use(express.static('dist/views'));
             app.use(express.static("docs"));
             app.use(express.static("public"));
             app.use(index_1.v1);
