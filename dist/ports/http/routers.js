@@ -24,6 +24,7 @@ class AppRouters {
             }));
             app.use(express.static('dist/views'));
             app.use(express.static("docs"));
+            app.use(express.static("public"));
             app.use(index_1.v1);
             app.use(health_routes_1.Healht);
         });

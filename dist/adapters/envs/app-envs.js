@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppEnvs = void 0;
 const AppEnvs = {
-    port: Number(process.env.PORT) || 8080,
+    port: Number(process.env.PORTA) || 8080,
     host: process.env.HOST || "localhost"
 };
 exports.AppEnvs = AppEnvs;

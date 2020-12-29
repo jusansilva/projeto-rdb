@@ -22,7 +22,7 @@ a.links{
 }
 h1{
   font-size: 48px;
-  color: #066a75;
+  color: #0d0f39;
   padding: 2px 0 10px 0;
   font-family: Arial,sans-serif;
   font-weight: bold;
@@ -49,7 +49,7 @@ p{
 }
  
 label{
-  color: #405c60;
+  color: #000;
   position: relative;
 }
 /* placeholder */
@@ -89,7 +89,7 @@ input:not([type="checkbox"]){
 input[type="submit"]{
   width: 100%!important;
   cursor: pointer;  
-  background: rgb(61, 157, 179);
+  background: #0d0f39;
   padding: 8px 5px;
   color: #fff;
   font-size: 20px;  
@@ -128,7 +128,7 @@ input[type="submit"]:hover{
   font-weight: bold;
   background: #f7f8f1;
   padding: 6px;
-  color: rgb(29, 162, 193);
+  color: #0d0f39;
   margin-left: 10px;
   border: 1px solid #cbd518;
  
@@ -229,4 +229,14 @@ input[type="submit"]:hover{
     opacity: 0;
     transform: translateX(-20px);
   }
+}
+
+#bg {
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+
+  /* Preserve aspet ratio */
+  min-width: 100%;
+  min-height: 100%;
 }
