@@ -4,7 +4,7 @@ interface AppEnvs {
 }
 
 const AppEnvs: AppEnvs = {
-    port: Number(process.env.PORTA) || 3001,
+    port: Number(process.env.PORTA) || 3000,
     host: process.env.HOST || "0.0.0.0"
 };
 
