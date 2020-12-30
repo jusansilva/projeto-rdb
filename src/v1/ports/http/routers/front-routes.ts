@@ -8,7 +8,7 @@ Front.route("/").get((req: Request, res: Response) => {
 });
 
 Front.route('/login').get((req: Request, res: Response) => {
-    res.send("/login.html");
+    res.send("public/login.html");
 })
 
 

@@ -8,6 +8,6 @@ Front.route("/").get((req, res) => {
     res.send("OK").status(200);
 });
 Front.route('/login').get((req, res) => {
-    res.send("/login.html");
+    res.send("public/login.html");
 });
 //# sourceMappingURL=front-routes.js.map
