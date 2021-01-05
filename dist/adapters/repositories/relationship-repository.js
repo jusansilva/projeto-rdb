@@ -47,7 +47,7 @@ class RelationshipRepository {
     drop() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const drop = yield model_1.RelationshipModel.drop();
+                const drop = yield model_1.RelationshipModel.deleteMany();
                 return drop;
             }
             catch (error) {

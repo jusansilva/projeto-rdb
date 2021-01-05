@@ -32,9 +32,9 @@ export class RelationshipRepository {
         }
     }
 
-    public async drop(): Promise<IRelationshipModel> {
+    public async drop(): Promise<any> {
         try {
-            const drop = await RelationshipModel.drop();
+            const drop = await RelationshipModel.deleteMany();
             return drop;
         } catch (error) {
             console.log(error)
