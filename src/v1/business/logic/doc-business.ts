@@ -85,7 +85,7 @@ export class DocBusiness {
                     console.log(`criou carro: ${bilhetagem[a].carro} com AVL: ${gps[i].AVL}`);
                     await this.realationshipRepository.create(
                       {
-                        data_gps: gps[i].data_final,
+                        data_gps: bilhetagem[a].data,
                         carro: bilhetagem[a].carro,
                         linha: bilhetagem[a].linha,
                         AVL: gps[i].AVL,
