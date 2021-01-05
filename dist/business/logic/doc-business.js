@@ -81,33 +81,31 @@ let DocBusiness = class DocBusiness {
                 for (let a = 0; a < bilhetagem.length; a++) {
                     console.log(`rodando ${a} de ${bilhetagem.length}`);
                     console.log("gps pesquisando");
-                    let gps = yield this.gpsRepository.find(date, bilhetagem[a].carro);
+                    let gps = yield this.gpsRepository.find(undefined, bilhetagem[a].carro);
                     console.log("gps finalizado");
                     let bDate;
                     let gDate;
                     for (let i = 0; i < gps.length; i++) {
-                        if (bilhetagem[a].carro === gps[i].carro) {
-                            if (bilhetagem[a].cartaoId === gps[i].cartaoId) {
-                                bDate = this.dateString2Date(bilhetagem[a].data.trim().replace("/", "-"));
-                                gDate = this.dateString2Date(gps[i].data_final.trim().replace("/", "-"));
-                                if ((gDate === null || gDate === void 0 ? void 0 : gDate.getDate()) === (bDate === null || bDate === void 0 ? void 0 : bDate.getDate())) {
-                                    if (bDate.getHours() == gDate.getHours()) {
-                                        if (bDate.getMinutes() > gDate.getMinutes() - 1 && bDate.getMinutes() < gDate.getMinutes() + 1) {
-                                            console.log(`criou carro: ${bilhetagem[a].carro} com AVL: ${gps[i].AVL}`);
-                                            yield this.realationshipRepository.create({
-                                                data_gps: bilhetagem[a].data,
-                                                carro: bilhetagem[a].carro,
-                                                linha: bilhetagem[a].linha,
-                                                AVL: gps[i].AVL,
-                                                cartaoId: bilhetagem[a].cartaoId,
-                                                transacao: bilhetagem[a].transacao,
-                                                sentido: bilhetagem[a].sentido,
-                                                latitude: gps[i].latitude,
-                                                longitude: gps[i].longitude,
-                                                ponto_notavel: gps[i].ponto_notavel,
-                                                desc_ponto_notavel: gps[i].desc_ponto_notavel
-                                            });
-                                        }
+                        bDate = this.dateString2Date(bilhetagem[a].data.trim().replace("/", "-"));
+                        gDate = this.dateString2Date(gps[i].data_final.trim().replace("/", "-"));
+                        if ((gDate === null || gDate === void 0 ? void 0 : gDate.getDate()) === (bDate === null || bDate === void 0 ? void 0 : bDate.getDate())) {
+                            if (bDate.getHours() == gDate.getHours()) {
+                                if (bDate.getMinutes() == gDate.getMinutes()) {
+                                    if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
+                                        console.log(`criou carro: ${bilhetagem[a].carro} com AVL: ${gps[i].AVL}`);
+                                        this.realationshipRepository.create({
+                                            data_gps: gps[a].data_final,
+                                            carro: bilhetagem[a].carro,
+                                            linha: bilhetagem[a].linha,
+                                            AVL: gps[i].AVL,
+                                            cartaoId: bilhetagem[a].cartaoId,
+                                            transacao: bilhetagem[a].transacao,
+                                            sentido: bilhetagem[a].sentido,
+                                            latitude: gps[i].latitude,
+                                            longitude: gps[i].longitude,
+                                            ponto_notavel: gps[i].ponto_notavel,
+                                            desc_ponto_notavel: gps[i].desc_ponto_notavel
+                                        });
                                     }
                                 }
                             }

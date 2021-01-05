@@ -27,13 +27,13 @@ class GpsImportRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (data !== undefined && carro !== undefined) {
-                    return yield model_1.GpsImportModel.find({ "data": data, "carro": carro }).skip(skip);
+                    return yield model_1.GpsImportModel.find({ data: data, carro: carro }).skip(skip);
                 }
                 if (data !== undefined && carro === undefined) {
-                    return yield model_1.GpsImportModel.find({ "data": data });
+                    return yield model_1.GpsImportModel.find({ data: data });
                 }
                 if (carro !== undefined && data === undefined) {
-                    return yield model_1.GpsImportModel.find({ "carro": carro }).skip(skip);
+                    return yield model_1.GpsImportModel.find({ carro: carro }).skip(skip);
                 }
                 return yield model_1.GpsImportModel.find().skip(skip);
             }
