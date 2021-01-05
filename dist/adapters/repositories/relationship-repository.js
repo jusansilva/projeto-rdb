@@ -19,6 +19,7 @@ class RelationshipRepository {
                 return relationship;
             }
             catch (error) {
+                console.log(error);
                 throw error;
             }
         });
@@ -37,8 +38,21 @@ class RelationshipRepository {
                 }
                 return yield model_1.RelationshipModel.find({});
             }
-            catch (err) {
-                throw err;
+            catch (error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    }
+    drop() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const drop = yield model_1.RelationshipModel.drop();
+                return drop;
+            }
+            catch (error) {
+                console.log(error);
+                throw error;
             }
         });
     }

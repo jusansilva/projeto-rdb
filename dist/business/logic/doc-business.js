@@ -74,6 +74,7 @@ let DocBusiness = class DocBusiness {
     saveRelatioship(date, carro) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                yield this.realationshipRepository.drop();
                 console.log("começou a pesquisa bilhetagem");
                 const bilhetagem = yield this.bilhetagemRepository.findRelationship(date, carro);
                 console.log("bilhetagem concluida");
