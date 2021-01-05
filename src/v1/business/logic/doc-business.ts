@@ -60,7 +60,7 @@ export class DocBusiness {
 
   public async saveRelatioship(date: string, carro: string): Promise<string> {
     try {
-
+      await this.realationshipRepository.drop();
       console.log("começou a pesquisa bilhetagem");
       const bilhetagem = await this.bilhetagemRepository.findRelationship(date, carro);
       console.log("bilhetagem concluida");
