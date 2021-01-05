@@ -1,14 +1,24 @@
 import { Router, Request, Response } from "express";
-import { Server } from "../../../config/server";
-import { DataBaseEnv } from "../../../adapters/envs";
+import * as express from "express";
+import * as  multer from 'multer';
+import { UserControlles } from "../controllers";
+import Container from 'typedi';
+const upload = multer({ dest: 'uploads/' })
 
 const Front = Router();
+Front.use(express.static("public"));
+
+const controller = Container.get(UserControlles);
 Front.route("/").get((req: Request, res: Response) => {
-  res.send("OK").status(200);
+  res.send("To aqui")
 });
 
 Front.route('/login').get((req: Request, res: Response) => {
-    res.send("public/login.html");
+  res.sendFile("/login.html");
+});
+
+Front.route('/logar').post((req: Request, res: Response) => {
+  return controller.logar(req.body, res);
 })
 
 

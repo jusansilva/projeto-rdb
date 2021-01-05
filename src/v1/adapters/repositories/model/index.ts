@@ -9,3 +9,4 @@ export * from './viagem-model';
 export * from './gps-import-model';
 export * from "./relationship-model";
 export * from "./bilhetagem-import-model";
+export * from "./user-model";

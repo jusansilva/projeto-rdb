@@ -21,4 +21,5 @@ __exportStar(require("./viajem-repository"), exports);
 __exportStar(require("./bilhetagem-import-repository"), exports);
 __exportStar(require("./gps-import-repository"), exports);
 __exportStar(require("./relationship-repository"), exports);
+__exportStar(require("./user-repository"), exports);
 //# sourceMappingURL=index.js.map

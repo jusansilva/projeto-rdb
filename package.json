@@ -6,7 +6,7 @@
   "scripts": {
     "build-doc": "snowboard html -o docs api.apib",
     "build": "tsc",
-    "start": "node dist/ports/http/index.js",
+    "start": "npm install; node dist/ports/http/index.js",
     "dev": "npm install; npm run build ; nodemon dist/ports/http/index.js",
     "test": "echo 'no tests defined yet.'",
     "lint": "eslint .",
@@ -21,11 +21,14 @@
     "agenda": "^3.1.0",
     "csv-parse": "^4.14.1",
     "csv-parser": "^3.0.0",
+    "dotenv-safe": "^8.2.0",
     "express": "^4.17.1",
     "fast-csv": "^4.3.6",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.15",
     "monq": "^0.3.7",
     "multer": "^1.4.2",
+    "path": "^0.12.7",
     "ts-node-dev": "^1.0.0",
     "typedi": "^0.8.0",
     "typescript": "^4.1.2"

@@ -9,3 +9,4 @@ export * from './viajem-repository';
 export * from './bilhetagem-import-repository';
 export * from './gps-import-repository';
 export * from './relationship-repository';
+export * from './user-repository';

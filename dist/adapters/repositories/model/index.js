@@ -21,4 +21,5 @@ __exportStar(require("./viagem-model"), exports);
 __exportStar(require("./gps-import-model"), exports);
 __exportStar(require("./relationship-model"), exports);
 __exportStar(require("./bilhetagem-import-model"), exports);
+__exportStar(require("./user-model"), exports);
 //# sourceMappingURL=index.js.map
