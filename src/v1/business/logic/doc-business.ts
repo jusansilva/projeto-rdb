@@ -8,7 +8,7 @@ import { EmailUtils } from "../../utils/email-utils";
 import { EmailDto } from "../../adapters/dtos";
 import { EmailEnvs } from "../../adapters/envs/email-envs";
 import * as archiver from 'archiver';
-import * as  path  from "path";
+import * as  path from "path";
 
 
 
@@ -46,16 +46,19 @@ export class DocBusiness {
       console.log("iniciando relação");
       await this.saveRelatioship();
       const date = new Date();
+      const day = date.getDay();
+      const month = date.getMonth();
+      const year = date.getFullYear();
 
       const relationship = await this.realationshipRepository.find();
-      if(relationship){
-      const data = JSON.stringify(relationship);
-      await fs.writeFileSync(`./${date.getDay}-${date.getMonth}-${date.getFullYear}-relacao.json`, data);
-      const path = await this.getAttachments()
+      if (relationship) {
+        const data = JSON.stringify(relationship);
+        await fs.writeFileSync(`./${day}-${month}-${year}-relacao.json`, data);
+        const path = await this.getAttachments()
       }
-      const text = `Relação documento ./${date.getDay}-${date.getMonth}-${date.getFullYear}-relacao.json concluida com sucesso!`
+      const text = `Relação documento ./${day}-${month}-${year}-relacao.json concluida com sucesso!`
       const subject = `Relação de documentos`;
-      const filename = `./${date.getDay}-${date.getMonth}-${date.getFullYear}-relacao.json`
+      const filename = `./${day}-${month}-${year}-relacao.json`
       const sendemail = this.parseEmailDto(text, subject, filename, path);
       await this.emailUtils.sendEmail(sendemail)
 
@@ -129,10 +132,10 @@ export class DocBusiness {
   }
 
   public parseEmailDto(text: string, subject: string, filename: string, path?: any): EmailDto {
-   const Attachments = path?{
-          filename: filename,
-          path: path
-        }:null;
+    const Attachments = path ? {
+      filename: filename,
+      path: path
+    } : null;
     return {
       remetente: {
         host: EmailEnvs.host,
@@ -155,16 +158,19 @@ export class DocBusiness {
   }
 
   public async getAttachments(): Promise<string> {
-    const data = new Date();
-    const output = fs.createWriteStream(`./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.zip`);
+    const date = new Date();
+    const day = date.getDay();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    const output = fs.createWriteStream(`./${day}-${month}-${year}-relacao.zip`);
     const archive = archiver('zip', {
       zlib: { level: 9 } // Sets the compression level.
     });
     archive.pipe(output);
-    const file = `./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.json`;
-    await archive.append(fs.createReadStream(file), { name: `./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.json` });
+    const file = `./${day}-${month}-${year}-relacao.json`;
+    await archive.append(fs.createReadStream(file), { name: `./${day}-${month}-${year}-relacao.json` });
 
-    return await `./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.zip`
+    return await `./${day}-${month}-${year}-relacao.zip`
   }
 
 
