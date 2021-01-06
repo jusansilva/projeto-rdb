@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 import { EmailDto } from 'v1/adapters/dtos';
 
 export class EmailUtils {

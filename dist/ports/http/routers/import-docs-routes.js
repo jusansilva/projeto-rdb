@@ -8,7 +8,10 @@ const fileupload = require("express-fileupload");
 const ImportDocs = express_1.Router();
 exports.ImportDocs = ImportDocs;
 const controller = typedi_1.default.get(controllers_1.DocsControlles);
-ImportDocs.use(fileupload());
+ImportDocs.use(fileupload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
+}));
 ImportDocs.route("/v1/import").post((req, res, next) => {
     res.redirect("/index.html");
     controller.importData({ bilhetagem: req.files.bilhetagem, gps: req.files.gps }, res);

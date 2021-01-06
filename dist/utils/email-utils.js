@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmailUtils = void 0;
-const nodemailer_1 = require("nodemailer");
+const nodemailer = require("nodemailer");
 class EmailUtils {
     sendEmail(dto) {
         return __awaiter(this, void 0, void 0, function* () {
-            const remetente = nodemailer_1.default.createTransport(dto.remetente);
+            const remetente = nodemailer.createTransport(dto.remetente);
             const result = yield remetente.sendMail(dto.destinatario, function (error) {
                 if (error) {
                     console.log(error);

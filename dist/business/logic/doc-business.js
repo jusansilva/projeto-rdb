@@ -24,7 +24,8 @@ const fs = require("fs");
 const repositories_1 = require("../../adapters/repositories");
 const email_utils_1 = require("../../utils/email-utils");
 const email_envs_1 = require("../../adapters/envs/email-envs");
-const archiver_1 = require("archiver");
+const archiver = require("archiver");
+const path = require("path");
 let DocBusiness = class DocBusiness {
     constructor(container) {
         this.bilhetagemRepository = container.get(repositories_1.BilhetagemImportRepository);
@@ -40,7 +41,7 @@ let DocBusiness = class DocBusiness {
                 const createDocument = [];
                 for (let i = 0; i < bilhetagem.length; i++) {
                     console.log(`${i} de ${bilhetagem.length}`);
-                    createDocument.push(yield this.bilhetagemRepository.create(Object.assign(Object.assign({}, bilhetagem[i]), { updatedAt: new Date, createdAt: new Date })));
+                    yield this.bilhetagemRepository.create(Object.assign(Object.assign({}, bilhetagem[i]), { updatedAt: new Date, createdAt: new Date }));
                 }
                 console.log("fim  de criação de bilhetagem");
                 console.log("inicio de criação de gps");
@@ -53,15 +54,16 @@ let DocBusiness = class DocBusiness {
                 console.log("iniciando relação");
                 yield this.saveRelatioship();
                 const relationship = yield this.realationshipRepository.find();
-                const data = JSON.stringify(relationship);
-                yield fs.writeFileSync(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`, data);
+                if (relationship) {
+                    const data = JSON.stringify(relationship);
+                    yield fs.writeFileSync(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`, data);
+                    const path = yield this.getAttachments();
+                }
                 const text = `Relação documento ${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json concluida com sucesso!`;
                 const subject = `Relação de documentos`;
                 const filename = `${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`;
-                const sendemail = this.parseEmailDto(text, subject, filename);
-                const sendEmail = yield this.emailUtils.sendEmail(sendemail);
-                if (sendEmail)
-                    return "documento criado";
+                const sendemail = this.parseEmailDto(text, subject, filename, path);
+                yield this.emailUtils.sendEmail(sendemail);
             }
             catch (err) {
                 console.log(err);
@@ -131,7 +133,11 @@ let DocBusiness = class DocBusiness {
             }
         });
     }
-    parseEmailDto(text, subject, filename) {
+    parseEmailDto(text, subject, filename, path) {
+        const Attachments = path ? {
+            filename: filename,
+            path: path
+        } : null;
         return {
             remetente: {
                 host: email_envs_1.EmailEnvs.host,
@@ -148,23 +154,22 @@ let DocBusiness = class DocBusiness {
                 to: email_envs_1.EmailEnvs.destinatario.to,
                 subject: subject,
                 text: text,
-                Attachments: {
-                    filename: filename,
-                    path: this.getAttachments()
-                },
+                Attachments
             }
         };
     }
     getAttachments() {
-        // create a file to stream archive data to.
-        const output = fs.createWriteStream(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`);
-        const archive = archiver_1.default('zip', {
-            zlib: { level: 9 } // Sets the compression level.
+        return __awaiter(this, void 0, void 0, function* () {
+            // create a file to stream archive data to.
+            const output = fs.createWriteStream(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`);
+            const archive = archiver('zip', {
+                zlib: { level: 9 } // Sets the compression level.
+            });
+            archive.pipe(output);
+            const file = `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`;
+            yield archive.append(fs.createReadStream(file), { name: `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json` });
+            return yield `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`;
         });
-        archive.pipe(output);
-        const file = `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`;
-        archive.append(fs.createReadStream(file), { name: `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json` });
-        return `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`;
     }
     parseDto(model) {
         return {
@@ -176,10 +181,11 @@ let DocBusiness = class DocBusiness {
             sentido: model.sentido
         };
     }
-    formatDocGps(path) {
+    formatDocGps(file) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const docGps = fs.readFileSync(path.data, { encoding: 'utf-8' });
+                console.log(file);
+                const docGps = fs.readFileSync(file.tempFilePath, { encoding: 'utf-8' });
                 const gpsLinhas = docGps.split(/\n/);
                 const gpsDto = [];
                 for (let i = 0; i < gpsLinhas.length; i++) {
@@ -203,10 +209,12 @@ let DocBusiness = class DocBusiness {
             }
         });
     }
-    formatDocBilhetagem(path) {
+    formatDocBilhetagem(file) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const doc = fs.readFileSync(path.data, { encoding: 'utf8' });
+                console.log(file);
+                const doc = fs.readFileSync(file.tempFilePath, { encoding: 'utf8' });
+                console.log(doc);
                 const documentArray = doc.replace(/["]/g, '').split(/\n/);
                 const arrayDocument = [];
                 for (let i = 0; i < documentArray.length; i++) {

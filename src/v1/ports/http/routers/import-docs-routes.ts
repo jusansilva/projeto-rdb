@@ -5,7 +5,10 @@ import * as  fileupload from "express-fileupload";
 
 const ImportDocs = Router();
 const controller = Container.get(DocsControlles);
-ImportDocs.use(fileupload());
+ImportDocs.use(fileupload({
+    useTempFiles : true,
+    tempFileDir : '/tmp/'
+}));
 ImportDocs.route("/v1/import").post((req: Request, res: Response, next) => {
   res.redirect("/index.html");
   controller.importData({ bilhetagem: req.files.bilhetagem, gps: req.files.gps }, res);

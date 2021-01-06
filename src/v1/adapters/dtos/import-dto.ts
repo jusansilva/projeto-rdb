@@ -1,6 +1,17 @@
 export interface ImportDto {
-    bilhetagem:File;
-    gps: File;
+    bilhetagem: FileTemp;
+    gps: FileTemp;
+}
+
+export interface FileTemp extends File {
+    name: string;
+    data: Buffer;
+    size: number;
+    encoding: string;
+    tempFilePath: string;
+    truncated: boolean;
+    mimetype: string;
+    md5: string;
 }
 
 export interface BilhetagemDto {

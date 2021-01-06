@@ -1,8 +1,9 @@
 import { Request } from 'express';
+import { FileTemp } from '../dtos';
 
 export interface ImportRequest extends Request {
-    bilhetagem: File;
-    gps:File;
+    bilhetagem: FileTemp;
+    gps:FileTemp;
 }
 
 export interface GetRelationshipRequest extends Request {
