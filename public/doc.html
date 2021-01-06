@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>RDB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/login.css" />
+</head>
+
+<body>
+    <img src="img/login.jpg" id="bg" alt="">
+    <div class="container">
+        <a class="links" id="paracadastro"></a>
+        <a class="links" id="paralogin"></a>
+
+        <div class="content">
+            <!--FORMULÁRIO DE LOGIN-->
+            <div id="insert">
+                <form method="post" action="/v1/import" enctype="multipart/form-data">
+                    <h1>Documentos</h1>
+                    <p>
+                        <label for="bilhetagem">Documento Bilhetagem</label>
+                        <input id="bilhetagem" name="bilhetagem" required="required" type="file" />
+                    </p>
+
+                    <p>
+                        <label for="gps">Documento GPS</label>
+                        <input id="gps" name="gps" required="required" type="file" />
+                    </p>
+
+                    <p>
+                        <input type="submit" value="import" id="import" />
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,8 +1,8 @@
 import { Request } from 'express';
 
 export interface ImportRequest extends Request {
-    data: string;
-    type: string;
+    bilhetagem: File;
+    gps:File;
 }
 
 export interface GetRelationshipRequest extends Request {

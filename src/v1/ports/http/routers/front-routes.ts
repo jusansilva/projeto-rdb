@@ -13,6 +13,10 @@ Front.route("/").get((req: Request, res: Response) => {
   res.send("To aqui")
 });
 
+Front.route("/docs").get((req: Request, res: Response) => {
+  res.sendFile("/doc.html");
+})
+
 Front.route('/login').get((req: Request, res: Response) => {
   res.sendFile("/login.html");
 });

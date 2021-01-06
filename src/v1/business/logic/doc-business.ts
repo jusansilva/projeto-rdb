@@ -2,8 +2,13 @@ import { Container, Service, ContainerInstance } from "typedi";
 import * as fs from "fs";
 import { ImportDto, BilhetagemDto, GpsImportDto, RelationshipDto } from "../../adapters/dtos/import-dto";
 import { BilhetagemImportRepository, GpsImportRepository, RelationshipRepository } from "../../adapters/repositories";
-import { IBilhetagemImportModel } from "v1/adapters/repositories/model/bilhetagem-import-model";
-import { IRelationshipModel } from "v1/adapters/repositories/model";
+import { IBilhetagemImportModel } from "../../adapters/repositories/model/bilhetagem-import-model";
+import { IRelationshipModel } from "../../adapters/repositories/model";
+import { EmailUtils } from "../../utils/email-utils";
+import { EmailDto } from "../../adapters/dtos";
+import { EmailEnvs } from "../../adapters/envs/email-envs";
+import archiver from 'archiver';
+
 
 
 @Service()
@@ -11,35 +16,47 @@ export class DocBusiness {
   protected readonly bilhetagemRepository: BilhetagemImportRepository;
   protected readonly gpsRepository: GpsImportRepository;
   protected readonly realationshipRepository: RelationshipRepository;
+  protected readonly emailUtils: EmailUtils;
   constructor(container: ContainerInstance) {
     this.bilhetagemRepository = container.get(BilhetagemImportRepository);
     this.gpsRepository = container.get(GpsImportRepository)
     this.realationshipRepository = container.get(RelationshipRepository);
+    this.emailUtils = container.get(EmailUtils);
   }
 
-  public async import(dto: ImportDto): Promise<string> {
+  public async import(dto: ImportDto): Promise<void> {
     try {
-      switch (dto.type) {
-        case 'bilhetagem':
-          const bilhetagem = await this.formatDocBilhetagem(dto.data);
-          const createDocument = [];
-          for (let i = 0; i < bilhetagem.length; i++) {
-            console.log(i);
-            createDocument.push(await this.bilhetagemRepository.create({ ...bilhetagem[i], updatedAt: new Date, createdAt: new Date }));
-          }
-          const documentDto = createDocument.map(create => this.parseDto(create));
-          return "documento criado";
-        case 'gps':
-          const gpsDoc = await this.formatDocGps(dto.data);
-          for (let i = 0; i < gpsDoc.length; i++) {
-            await this.gpsRepository.create({ ...gpsDoc[i], updatedAt: new Date, createdAt: new Date })
-            console.log(i);
-          }
-          console.log("documento criado totalmente")
-          return "documento criado"
-        default:
-          break;
+      console.log("Inicio  de criação de bilhetagem");
+      const bilhetagem = await this.formatDocBilhetagem(dto.bilhetagem);
+      const createDocument = [];
+      for (let i = 0; i < bilhetagem.length; i++) {
+        console.log(`${i} de ${bilhetagem.length}`);
+        createDocument.push(await this.bilhetagemRepository.create({ ...bilhetagem[i], updatedAt: new Date, createdAt: new Date }));
       }
+      console.log("fim  de criação de bilhetagem");
+      console.log("inicio de criação de gps");
+      const gpsDoc = await this.formatDocGps(dto.gps);
+      for (let i = 0; i < gpsDoc.length; i++) {
+        console.log(`${i} de ${gpsDoc.length}`);
+        await this.gpsRepository.create({ ...gpsDoc[i], updatedAt: new Date, createdAt: new Date })
+      }
+      console.log("fim de criação de gps");
+
+      console.log("iniciando relação");
+      await this.saveRelatioship();
+
+      const relationship = await this.realationshipRepository.find();
+
+      const data = JSON.stringify(relationship);
+      await fs.writeFileSync(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`, data);
+
+      const text = `Relação documento ${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json concluida com sucesso!`
+      const subject = `Relação de documentos`;
+      const filename = `${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`
+      const sendemail = this.parseEmailDto(text, subject, filename);
+      const sendEmail = await this.emailUtils.sendEmail(sendemail)
+      if (sendEmail)
+        return "documento criado";
 
     } catch (err) {
       console.log(err)
@@ -58,14 +75,12 @@ export class DocBusiness {
     }
   }
 
-  public async saveRelatioship(date: string, carro: string): Promise<string> {
+  public async saveRelatioship(date?: string, carro?: string): Promise<string> {
     try {
       await this.realationshipRepository.drop();
       console.log("começou a pesquisa bilhetagem");
       const bilhetagem = await this.bilhetagemRepository.findRelationship(date, carro);
       console.log("bilhetagem concluida");
-
-
 
       for (let a = 0; a < bilhetagem.length; a++) {
         console.log(`rodando ${a} de ${bilhetagem.length}`)
@@ -112,6 +127,44 @@ export class DocBusiness {
     }
   }
 
+  public parseEmailDto(text: string, subject: string, filename: string): EmailDto {
+    return {
+      remetente: {
+        host: EmailEnvs.host,
+        service: EmailEnvs.service,
+        port: EmailEnvs.port,
+        secure: EmailEnvs.secure,
+        auth: {
+          user: EmailEnvs.auth.user,
+          pass: EmailEnvs.auth.pass
+        }
+      },
+      destinatario: {
+        from: EmailEnvs.destinatario.from,
+        to: EmailEnvs.destinatario.to,
+        subject: subject,
+        text: text,
+        Attachments: {
+          filename: filename,
+          path: this.getAttachments()
+        },
+      }
+    }
+  }
+
+  public getAttachments(): string {
+    // create a file to stream archive data to.
+    const output = fs.createWriteStream(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`);
+    const archive = archiver('zip', {
+      zlib: { level: 9 } // Sets the compression level.
+    });
+    archive.pipe(output);
+    const file = `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`;
+    archive.append(fs.createReadStream(file), { name: `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json` });
+
+    return `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`
+  }
+
 
   public parseDto(model: IBilhetagemImportModel): BilhetagemDto {
     return {
@@ -124,9 +177,9 @@ export class DocBusiness {
     }
   }
 
-  public async formatDocGps(path: string): Promise<GpsImportDto[]> {
+  public async formatDocGps(path: File): Promise<GpsImportDto[]> {
     try {
-      const docGps = fs.readFileSync(path, { encoding: 'utf-8' });
+      const docGps = fs.readFileSync(path.data, { encoding: 'utf-8' });
       const gpsLinhas = docGps.split(/\n/);
       const gpsDto: GpsImportDto[] = [];
       for (let i = 0; i < gpsLinhas.length; i++) {
@@ -149,9 +202,9 @@ export class DocBusiness {
     }
   }
 
-  public async formatDocBilhetagem(path: string): Promise<BilhetagemDto[]> {
+  public async formatDocBilhetagem(path: File): Promise<BilhetagemDto[]> {
     try {
-      const doc = fs.readFileSync(path, { encoding: 'utf8' });
+      const doc = fs.readFileSync(path.data, { encoding: 'utf8' });
       const documentArray = doc.replace(/["]/g, '').split(/\n/);
       const arrayDocument: BilhetagemDto[] = [];
       for (let i = 0; i < documentArray.length; i++) {

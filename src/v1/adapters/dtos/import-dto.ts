@@ -1,6 +1,6 @@
 export interface ImportDto {
-    data: string;
-    type: string;
+    bilhetagem:File;
+    gps: File;
 }
 
 export interface BilhetagemDto {

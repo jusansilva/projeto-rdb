@@ -22,36 +22,46 @@ exports.DocBusiness = void 0;
 const typedi_1 = require("typedi");
 const fs = require("fs");
 const repositories_1 = require("../../adapters/repositories");
+const email_utils_1 = require("../../utils/email-utils");
+const email_envs_1 = require("../../adapters/envs/email-envs");
+const archiver_1 = require("archiver");
 let DocBusiness = class DocBusiness {
     constructor(container) {
         this.bilhetagemRepository = container.get(repositories_1.BilhetagemImportRepository);
         this.gpsRepository = container.get(repositories_1.GpsImportRepository);
         this.realationshipRepository = container.get(repositories_1.RelationshipRepository);
+        this.emailUtils = container.get(email_utils_1.EmailUtils);
     }
     import(dto) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                switch (dto.type) {
-                    case 'bilhetagem':
-                        const bilhetagem = yield this.formatDocBilhetagem(dto.data);
-                        const createDocument = [];
-                        for (let i = 0; i < bilhetagem.length; i++) {
-                            console.log(i);
-                            createDocument.push(yield this.bilhetagemRepository.create(Object.assign(Object.assign({}, bilhetagem[i]), { updatedAt: new Date, createdAt: new Date })));
-                        }
-                        const documentDto = createDocument.map(create => this.parseDto(create));
-                        return "documento criado";
-                    case 'gps':
-                        const gpsDoc = yield this.formatDocGps(dto.data);
-                        for (let i = 0; i < gpsDoc.length; i++) {
-                            yield this.gpsRepository.create(Object.assign(Object.assign({}, gpsDoc[i]), { updatedAt: new Date, createdAt: new Date }));
-                            console.log(i);
-                        }
-                        console.log("documento criado totalmente");
-                        return "documento criado";
-                    default:
-                        break;
+                console.log("Inicio  de criação de bilhetagem");
+                const bilhetagem = yield this.formatDocBilhetagem(dto.bilhetagem);
+                const createDocument = [];
+                for (let i = 0; i < bilhetagem.length; i++) {
+                    console.log(`${i} de ${bilhetagem.length}`);
+                    createDocument.push(yield this.bilhetagemRepository.create(Object.assign(Object.assign({}, bilhetagem[i]), { updatedAt: new Date, createdAt: new Date })));
                 }
+                console.log("fim  de criação de bilhetagem");
+                console.log("inicio de criação de gps");
+                const gpsDoc = yield this.formatDocGps(dto.gps);
+                for (let i = 0; i < gpsDoc.length; i++) {
+                    console.log(`${i} de ${gpsDoc.length}`);
+                    yield this.gpsRepository.create(Object.assign(Object.assign({}, gpsDoc[i]), { updatedAt: new Date, createdAt: new Date }));
+                }
+                console.log("fim de criação de gps");
+                console.log("iniciando relação");
+                yield this.saveRelatioship();
+                const relationship = yield this.realationshipRepository.find();
+                const data = JSON.stringify(relationship);
+                yield fs.writeFileSync(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`, data);
+                const text = `Relação documento ${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json concluida com sucesso!`;
+                const subject = `Relação de documentos`;
+                const filename = `${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`;
+                const sendemail = this.parseEmailDto(text, subject, filename);
+                const sendEmail = yield this.emailUtils.sendEmail(sendemail);
+                if (sendEmail)
+                    return "documento criado";
             }
             catch (err) {
                 console.log(err);
@@ -121,6 +131,41 @@ let DocBusiness = class DocBusiness {
             }
         });
     }
+    parseEmailDto(text, subject, filename) {
+        return {
+            remetente: {
+                host: email_envs_1.EmailEnvs.host,
+                service: email_envs_1.EmailEnvs.service,
+                port: email_envs_1.EmailEnvs.port,
+                secure: email_envs_1.EmailEnvs.secure,
+                auth: {
+                    user: email_envs_1.EmailEnvs.auth.user,
+                    pass: email_envs_1.EmailEnvs.auth.pass
+                }
+            },
+            destinatario: {
+                from: email_envs_1.EmailEnvs.destinatario.from,
+                to: email_envs_1.EmailEnvs.destinatario.to,
+                subject: subject,
+                text: text,
+                Attachments: {
+                    filename: filename,
+                    path: this.getAttachments()
+                },
+            }
+        };
+    }
+    getAttachments() {
+        // create a file to stream archive data to.
+        const output = fs.createWriteStream(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`);
+        const archive = archiver_1.default('zip', {
+            zlib: { level: 9 } // Sets the compression level.
+        });
+        archive.pipe(output);
+        const file = `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`;
+        archive.append(fs.createReadStream(file), { name: `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json` });
+        return `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`;
+    }
     parseDto(model) {
         return {
             carro: model.carro,
@@ -134,7 +179,7 @@ let DocBusiness = class DocBusiness {
     formatDocGps(path) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const docGps = fs.readFileSync(path, { encoding: 'utf-8' });
+                const docGps = fs.readFileSync(path.data, { encoding: 'utf-8' });
                 const gpsLinhas = docGps.split(/\n/);
                 const gpsDto = [];
                 for (let i = 0; i < gpsLinhas.length; i++) {
@@ -161,7 +206,7 @@ let DocBusiness = class DocBusiness {
     formatDocBilhetagem(path) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const doc = fs.readFileSync(path, { encoding: 'utf8' });
+                const doc = fs.readFileSync(path.data, { encoding: 'utf8' });
                 const documentArray = doc.replace(/["]/g, '').split(/\n/);
                 const arrayDocument = [];
                 for (let i = 0; i < documentArray.length; i++) {

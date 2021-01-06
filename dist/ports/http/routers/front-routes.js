@@ -14,6 +14,9 @@ const controller = typedi_1.default.get(controllers_1.UserControlles);
 Front.route("/").get((req, res) => {
     res.send("To aqui");
 });
+Front.route("/docs").get((req, res) => {
+    res.sendFile("/doc.html");
+});
 Front.route('/login').get((req, res) => {
     res.sendFile("/login.html");
 });

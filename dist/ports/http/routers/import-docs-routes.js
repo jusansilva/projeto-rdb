@@ -4,15 +4,14 @@ exports.ImportDocs = void 0;
 const express_1 = require("express");
 const controllers_1 = require("../controllers");
 const typedi_1 = require("typedi");
-const multer = require("multer");
-const upload = multer({ dest: 'uploads/' });
+const fileupload = require("express-fileupload");
 const ImportDocs = express_1.Router();
 exports.ImportDocs = ImportDocs;
 const controller = typedi_1.default.get(controllers_1.DocsControlles);
-ImportDocs.route("/v1/import", upload.single("import")).post((req, res, next) => {
-    Promise.resolve().then(function () {
-        return controller.importData(req.body, res);
-    }).catch(next);
+ImportDocs.use(fileupload());
+ImportDocs.route("/v1/import").post((req, res, next) => {
+    res.redirect("/index.html");
+    controller.importData({ bilhetagem: req.files.bilhetagem, gps: req.files.gps }, res);
 });
 ImportDocs.route("/v1/relacao").get((req, res, next) => {
     Promise.resolve().then(function () {

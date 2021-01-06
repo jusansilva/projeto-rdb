@@ -18,9 +18,7 @@ class DocsControlles {
     importData(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const imp = yield this.delegate.import(req);
-                res.json(imp);
-                return imp;
+                this.delegate.import(req);
             }
             catch (err) {
                 console.log(err);
