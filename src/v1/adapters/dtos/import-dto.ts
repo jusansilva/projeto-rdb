@@ -21,6 +21,7 @@ export interface BilhetagemDto {
     cartaoId?: string;
     transacao?: string;
     sentido?: string;
+    document?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -35,6 +36,7 @@ export interface GpsImportDto {
     desc_ponto_notavel: string;
     linha: string;
     sentido: string;
+    document?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }

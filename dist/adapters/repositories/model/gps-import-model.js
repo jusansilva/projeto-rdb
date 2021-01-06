@@ -29,6 +29,9 @@ const Schema = new mongoose.Schema({
     },
     sentido: {
         type: String,
+    },
+    document: {
+        type: String,
     }
 }, {
     timestamps: true,

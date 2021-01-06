@@ -35,21 +35,21 @@ class BilhetagemImportRepository {
                 if (carro !== undefined && data === undefined) {
                     return model_1.BilhetagemImportModel.find({ "carro": carro });
                 }
-                return model_1.BilhetagemImportModel.find({});
+                return model_1.BilhetagemImportModel.find();
             }
             catch (err) {
                 throw err;
             }
         });
     }
-    findRelationship(date, carro) {
+    findRelationship(date, carro, document) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const gpsModel = model_1.GpsImportModel;
                 if (date !== undefined && carro !== undefined) {
                     return model_1.BilhetagemImportModel.aggregate([
                         {
-                            "date": date, "carro": carro
+                            "date": date, "carro": carro, document: document
                         },
                         {
                             $lookup: {
@@ -62,12 +62,12 @@ class BilhetagemImportRepository {
                     ]);
                 }
                 if (date !== undefined) {
-                    return model_1.BilhetagemImportModel.find({ "data": date });
+                    return model_1.BilhetagemImportModel.find({ "data": date, document: document });
                 }
                 if (carro !== undefined) {
-                    return model_1.BilhetagemImportModel.find({ "carro": carro });
+                    return model_1.BilhetagemImportModel.find({ "carro": carro, document: document });
                 }
-                return model_1.BilhetagemImportModel.find({});
+                return model_1.BilhetagemImportModel.find({ document: document });
             }
             catch (err) {
             }

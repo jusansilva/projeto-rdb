@@ -53,7 +53,7 @@ let DocBusiness = class DocBusiness {
                 }
                 console.log("fim de criação de gps");
                 console.log("iniciando relação");
-                yield this.saveRelatioship();
+                yield this.saveRelatioship(dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
                 const name = uuid_1.default();
                 const relationship = yield this.realationshipRepository.find();
                 if (relationship) {
@@ -85,17 +85,17 @@ let DocBusiness = class DocBusiness {
             }
         });
     }
-    saveRelatioship(date, carro) {
+    saveRelatioship(date, carro, bilhetagemDocument, gpsDocument) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield this.realationshipRepository.drop();
                 console.log("começou a pesquisa bilhetagem");
-                const bilhetagem = yield this.bilhetagemRepository.findRelationship(date, carro);
+                const bilhetagem = yield this.bilhetagemRepository.findRelationship(date, carro, bilhetagemDocument);
                 console.log("bilhetagem concluida");
                 for (let a = 0; a < bilhetagem.length; a++) {
                     console.log(`rodando ${a} de ${bilhetagem.length}`);
                     console.log("gps pesquisando");
-                    let gps = yield this.gpsRepository.find(undefined, bilhetagem[a].carro);
+                    let gps = yield this.gpsRepository.find(undefined, bilhetagem[a].carro, gpsDocument);
                     console.log("gps finalizado");
                     let bDate;
                     let gDate;
@@ -189,7 +189,6 @@ let DocBusiness = class DocBusiness {
     formatDocGps(file) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log(file);
                 const docGps = fs.readFileSync(file.tempFilePath, { encoding: 'utf-8' });
                 const gpsLinhas = docGps.split(/\n/);
                 const gpsDto = [];
@@ -204,7 +203,8 @@ let DocBusiness = class DocBusiness {
                         ponto_notavel: gpsArray[6],
                         desc_ponto_notavel: gpsArray[7],
                         linha: gpsArray[8],
-                        sentido: gpsArray[9]
+                        sentido: gpsArray[9],
+                        document: file.tempFilePath
                     });
                 }
                 return gpsDto;
@@ -232,6 +232,7 @@ let DocBusiness = class DocBusiness {
                             cartaoId: dados[23],
                             transacao: dados[24],
                             sentido: dados[25],
+                            document: file.tempFilePath
                         });
                     }
                 }

@@ -45,7 +45,7 @@ export class DocBusiness {
       console.log("fim de criação de gps");
 
       console.log("iniciando relação");
-      await this.saveRelatioship();
+      await this.saveRelatioship(dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
       const name = uuid();
 
       const relationship = await this.realationshipRepository.find();
@@ -77,17 +77,17 @@ export class DocBusiness {
     }
   }
 
-  public async saveRelatioship(date?: string, carro?: string): Promise<string> {
+  public async saveRelatioship(date?: string, carro?: string, bilhetagemDocument?: string, gpsDocument?: string): Promise<string> {
     try {
       await this.realationshipRepository.drop();
       console.log("começou a pesquisa bilhetagem");
-      const bilhetagem = await this.bilhetagemRepository.findRelationship(date, carro);
+      const bilhetagem = await this.bilhetagemRepository.findRelationship(date, carro, bilhetagemDocument);
       console.log("bilhetagem concluida");
 
       for (let a = 0; a < bilhetagem.length; a++) {
         console.log(`rodando ${a} de ${bilhetagem.length}`)
         console.log("gps pesquisando")
-        let gps = await this.gpsRepository.find(undefined, bilhetagem[a].carro);
+        let gps = await this.gpsRepository.find(undefined, bilhetagem[a].carro, gpsDocument);
         console.log("gps finalizado")
         let bDate;
         let gDate;
@@ -185,7 +185,6 @@ export class DocBusiness {
 
   public async formatDocGps(file: FileTemp): Promise<GpsImportDto[]> {
     try {
-      console.log(file);
       const docGps = fs.readFileSync(file.tempFilePath, { encoding: 'utf-8' });
       const gpsLinhas = docGps.split(/\n/);
       const gpsDto: GpsImportDto[] = [];
@@ -200,7 +199,8 @@ export class DocBusiness {
           ponto_notavel: gpsArray[6],
           desc_ponto_notavel: gpsArray[7],
           linha: gpsArray[8],
-          sentido: gpsArray[9]
+          sentido: gpsArray[9],
+          document: file.tempFilePath
         })
       }
       return gpsDto;
@@ -226,6 +226,7 @@ export class DocBusiness {
             cartaoId: dados[23],
             transacao: dados[24],
             sentido: dados[25],
+            document: file.tempFilePath
           });
         }
       }

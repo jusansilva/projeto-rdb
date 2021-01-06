@@ -12,6 +12,7 @@ export interface IGpsImportModel extends mongoose.Document {
   sentido?: string;
   ponto_notavel?: string;
   desc_ponto_notavel?: string;
+  document?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -43,6 +44,9 @@ const Schema = new mongoose.Schema(
       type: String,
     },
     sentido: {
+      type: String,
+    },
+    document: {
       type: String,
     }
   },

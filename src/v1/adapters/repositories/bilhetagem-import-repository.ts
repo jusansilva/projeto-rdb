@@ -15,29 +15,29 @@ export class BilhetagemImportRepository {
     public async find(data?: string, carro?: string): Promise<IBilhetagemImportModel[]> {
         try {
             if (data !== undefined && carro !== undefined) {
-                return BilhetagemImportModel.find({ "data": data, "carro": carro });
+                return BilhetagemImportModel.find({ "data": data, "carro": carro});
             }
             if (data !== undefined && carro === undefined) {
-                return BilhetagemImportModel.find({ "data": data });
+                return BilhetagemImportModel.find({ "data": data  });
             }
             if (carro !== undefined && data === undefined) {
-                return BilhetagemImportModel.find({ "carro": carro });
+                return BilhetagemImportModel.find({ "carro": carro});
             }
-            return BilhetagemImportModel.find({});
+            return BilhetagemImportModel.find();
 
         } catch (err) {
             throw err
         }
     }
 
-    public async findRelationship(date?: string, carro?: string): Promise<any[]> {
+    public async findRelationship(date?: string, carro?: string, document?: string): Promise<any[]> {
         try {
             const gpsModel = GpsImportModel
 
             if (date !== undefined && carro !== undefined) {
                 return BilhetagemImportModel.aggregate([
                     {
-                        "date":date, "carro": carro
+                        "date":date, "carro": carro, document: document 
                     },
                     {
                         $lookup: {
@@ -49,12 +49,12 @@ export class BilhetagemImportRepository {
                     }]);
             }
             if (date !== undefined) {
-                return BilhetagemImportModel.find({ "data": date });
+                return BilhetagemImportModel.find({ "data": date, document: document  });
             }
             if (carro !== undefined) {
-                return BilhetagemImportModel.find({ "carro": carro });
+                return BilhetagemImportModel.find({ "carro": carro, document: document  });
             }
-            return BilhetagemImportModel.find({});
+            return BilhetagemImportModel.find({document: document });
 
 
         } catch (err) {

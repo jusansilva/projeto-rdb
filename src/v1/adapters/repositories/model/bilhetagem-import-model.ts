@@ -7,6 +7,7 @@ export interface IBilhetagemImportModel extends mongoose.Document {
   cartaoId?: string;
   transacao?: string;
   sentido?: string;
+  document?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -29,6 +30,9 @@ const Schema = new mongoose.Schema(
       type: String,
     },
     sentido: {
+      type: String,
+    },
+    document: {
       type: String,
     }
   },
