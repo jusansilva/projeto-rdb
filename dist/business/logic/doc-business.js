@@ -53,8 +53,8 @@ let DocBusiness = class DocBusiness {
                 }
                 console.log("fim de criação de gps");
                 console.log("iniciando relação");
-                yield this.saveRelatioship(dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
-                const name = uuid_1.default();
+                yield this.saveRelatioship(undefined, undefined, dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
+                const name = uuid_1.v4();
                 const relationship = yield this.realationshipRepository.find();
                 if (relationship) {
                     const data = JSON.stringify(relationship);
@@ -92,6 +92,7 @@ let DocBusiness = class DocBusiness {
                 console.log("começou a pesquisa bilhetagem");
                 const bilhetagem = yield this.bilhetagemRepository.findRelationship(date, carro, bilhetagemDocument);
                 console.log("bilhetagem concluida");
+                console.log(bilhetagem);
                 for (let a = 0; a < bilhetagem.length; a++) {
                     console.log(`rodando ${a} de ${bilhetagem.length}`);
                     console.log("gps pesquisando");

@@ -9,8 +9,7 @@ import { EmailDto } from "../../adapters/dtos";
 import { EmailEnvs } from "../../adapters/envs/email-envs";
 import * as archiver from 'archiver';
 import * as  path from "path";
-import * as uuid from "uuid";
-
+import { v4 as uuid } from 'uuid';
 
 
 @Service()
@@ -45,7 +44,7 @@ export class DocBusiness {
       console.log("fim de criação de gps");
 
       console.log("iniciando relação");
-      await this.saveRelatioship(dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
+      await this.saveRelatioship(undefined, undefined, dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
       const name = uuid();
 
       const relationship = await this.realationshipRepository.find();
@@ -83,6 +82,7 @@ export class DocBusiness {
       console.log("começou a pesquisa bilhetagem");
       const bilhetagem = await this.bilhetagemRepository.findRelationship(date, carro, bilhetagemDocument);
       console.log("bilhetagem concluida");
+      console.log(bilhetagem);
 
       for (let a = 0; a < bilhetagem.length; a++) {
         console.log(`rodando ${a} de ${bilhetagem.length}`)

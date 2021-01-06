@@ -46,6 +46,8 @@ class BilhetagemImportRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const gpsModel = model_1.GpsImportModel;
+                console.log(document);
+                console.log(date, carro);
                 if (date !== undefined && carro !== undefined) {
                     return model_1.BilhetagemImportModel.aggregate([
                         {
@@ -67,7 +69,9 @@ class BilhetagemImportRepository {
                 if (carro !== undefined) {
                     return model_1.BilhetagemImportModel.find({ "carro": carro, document: document });
                 }
-                return model_1.BilhetagemImportModel.find({ document: document });
+                const bilhetagem = model_1.BilhetagemImportModel.find({ document: document });
+                console.log(bilhetagem);
+                return bilhetagem;
             }
             catch (err) {
             }
