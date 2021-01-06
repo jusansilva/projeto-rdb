@@ -3,7 +3,7 @@ import * as mongoose from "mongoose";
 export interface IUserModel extends mongoose.Document {
   nome: string;
   email: string;
-  password: string;
+  password?: string;
   token: string;
   createdAt?: Date;
   updatedAt?: Date;

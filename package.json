@@ -17,6 +17,7 @@
   "author": "Jusan Magno",
   "license": "MIT",
   "dependencies": {
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^14.14.9",
     "agenda": "^3.1.0",
     "archiver": "^5.1.0",

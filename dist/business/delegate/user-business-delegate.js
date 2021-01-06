@@ -26,9 +26,14 @@ class UserBusinessDelegate {
     constructor() {
         this.factory = new factory_2.UserFactory();
     }
-    logar(dto) {
+    logar(dto, authorization) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.factory.build().logar(dto);
+            return this.factory.build().logar(dto, authorization);
+        });
+    }
+    create(dto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.factory.build().create(dto);
         });
     }
 }

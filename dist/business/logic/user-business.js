@@ -21,32 +21,53 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserBusiness = void 0;
 const typedi_1 = require("typedi");
 const repositories_1 = require("../../adapters/repositories");
-const jsonwebtoken_1 = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+require("dotenv").config();
 let UserBusiness = class UserBusiness {
     constructor(container) {
         this.repository = container.get(repositories_1.UserRepository);
     }
-    logar(dto) {
+    logar(dto, authorization) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const find = yield this.repository.logar(dto.email, dto.password);
-                if (!find)
-                    return { auth: false, message: 'User or passwor not found' };
-                if (find.token) {
-                    const jwtVerify = jsonwebtoken_1.default.verify(find.token, process.env.SECRET, function (err, decoded) {
+                if (authorization) {
+                    let verify;
+                    yield jwt.verify(authorization, process.env.SECRET, function (err, decoded) {
                         if (err) {
-                            const token = jsonwebtoken_1.default.sign(find.email, process.env.SECRET, {
-                                expiresIn: 3600 // expires in 10min
+                            if (dto.email) {
+                                const token = jwt.sign({ email: dto.email }, process.env.SECRET, {
+                                    expiresIn: 3600 // expires in 10min
+                                });
+                                this.repository.updateToken(token, dto.email);
+                            }
+                            verify = { auth: false, message: 'User or password not found' };
+                        }
+                        else {
+                            verify = { auth: true, token: authorization };
+                        }
+                    });
+                    return verify;
+                }
+                const find = yield this.repository.logar(dto.email, this.encrypt(dto.password));
+                if (!find)
+                    return { auth: false, message: 'User or password not found' };
+                if (find.token) {
+                    let jwtVerify;
+                    yield jwt.verify(find.token, process.env.SECRET, function (err, decoded) {
+                        if (err) {
+                            const token = jwt.sign({ email: find.email }, process.env.SECRET, {
+                                expiresIn: "10h" // expires in 10h
                             });
                             this.repository.updateToken(token, dto.email);
                         }
-                        return { auth: true, token: decoded.token };
+                        jwtVerify = { auth: true, token: find.token };
                     });
                     return jwtVerify;
                 }
                 else {
-                    const token = jsonwebtoken_1.default.sign(find.email, process.env.SECRET, {
-                        expiresIn: 3600 // expires in 10min
+                    const token = jwt.sign({ email: find.email }, process.env.SECRET, {
+                        expiresIn: "10h" // expires in 10h
                     });
                     yield this.repository.updateToken(token, dto.email);
                     return { auth: true, token: token };
@@ -57,6 +78,45 @@ let UserBusiness = class UserBusiness {
                 return error;
             }
         });
+    }
+    create(dto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const token = jwt.sign({ email: dto.email }, process.env.SECRET, {
+                    expiresIn: "10h" // expires in 10h
+                });
+                const user = {
+                    nome: dto.nome,
+                    email: dto.email,
+                    password: this.encrypt(dto.password),
+                    token: token
+                };
+                const creater = yield this.repository.create(user);
+                const dtoUser = this.parseDtoUser(creater);
+                delete dtoUser.password;
+                return dtoUser;
+            }
+            catch (error) {
+                console.log(error);
+                return error;
+            }
+        });
+    }
+    parseDtoUser(model) {
+        return {
+            nome: model.nome,
+            email: model.email,
+            password: model.password,
+            token: model.token
+        };
+    }
+    encrypt(text) {
+        const iv = crypto.randomBytes(16);
+        const hash = crypto.createHash("sha1");
+        hash.update(text);
+        let key = hash.digest().slice(0, 16);
+        const cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
+        return key;
     }
 };
 UserBusiness = __decorate([

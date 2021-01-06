@@ -9,7 +9,11 @@ export class UserBusinessDelegate implements UserFacade {
     @Inject(FactoryName.BusinessDoc)
     private readonly factory = new UserFactory();
 
-    async logar(dto: UserDto): Promise<AuthResponse> {
-        return this.factory.build().logar(dto);
+    async logar(dto: UserDto, authorization?: string): Promise<AuthResponse> {
+        return this.factory.build().logar(dto, authorization);
+    }
+
+    async create(dto: UserDto): Promise<UserDto> {
+        return this.factory.build().create(dto);
     }
 }

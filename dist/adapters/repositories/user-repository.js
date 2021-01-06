@@ -31,6 +31,20 @@ class UserRepository {
                 return updated;
             }
             catch (error) {
+                console.log(error);
+                return error;
+            }
+        });
+    }
+    create(dto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const model = yield model_1.UserModel.create({ nome: dto.nome, email: dto.email, password: dto.password, token: dto.token });
+                return model;
+            }
+            catch (error) {
+                console.log(error);
+                return error;
             }
         });
     }

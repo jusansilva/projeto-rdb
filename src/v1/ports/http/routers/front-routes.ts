@@ -21,9 +21,6 @@ Front.route('/login').get((req: Request, res: Response) => {
   res.sendFile("/login.html");
 });
 
-Front.route('/logar').post((req: Request, res: Response) => {
-  return controller.logar(req.body, res);
-})
 
 
 export { Front };

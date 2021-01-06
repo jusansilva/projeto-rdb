@@ -15,10 +15,21 @@ class UserControlles {
     constructor() {
         this.delegate = new delegate_1.UserBusinessDelegate();
     }
-    logar(body, res) {
+    create(dto, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const logado = yield this.delegate.logar(body);
+                const create = yield this.delegate.create(dto);
+                res.json(create);
+                return create;
+            }
+            catch (error) {
+            }
+        });
+    }
+    logar(body, res, authorization) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const logado = yield this.delegate.logar(body, authorization);
                 res.json(logado);
                 return logado;
             }

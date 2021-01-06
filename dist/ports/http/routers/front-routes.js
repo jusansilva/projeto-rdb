@@ -20,7 +20,4 @@ Front.route("/docs").get((req, res) => {
 Front.route('/login').get((req, res) => {
     res.sendFile("/login.html");
 });
-Front.route('/logar').post((req, res) => {
-    return controller.logar(req.body, res);
-});
 //# sourceMappingURL=front-routes.js.map
