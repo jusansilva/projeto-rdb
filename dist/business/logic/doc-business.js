@@ -26,6 +26,7 @@ const email_utils_1 = require("../../utils/email-utils");
 const email_envs_1 = require("../../adapters/envs/email-envs");
 const archiver = require("archiver");
 const path = require("path");
+const uuid_1 = require("uuid");
 let DocBusiness = class DocBusiness {
     constructor(container) {
         this.bilhetagemRepository = container.get(repositories_1.BilhetagemImportRepository);
@@ -53,19 +54,16 @@ let DocBusiness = class DocBusiness {
                 console.log("fim de criação de gps");
                 console.log("iniciando relação");
                 yield this.saveRelatioship();
-                const date = new Date();
-                const day = date.getDay();
-                const month = date.getMonth();
-                const year = date.getFullYear();
+                const name = uuid_1.default();
                 const relationship = yield this.realationshipRepository.find();
                 if (relationship) {
                     const data = JSON.stringify(relationship);
-                    yield fs.writeFileSync(`./${day}-${month}-${year}-relacao.json`, data);
-                    const path = yield this.getAttachments();
+                    yield fs.writeFileSync(`${name}-relacao.json`, data);
+                    const path = yield this.getAttachments(name);
                 }
-                const text = `Relação documento ./${day}-${month}-${year}-relacao.json concluida com sucesso!`;
+                const text = `Relação documento ${name}-relacao.json concluida com sucesso!`;
                 const subject = `Relação de documentos`;
-                const filename = `./${day}-${month}-${year}-relacao.json`;
+                const filename = `${name}-relacao.json`;
                 const sendemail = this.parseEmailDto(text, subject, filename, path);
                 yield this.emailUtils.sendEmail(sendemail);
             }
@@ -162,20 +160,20 @@ let DocBusiness = class DocBusiness {
             }
         };
     }
-    getAttachments() {
+    getAttachments(name) {
         return __awaiter(this, void 0, void 0, function* () {
             const date = new Date();
             const day = date.getDay();
             const month = date.getMonth();
             const year = date.getFullYear();
-            const output = fs.createWriteStream(`./${day}-${month}-${year}-relacao.zip`);
+            const output = fs.createWriteStream(`${name}-relacao.zip`);
             const archive = archiver('zip', {
                 zlib: { level: 9 } // Sets the compression level.
             });
             archive.pipe(output);
-            const file = `./${day}-${month}-${year}-relacao.json`;
-            yield archive.append(fs.createReadStream(file), { name: `./${day}-${month}-${year}-relacao.json` });
-            return yield `./${day}-${month}-${year}-relacao.zip`;
+            const file = `${name}-relacao.json`;
+            yield archive.append(fs.createReadStream(file), { name: `${name}-relacao.json` });
+            return yield `${name}-relacao.zip`;
         });
     }
     parseDto(model) {
