@@ -53,15 +53,16 @@ let DocBusiness = class DocBusiness {
                 console.log("fim de criação de gps");
                 console.log("iniciando relação");
                 yield this.saveRelatioship();
+                const date = new Date();
                 const relationship = yield this.realationshipRepository.find();
                 if (relationship) {
                     const data = JSON.stringify(relationship);
-                    yield fs.writeFileSync(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`, data);
+                    yield fs.writeFileSync(`./${date.getDay}-${date.getMonth}-${date.getFullYear}-relacao.json`, data);
                     const path = yield this.getAttachments();
                 }
-                const text = `Relação documento ${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json concluida com sucesso!`;
+                const text = `Relação documento ./${date.getDay}-${date.getMonth}-${date.getFullYear}-relacao.json concluida com sucesso!`;
                 const subject = `Relação de documentos`;
-                const filename = `${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`;
+                const filename = `./${date.getDay}-${date.getMonth}-${date.getFullYear}-relacao.json`;
                 const sendemail = this.parseEmailDto(text, subject, filename, path);
                 yield this.emailUtils.sendEmail(sendemail);
             }
@@ -160,15 +161,15 @@ let DocBusiness = class DocBusiness {
     }
     getAttachments() {
         return __awaiter(this, void 0, void 0, function* () {
-            // create a file to stream archive data to.
-            const output = fs.createWriteStream(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`);
+            const data = new Date();
+            const output = fs.createWriteStream(`./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.zip`);
             const archive = archiver('zip', {
                 zlib: { level: 9 } // Sets the compression level.
             });
             archive.pipe(output);
-            const file = `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`;
-            yield archive.append(fs.createReadStream(file), { name: `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json` });
-            return yield `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`;
+            const file = `./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.json`;
+            yield archive.append(fs.createReadStream(file), { name: `./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.json` });
+            return yield `./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.zip`;
         });
     }
     parseDto(model) {

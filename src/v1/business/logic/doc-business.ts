@@ -45,16 +45,17 @@ export class DocBusiness {
 
       console.log("iniciando relação");
       await this.saveRelatioship();
+      const date = new Date();
 
       const relationship = await this.realationshipRepository.find();
       if(relationship){
       const data = JSON.stringify(relationship);
-      await fs.writeFileSync(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`, data);
+      await fs.writeFileSync(`./${date.getDay}-${date.getMonth}-${date.getFullYear}-relacao.json`, data);
       const path = await this.getAttachments()
       }
-      const text = `Relação documento ${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json concluida com sucesso!`
+      const text = `Relação documento ./${date.getDay}-${date.getMonth}-${date.getFullYear}-relacao.json concluida com sucesso!`
       const subject = `Relação de documentos`;
-      const filename = `${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`
+      const filename = `./${date.getDay}-${date.getMonth}-${date.getFullYear}-relacao.json`
       const sendemail = this.parseEmailDto(text, subject, filename, path);
       await this.emailUtils.sendEmail(sendemail)
 
@@ -154,16 +155,16 @@ export class DocBusiness {
   }
 
   public async getAttachments(): Promise<string> {
-    // create a file to stream archive data to.
-    const output = fs.createWriteStream(`./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`);
+    const data = new Date();
+    const output = fs.createWriteStream(`./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.zip`);
     const archive = archiver('zip', {
       zlib: { level: 9 } // Sets the compression level.
     });
     archive.pipe(output);
-    const file = `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json`;
-    await archive.append(fs.createReadStream(file), { name: `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.json` });
+    const file = `./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.json`;
+    await archive.append(fs.createReadStream(file), { name: `./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.json` });
 
-    return await `./${new Date().getDay}-${new Date().getMonth}-${new Date().getFullYear}-relacao.zip`
+    return await `./${data.getDay}-${data.getMonth}-${data.getFullYear}-relacao.zip`
   }
 
 

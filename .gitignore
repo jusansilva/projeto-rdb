@@ -1,2 +1,4 @@
 node_modules
 gps.txt
+*.json
+*.zip
