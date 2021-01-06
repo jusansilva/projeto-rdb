@@ -9,7 +9,7 @@ import { EmailDto } from "../../adapters/dtos";
 import { EmailEnvs } from "../../adapters/envs/email-envs";
 import * as archiver from 'archiver';
 import * as  path from "path";
-import uuid from "uuid";
+import * as uuid from "uuid";
 
 
 
