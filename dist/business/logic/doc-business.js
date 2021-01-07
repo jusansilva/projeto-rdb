@@ -57,7 +57,7 @@ let DocBusiness = class DocBusiness {
                                 if (bDate.getMinutes() == gDate.getMinutes()) {
                                     if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
                                         console.log(`criou carro: ${bilhetagem[i].carro} com AVL: ${gpsDoc[j].AVL}`);
-                                        this.realationshipRepository.create({
+                                        yield this.realationshipRepository.create({
                                             data_gps: gpsDoc[j].data_final,
                                             carro: bilhetagem[i].carro,
                                             linha: bilhetagem[i].linha,
