@@ -27,26 +27,48 @@ export class DocBusiness {
 
   public async import(dto: ImportDto): Promise<void> {
     try {
-      console.log("Inicio  de criação de bilhetagem");
+      console.log("Inicio  de criação de documentos");
+      const gpsDoc = await this.formatDocGps(dto.gps);
       const bilhetagem = await this.formatDocBilhetagem(dto.bilhetagem);
       const createDocument = [];
-      const saveBilhetagem =  await Promise.all(bilhetagem.map(async (bilhete, i, total) => {
-        console.log(`${i} de ${total.length}`);
-        return await this.bilhetagemRepository.create({ ...bilhete, updatedAt: new Date, createdAt: new Date });
-      }))
-
-      console.log("fim  de criação de bilhetagem");
-      console.log("inicio de criação de gps");
-      const gpsDoc = await this.formatDocGps(dto.gps);
-      const saveGps = await Promise.all(gpsDoc.map(async (gps, i, total) => {
-        console.log(`${i} de ${total.length}`);
-        return await this.gpsRepository.create({ ...gps, updatedAt: new Date, createdAt: new Date })
-      }))
-
-      console.log("fim de criação de gps");
-
+      let bDate;
+      let gDate;
+      for (let j = 0; j < gpsDoc.length; j++) {
+        console.log(`${j} de Gps ${gpsDoc.length}`);
+        for (let i = 0; i < bilhetagem.length; i++) {
+          console.log(`${i} de bilhetagem ${bilhetagem.length}`);
+          if (j = 0) {
+            await this.bilhetagemRepository.create({ ...bilhetagem[i], updatedAt: new Date, createdAt: new Date });
+          }
+          bDate = this.dateString2Date(bilhetagem[i].data.trim().replace("/", "-"));
+          gDate = this.dateString2Date(gpsDoc[j].data_final.trim().replace("/", "-"));
+          if (gDate?.getDate() === bDate?.getDate()) {
+            if (bDate.getHours() == gDate.getHours()) {
+              if (bDate.getMinutes() == gDate.getMinutes()) {
+                if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
+                  console.log(`criou carro: ${bilhetagem[i].carro} com AVL: ${gpsDoc[j].AVL}`);
+                  this.realationshipRepository.create(
+                    {
+                      data_gps: gpsDoc[j].data_final,
+                      carro: bilhetagem[i].carro,
+                      linha: bilhetagem[i].linha,
+                      AVL: gpsDoc[j].AVL,
+                      cartaoId: bilhetagem[i].cartaoId,
+                      transacao: bilhetagem[i].transacao,
+                      sentido: bilhetagem[i].sentido,
+                      latitude: gpsDoc[j].latitude,
+                      longitude: gpsDoc[j].longitude,
+                      ponto_notavel: gpsDoc[j].ponto_notavel,
+                      desc_ponto_notavel: gpsDoc[j].desc_ponto_notavel
+                    })
+                }
+              }
+            }
+          }
+        }
+        await this.gpsRepository.create({ ...gpsDoc[j], updatedAt: new Date, createdAt: new Date })
+      }
       console.log("iniciando relação");
-      await this.saveRelatioship(saveBilhetagem, saveGps, dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
       const name = uuid();
 
       const relationship = await this.realationshipRepository.find();
@@ -185,6 +207,7 @@ export class DocBusiness {
 
   public async formatDocGps(file: FileTemp): Promise<GpsImportDto[]> {
     try {
+      console.log("inicio de leitura gps");
       const docGps = fs.readFileSync(file.tempFilePath, { encoding: 'utf-8' });
       const gpsLinhas = docGps.split(/\n/);
       const gpsDto: GpsImportDto[] = [];
@@ -203,6 +226,7 @@ export class DocBusiness {
           document: file.tempFilePath
         })
       }
+      console.log("fim de leitura gps");
       return gpsDto;
     } catch (err) {
       throw err;
@@ -211,9 +235,8 @@ export class DocBusiness {
 
   public async formatDocBilhetagem(file: FileTemp): Promise<BilhetagemDto[]> {
     try {
-      console.log(file);
+      console.log("inicio de leitura bilhetagem");
       const doc = fs.readFileSync(file.tempFilePath, { encoding: 'utf8' });
-      console.log(doc)
       const documentArray = doc.replace(/["]/g, '').split(/\n/);
       const arrayDocument: BilhetagemDto[] = [];
       for (let i = 0; i < documentArray.length; i++) {
@@ -230,7 +253,7 @@ export class DocBusiness {
           });
         }
       }
-
+      console.log("fim de leitura bilhetagem");
       return arrayDocument;
 
     } catch (error) {

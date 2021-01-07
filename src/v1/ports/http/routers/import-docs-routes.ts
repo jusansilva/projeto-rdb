@@ -10,7 +10,8 @@ ImportDocs.use(fileupload({
     tempFileDir : '/tmp/'
 }));
 ImportDocs.route("/v1/import").post((req: Request, res: Response, next) => {
-  res.redirect("/index.html");
+  const token = req.body.t;
+  res.redirect(`/docs?t=${token}&status=true`);
   controller.importData({ bilhetagem: req.files.bilhetagem, gps: req.files.gps }, res);
 });
 ImportDocs.route("/v1/relacao").get((req: Request, res: Response, next) => {

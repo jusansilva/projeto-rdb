@@ -33,6 +33,7 @@ Front.route("/docs").get((req, res) => __awaiter(void 0, void 0, void 0, functio
             return res.sendView('login.html');
         }
     }
+    res.set('x-access-token', auth);
     return res.redirect('/login?status=false');
 }));
 Front.route('/login').get((req, res) => {

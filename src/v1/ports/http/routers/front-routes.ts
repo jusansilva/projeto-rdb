@@ -25,6 +25,7 @@ Front.route("/docs").get(async (req: Request, res: Response) => {
       return res.sendView('login.html');
     }
   }
+   res.set('x-access-token', auth);
   return res.redirect('/login?status=false');
 
 })
