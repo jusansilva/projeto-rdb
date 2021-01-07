@@ -3,7 +3,7 @@ import * as fs from "fs";
 import { ImportDto, BilhetagemDto, GpsImportDto, RelationshipDto, FileTemp } from "../../adapters/dtos/import-dto";
 import { BilhetagemImportRepository, GpsImportRepository, RelationshipRepository } from "../../adapters/repositories";
 import { IBilhetagemImportModel } from "../../adapters/repositories/model/bilhetagem-import-model";
-import { IRelationshipModel } from "../../adapters/repositories/model";
+import { IRelationshipModel, IGpsImportModel } from "../../adapters/repositories/model";
 import { EmailUtils } from "../../utils/email-utils";
 import { EmailDto } from "../../adapters/dtos";
 import { EmailEnvs } from "../../adapters/envs/email-envs";
@@ -30,21 +30,23 @@ export class DocBusiness {
       console.log("Inicio  de criação de bilhetagem");
       const bilhetagem = await this.formatDocBilhetagem(dto.bilhetagem);
       const createDocument = [];
-      for (let i = 0; i < bilhetagem.length; i++) {
-        console.log(`${i} de ${bilhetagem.length}`);
-        await this.bilhetagemRepository.create({ ...bilhetagem[i], updatedAt: new Date, createdAt: new Date });
-      }
+      const saveBilhetagem =  await Promise.all(bilhetagem.map(async (bilhete, i, total) => {
+        console.log(`${i} de ${total.length}`);
+        return await this.bilhetagemRepository.create({ ...bilhete, updatedAt: new Date, createdAt: new Date });
+      }))
+
       console.log("fim  de criação de bilhetagem");
       console.log("inicio de criação de gps");
       const gpsDoc = await this.formatDocGps(dto.gps);
-      for (let i = 0; i < gpsDoc.length; i++) {
-        console.log(`${i} de ${gpsDoc.length}`);
-        await this.gpsRepository.create({ ...gpsDoc[i], updatedAt: new Date, createdAt: new Date })
-      }
+      const saveGps = await Promise.all(gpsDoc.map(async (gps, i, total) => {
+        console.log(`${i} de ${total.length}`);
+        return await this.gpsRepository.create({ ...gps, updatedAt: new Date, createdAt: new Date })
+      }))
+
       console.log("fim de criação de gps");
 
       console.log("iniciando relação");
-      await this.saveRelatioship(undefined, undefined, dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
+      await this.saveRelatioship(saveBilhetagem, saveGps, dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
       const name = uuid();
 
       const relationship = await this.realationshipRepository.find();
@@ -76,48 +78,46 @@ export class DocBusiness {
     }
   }
 
-  public async saveRelatioship(date?: string, carro?: string, bilhetagemDocument?: string, gpsDocument?: string): Promise<string> {
+  public async saveRelatioship(bilhetagem: IBilhetagemImportModel[], gps: IGpsImportModel[], bilhetagemDocument?: string, gpsDocument?: string): Promise<string> {
     try {
       await this.realationshipRepository.drop();
       console.log("começou a pesquisa bilhetagem");
-      const bilhetagem = await this.bilhetagemRepository.findRelationship(date, carro, bilhetagemDocument);
       console.log("bilhetagem concluida");
       console.log(bilhetagem);
-
       for (let a = 0; a < bilhetagem.length; a++) {
         console.log(`rodando ${a} de ${bilhetagem.length}`)
         console.log("gps pesquisando")
-        let gps = await this.gpsRepository.find(undefined, bilhetagem[a].carro, gpsDocument);
-        console.log("gps finalizado")
         let bDate;
         let gDate;
-        for (let i = 0; i < gps.length; i++) {
-          bDate = this.dateString2Date(bilhetagem[a].data.trim().replace("/", "-"));
-          gDate = this.dateString2Date(gps[i].data_final.trim().replace("/", "-"));
-          if (gDate?.getDate() === bDate?.getDate()) {
-            if (bDate.getHours() == gDate.getHours()) {
-              if (bDate.getMinutes() == gDate.getMinutes()) {
-                if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
-                  console.log(`criou carro: ${bilhetagem[a].carro} com AVL: ${gps[i].AVL}`);
-                  this.realationshipRepository.create(
-                    {
-                      data_gps: gps[a].data_final,
-                      carro: bilhetagem[a].carro,
-                      linha: bilhetagem[a].linha,
-                      AVL: gps[i].AVL,
-                      cartaoId: bilhetagem[a].cartaoId,
-                      transacao: bilhetagem[a].transacao,
-                      sentido: bilhetagem[a].sentido,
-                      latitude: gps[i].latitude,
-                      longitude: gps[i].longitude,
-                      ponto_notavel: gps[i].ponto_notavel,
-                      desc_ponto_notavel: gps[i].desc_ponto_notavel
-                    })
+        gps.map((gps) => {
+          if (gps.carro === bilhetagem[a].carro) {
+            bDate = this.dateString2Date(bilhetagem[a].data.trim().replace("/", "-"));
+            gDate = this.dateString2Date(gps.data_final.trim().replace("/", "-"));
+            if (gDate?.getDate() === bDate?.getDate()) {
+              if (bDate.getHours() == gDate.getHours()) {
+                if (bDate.getMinutes() == gDate.getMinutes()) {
+                  if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
+                    console.log(`criou carro: ${bilhetagem[a].carro} com AVL: ${gps.AVL}`);
+                    this.realationshipRepository.create(
+                      {
+                        data_gps: gps.data_final,
+                        carro: bilhetagem[a].carro,
+                        linha: bilhetagem[a].linha,
+                        AVL: gps.AVL,
+                        cartaoId: bilhetagem[a].cartaoId,
+                        transacao: bilhetagem[a].transacao,
+                        sentido: bilhetagem[a].sentido,
+                        latitude: gps.latitude,
+                        longitude: gps.longitude,
+                        ponto_notavel: gps.ponto_notavel,
+                        desc_ponto_notavel: gps.desc_ponto_notavel
+                      })
+                  }
                 }
               }
             }
           }
-        }
+        })
       }
       console.log('terminou')
 

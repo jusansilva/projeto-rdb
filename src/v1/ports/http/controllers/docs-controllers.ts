@@ -28,10 +28,10 @@ export class DocsControlles {
 
       public async saveRelatioship(req: GetRelationshipRequest, res: Response): Promise<string> {
             try {
-                  const { date, carro } = req;
-                  const save = await this.delegate.saveRelatioship(date, carro);
-                  res.json(save);
-                  return save;
+                  // const { date, carro } = req;
+                  // const save = await this.delegate.saveRelatioship(date, carro);
+                  // res.json(save);
+                  return "m construção";
             } catch (err) {
                   console.log(err);
                   throw err;

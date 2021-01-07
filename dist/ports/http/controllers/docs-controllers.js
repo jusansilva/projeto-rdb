@@ -43,10 +43,10 @@ class DocsControlles {
     saveRelatioship(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { date, carro } = req;
-                const save = yield this.delegate.saveRelatioship(date, carro);
-                res.json(save);
-                return save;
+                // const { date, carro } = req;
+                // const save = await this.delegate.saveRelatioship(date, carro);
+                // res.json(save);
+                return "m construção";
             }
             catch (err) {
                 console.log(err);

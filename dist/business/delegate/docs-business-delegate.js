@@ -25,6 +25,9 @@ const factory_2 = require("../factory");
 class DocsBusinessDelegate {
     constructor() {
         this.factory = new factory_2.DocsFactory();
+        // async saveRelatioship(date?: string, carro?: string):Promise<string>{
+        //   return this.factory.build().saveRelatioship(date, carro);
+        // }
     }
     import(dto) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -34,11 +37,6 @@ class DocsBusinessDelegate {
     find(date, carro) {
         return __awaiter(this, void 0, void 0, function* () {
             return this.factory.build().find(date, carro);
-        });
-    }
-    saveRelatioship(date, carro) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.factory.build().saveRelatioship(date, carro);
         });
     }
 }

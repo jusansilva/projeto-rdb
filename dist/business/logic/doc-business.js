@@ -40,20 +40,20 @@ let DocBusiness = class DocBusiness {
                 console.log("Inicio  de criação de bilhetagem");
                 const bilhetagem = yield this.formatDocBilhetagem(dto.bilhetagem);
                 const createDocument = [];
-                for (let i = 0; i < bilhetagem.length; i++) {
-                    console.log(`${i} de ${bilhetagem.length}`);
-                    yield this.bilhetagemRepository.create(Object.assign(Object.assign({}, bilhetagem[i]), { updatedAt: new Date, createdAt: new Date }));
-                }
+                const saveBilhetagem = yield Promise.all(bilhetagem.map((bilhete, i, total) => __awaiter(this, void 0, void 0, function* () {
+                    console.log(`${i} de ${total.length}`);
+                    return yield this.bilhetagemRepository.create(Object.assign(Object.assign({}, bilhete), { updatedAt: new Date, createdAt: new Date }));
+                })));
                 console.log("fim  de criação de bilhetagem");
                 console.log("inicio de criação de gps");
                 const gpsDoc = yield this.formatDocGps(dto.gps);
-                for (let i = 0; i < gpsDoc.length; i++) {
-                    console.log(`${i} de ${gpsDoc.length}`);
-                    yield this.gpsRepository.create(Object.assign(Object.assign({}, gpsDoc[i]), { updatedAt: new Date, createdAt: new Date }));
-                }
+                const saveGps = yield Promise.all(gpsDoc.map((gps, i, total) => __awaiter(this, void 0, void 0, function* () {
+                    console.log(`${i} de ${total.length}`);
+                    return yield this.gpsRepository.create(Object.assign(Object.assign({}, gps), { updatedAt: new Date, createdAt: new Date }));
+                })));
                 console.log("fim de criação de gps");
                 console.log("iniciando relação");
-                yield this.saveRelatioship(undefined, undefined, dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
+                yield this.saveRelatioship(saveBilhetagem, saveGps, dto.bilhetagem.tempFilePath, dto.gps.tempFilePath);
                 const name = uuid_1.v4();
                 const relationship = yield this.realationshipRepository.find();
                 if (relationship) {
@@ -85,47 +85,46 @@ let DocBusiness = class DocBusiness {
             }
         });
     }
-    saveRelatioship(date, carro, bilhetagemDocument, gpsDocument) {
+    saveRelatioship(bilhetagem, gps, bilhetagemDocument, gpsDocument) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield this.realationshipRepository.drop();
                 console.log("começou a pesquisa bilhetagem");
-                const bilhetagem = yield this.bilhetagemRepository.findRelationship(date, carro, bilhetagemDocument);
                 console.log("bilhetagem concluida");
                 console.log(bilhetagem);
                 for (let a = 0; a < bilhetagem.length; a++) {
                     console.log(`rodando ${a} de ${bilhetagem.length}`);
                     console.log("gps pesquisando");
-                    let gps = yield this.gpsRepository.find(undefined, bilhetagem[a].carro, gpsDocument);
-                    console.log("gps finalizado");
                     let bDate;
                     let gDate;
-                    for (let i = 0; i < gps.length; i++) {
-                        bDate = this.dateString2Date(bilhetagem[a].data.trim().replace("/", "-"));
-                        gDate = this.dateString2Date(gps[i].data_final.trim().replace("/", "-"));
-                        if ((gDate === null || gDate === void 0 ? void 0 : gDate.getDate()) === (bDate === null || bDate === void 0 ? void 0 : bDate.getDate())) {
-                            if (bDate.getHours() == gDate.getHours()) {
-                                if (bDate.getMinutes() == gDate.getMinutes()) {
-                                    if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
-                                        console.log(`criou carro: ${bilhetagem[a].carro} com AVL: ${gps[i].AVL}`);
-                                        this.realationshipRepository.create({
-                                            data_gps: gps[a].data_final,
-                                            carro: bilhetagem[a].carro,
-                                            linha: bilhetagem[a].linha,
-                                            AVL: gps[i].AVL,
-                                            cartaoId: bilhetagem[a].cartaoId,
-                                            transacao: bilhetagem[a].transacao,
-                                            sentido: bilhetagem[a].sentido,
-                                            latitude: gps[i].latitude,
-                                            longitude: gps[i].longitude,
-                                            ponto_notavel: gps[i].ponto_notavel,
-                                            desc_ponto_notavel: gps[i].desc_ponto_notavel
-                                        });
+                    gps.map((gps) => {
+                        if (gps.carro === bilhetagem[a].carro) {
+                            bDate = this.dateString2Date(bilhetagem[a].data.trim().replace("/", "-"));
+                            gDate = this.dateString2Date(gps.data_final.trim().replace("/", "-"));
+                            if ((gDate === null || gDate === void 0 ? void 0 : gDate.getDate()) === (bDate === null || bDate === void 0 ? void 0 : bDate.getDate())) {
+                                if (bDate.getHours() == gDate.getHours()) {
+                                    if (bDate.getMinutes() == gDate.getMinutes()) {
+                                        if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
+                                            console.log(`criou carro: ${bilhetagem[a].carro} com AVL: ${gps.AVL}`);
+                                            this.realationshipRepository.create({
+                                                data_gps: gps.data_final,
+                                                carro: bilhetagem[a].carro,
+                                                linha: bilhetagem[a].linha,
+                                                AVL: gps.AVL,
+                                                cartaoId: bilhetagem[a].cartaoId,
+                                                transacao: bilhetagem[a].transacao,
+                                                sentido: bilhetagem[a].sentido,
+                                                latitude: gps.latitude,
+                                                longitude: gps.longitude,
+                                                ponto_notavel: gps.ponto_notavel,
+                                                desc_ponto_notavel: gps.desc_ponto_notavel
+                                            });
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
+                    });
                 }
                 console.log('terminou');
                 return "dados estao sendo processados";

@@ -27,7 +27,6 @@ Front.route("/docs").get((req, res) => __awaiter(void 0, void 0, void 0, functio
     if (auth) {
         const verify = yield controller.auth(auth);
         if (verify.auth) {
-            console.log(verify.auth);
             return res.sendView('doc.html');
         }
         else {
