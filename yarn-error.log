@@ -1,0 +1,80 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add ; yarn build ; nodemon dist/ports/http/index.js
+
+PATH: 
+  C:\Users\K2018B~1.JUS\AppData\Local\Temp\yarn--1610018417620-0.1239778092663899;C:\Users\k2.jusan\Desktop\projetos\projeto-rdb\node_modules\.bin;C:\Users\k2.jusan\AppData\Local\Yarn\Data\link\node_modules\.bin;C:\Program Files\libexec\lib\node_modules\npm\bin\node-gyp-bin;C:\Program Files\lib\node_modules\npm\bin\node-gyp-bin;C:\Program Files\nodejs\node_modules\npm\bin\node-gyp-bin;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files (x86)\CheckPoint\Endpoint Security\Endpoint Common\bin;C:\Program Files\Git\cmd;C:\Program Files (x86)\Yarn\bin\;C:\Program Files\nodejs\;C:\Users\k2.jusan\AppData\Local\Microsoft\WindowsApps;;C:\Users\k2.jusan\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\k2.jusan\AppData\Local\Yarn\bin;C:\Users\k2.jusan\AppData\Roaming\npm
+
+Yarn version: 
+  1.22.5
+
+Node version: 
+  14.15.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/;: Not found
+      at Request.params.callback [as _callback] (C:\Program Files (x86)\Yarn\lib\cli.js:66097:18)
+      at Request.self.callback (C:\Program Files (x86)\Yarn\lib\cli.js:140749:22)
+      at Request.emit (events.js:315:20)
+      at Request.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:141721:10)
+      at Request.emit (events.js:315:20)
+      at IncomingMessage.<anonymous> (C:\Program Files (x86)\Yarn\lib\cli.js:141643:12)
+      at Object.onceWrapper (events.js:421:28)
+      at IncomingMessage.emit (events.js:327:22)
+      at endReadableNT (_stream_readable.js:1327:12)
+      at processTicksAndRejections (internal/process/task_queues.js:80:21)
+
+npm manifest: 
+  {
+    "name": "projeto-rdb",
+    "version": "1.0.0",
+    "description": "projeto de analise de arquivos e geração de automação",
+    "main": "src/index.js",
+    "scripts": {
+      "build-doc": "snowboard html -o docs api.apib",
+      "build": "tsc",
+      "start": "npm install; npm run build; node dist/ports/http/index.js",
+      "dev": " yarn add ; yarn build ; nodemon dist/ports/http/index.js",
+      "test": "echo 'no tests defined yet.'",
+      "lint": "eslint .",
+      "lint:api": "snowboard lint api.apib",
+      "eslint": "eslint --no-error-on-unmatched-pattern $(git diff --name-only origin/develop)",
+      "debug": "tsc && node dist/ports/http/index.js"
+    },
+    "author": "Jusan Magno",
+    "license": "MIT",
+    "dependencies": {
+      "@types/jsonwebtoken": "^8.5.0",
+      "@types/node": "^14.14.9",
+      "agenda": "^3.1.0",
+      "archiver": "^5.1.0",
+      "csv-parse": "^4.14.1",
+      "csv-parser": "^3.0.0",
+      "dotenv-safe": "^8.2.0",
+      "express": "^4.17.1",
+      "express-fileupload": "^1.2.0",
+      "fast-csv": "^4.3.6",
+      "jsonwebtoken": "^8.5.1",
+      "mongoose": "^5.10.15",
+      "monq": "^0.3.7",
+      "multer": "^1.4.2",
+      "nodemailer": "^6.4.17",
+      "nodemon": "^2.0.7",
+      "path": "^0.12.7",
+      "request": "^2.88.2",
+      "ts-node-dev": "^1.0.0",
+      "typedi": "^0.8.0",
+      "uuid": "^8.3.2"
+    },
+    "devDependencies": {
+      "typescript": "^4.1.3"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

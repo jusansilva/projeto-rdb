@@ -21,20 +21,21 @@ export class UserBusiness {
   public async logar(dto: UserDto, authorization?: string): Promise<AuthResponse> {
     try {
       if (authorization) {
-        let verify;
-        await jwt.verify(authorization, process.env.SECRET, function (err, decoded) {
+        let verify, token;
+        jwt.verify(authorization, process.env.SECRET, function (err, decoded) {
           if (err) {
             if (dto.email) {
-              const token = jwt.sign({ email: dto.email }, process.env.SECRET, {
+              token = jwt.sign({ email: dto.email }, process.env.SECRET, {
                 expiresIn: 3600 // expires in 10min
               });
-              this.repository.updateToken(token, dto.email);
+              
             }
             verify = { auth: false, message: 'User or password not found' }
           } else {
             verify = { auth: true, token: authorization };
           }
         });
+        if(token)this.repository.updateToken(token, dto.email);
         return verify;
       }
       const password =  crypto.createHash('md5').update(dto.password).digest("hex");
@@ -43,17 +44,17 @@ export class UserBusiness {
 
 
       if (find.token) {
-        let jwtVerify;
+        let jwtVerify, token;
 
         await jwt.verify(find.token, process.env.SECRET, function (err, decoded) {
           if (err) {
-            const token = jwt.sign({ email: find.email }, process.env.SECRET, {
+             token = jwt.sign({ email: find.email }, process.env.SECRET, {
               expiresIn: "10h" // expires in 10h
             });
-            this.repository.updateToken(token, dto.email);
           }
           jwtVerify = { auth: true, token: find.token };
         });
+        this.repository.updateToken(token, dto.email);
         return jwtVerify;
       } else {
         const token = jwt.sign({ email: find.email }, process.env.SECRET, {
