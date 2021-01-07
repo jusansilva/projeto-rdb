@@ -11,6 +11,9 @@ Front.use(sendViewMiddleware);
 
 const controller = Container.get(UserControlles);
 Front.route("/").get((req: Request, res: Response) => {
+  const token = res.headers['x-access-token']
+  if(token) res.redirect(`/docs?t${token}`);
+  
    res.redirect("/login"); 
 });
 
