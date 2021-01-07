@@ -5,4 +5,6 @@ export interface UserFacade {
     logar: (dto: UserDto, authorization?: string) => Promise<AuthResponse>;
 
     create: (dto: UserDto) => Promise<UserDto>;
+
+    auth: (auth: string) => Promise<AuthResponse>;
 }

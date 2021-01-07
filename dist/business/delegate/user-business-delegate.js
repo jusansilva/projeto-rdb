@@ -36,6 +36,11 @@ class UserBusinessDelegate {
             return this.factory.build().create(dto);
         });
     }
+    auth(auth) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.factory.build().auth(auth);
+        });
+    }
 }
 __decorate([
     typedi_1.Inject(factory_1.FactoryName.BusinessDoc),

@@ -49,7 +49,8 @@ let UserBusiness = class UserBusiness {
                     });
                     return verify;
                 }
-                const find = yield this.repository.logar(dto.email, this.encrypt(dto.password));
+                const password = crypto.createHash('md5').update(dto.password).digest("hex");
+                const find = yield this.repository.logar(dto.email, password);
                 if (!find)
                     return { auth: false, message: 'User or password not found' };
                 if (find.token) {
@@ -88,7 +89,7 @@ let UserBusiness = class UserBusiness {
                 const user = {
                     nome: dto.nome,
                     email: dto.email,
-                    password: this.encrypt(dto.password),
+                    password: crypto.createHash('md5').update(dto.password).digest("hex"),
                     token: token
                 };
                 const creater = yield this.repository.create(user);
@@ -110,13 +111,25 @@ let UserBusiness = class UserBusiness {
             token: model.token
         };
     }
-    encrypt(text) {
-        const iv = crypto.randomBytes(16);
-        const hash = crypto.createHash("sha1");
-        hash.update(text);
-        let key = hash.digest().slice(0, 16);
-        const cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
-        return key;
+    auth(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let verify;
+                yield jwt.verify(token, process.env.SECRET, function (err, decoded) {
+                    if (err) {
+                        verify = { auth: false, message: 'Please try login' };
+                    }
+                    else {
+                        verify = { auth: true, token: token };
+                    }
+                });
+                return verify;
+            }
+            catch (error) {
+                console.log(error);
+                return error;
+            }
+        });
     }
 };
 UserBusiness = __decorate([

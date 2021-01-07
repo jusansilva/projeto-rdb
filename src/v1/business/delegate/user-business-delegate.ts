@@ -16,4 +16,8 @@ export class UserBusinessDelegate implements UserFacade {
     async create(dto: UserDto): Promise<UserDto> {
         return this.factory.build().create(dto);
     }
+
+    async auth(auth: string): Promise<AuthResponse> {
+        return this.factory.build().auth(auth);
+    }
 }

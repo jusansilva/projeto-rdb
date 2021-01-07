@@ -1,78 +1,139 @@
 <!DOCTYPE html>
+
 <head>
   <meta charset="UTF-8" />
   <title>RDB</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="css/login.css" />
 </head>
+
 <body>
   <img src="img/login.jpg" id="bg" alt="">
-  <div class="container" >
+  <div class="container">
     <a class="links" id="paracadastro"></a>
     <a class="links" id="paralogin"></a>
-     
-    <div class="content">      
+
+    <div class="content">
       <!--FORMULÁRIO DE LOGIN-->
       <div id="login">
-        <form method="post" action="/v1/logar"> 
-          <h1>Login</h1> 
-          <p> 
-            <label for="nome_login">Seu nome</label>
-            <input id="nome_login" name="nome_login" required="required" type="text" placeholder="ex. contato@htmlecsspro.com"/>
+        <form method="post" action="/v1/logar" id="form-login">
+          <h1>Login</h1>
+          <p>
+            <label for="email">Seu nome</label>
+            <input id="email" name="email" required="required" type="text"
+              placeholder="ex. contato@htmlecsspro.com" />
           </p>
-           
-          <p> 
-            <label for="email_login">Seu e-mail</label>
-            <input id="email_login" name="email_login" required="required" type="password" placeholder="ex. senha" /> 
+
+          <p>
+            <label for="password">Seu e-mail</label>
+            <input id="password" name="password" required="required" type="password" placeholder="ex. senha" />
           </p>
-           
-          <p> 
-            <input type="checkbox" name="manterlogado" id="manterlogado" value="" /> 
+          <!-- <p>
+            <input type="checkbox" name="manterlogado" id="manterlogado" value="" />
             <label for="manterlogado">Manter-me logado</label>
+          </p> -->
+
+          <p>
+            <input type="submit" value="Logar" id="logar" />
           </p>
-           
-          <p> 
-            <input type="submit" value="Logar" /> 
-          </p>
-           
-          <p class="link">
+
+          <!-- <p class="link">
             Ainda não tem conta?
             <a href="#paracadastro">Cadastre-se</a>
-          </p>
+          </p> -->
         </form>
       </div>
- 
-      <!--FORMULÁRIO DE CADASTRO-->
+
+      <!-- FORMULÁRIO DE CADASTRO
       <div id="cadastro">
-        <form method="post" action="/v1/creater"> 
-          <h1>Cadastro</h1> 
-           
-          <p> 
+        <form method="post" action="/v1/creater">
+          <h1>Cadastro</h1>
+
+          <p>
             <label for="nome_cad">Seu nome</label>
             <input id="nome_cad" name="nome_cad" required="required" type="text" placeholder="nome" />
           </p>
-           
-          <p> 
+
+          <p>
             <label for="email_cad">Seu e-mail</label>
-            <input id="email_cad" name="email_cad" required="required" type="email" placeholder="contato@htmlecsspro.com"/> 
+            <input id="email_cad" name="email_cad" required="required" type="email"
+              placeholder="contato@htmlecsspro.com" />
           </p>
-           
-          <p> 
+
+          <p>
             <label for="senha_cad">Sua senha</label>
-            <input id="senha_cad" name="senha_cad" required="required" type="password" placeholder="ex. 1234"/>
+            <input id="senha_cad" name="senha_cad" required="required" type="password" placeholder="ex. 1234" />
           </p>
-           
-          <p> 
-            <input type="submit" value="Cadastrar"/> 
+
+          <p>
+            <input type="submit" value="Cadastrar" />
           </p>
-           
-          <p class="link">  
+
+          <p class="link">
             Já tem conta?
             <a href="#paralogin"> Ir para Login </a>
           </p>
         </form>
-      </div>
+      </div> -->
     </div>
-  </div>  
+  </div>
 </body>
+<script>
+  var query = location.search.slice(1);
+  var partes = query.split('&');
+  var data = {};
+  partes.forEach(function (parte) {
+    var chaveValor = parte.split('=');
+    var chave = chaveValor[0];
+    var valor = chaveValor[1];
+    data[chave] = valor;
+  });
+
+  if(data.status){
+    alert("usuario ou senha incorreta");
+    data = "";
+  }
+
+
+
+  // document.getElementById("logar").addEventListener("click", function () {
+  //   event.preventDefault();
+  //   var body = {
+  //     email: document.getElementById('nome_login').value,
+  //     password: document.getElementById('email_login').value
+  //   }
+  //   fetch("/v1/logar", {
+  //     method: "post",
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify(body)
+  //   }).then(function (response) {
+  //     return response.json();
+  //   }).then(function (data) {
+  //     console.log(data)
+  //     if (data.auth) {
+  //       fetch("/docs", {
+  //         method: "get",
+  //         headers: {
+  //           authorization: data.token
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.log(error)
+  //         window.location.href = "/login.html";
+
+  //       });
+  //     } else {
+  //       window.location.href = "/login.html?status=incorreta";
+  //     }
+  //   }).catch((error) => {
+  //     console.log(error)
+  //     window.location.href = "/login.html";
+  //   });
+
+  // });
+</script>
+
 </html>

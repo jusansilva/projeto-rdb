@@ -1,26 +1,45 @@
 import { Router, Request, Response } from "express";
 import * as express from "express";
-import * as  multer from 'multer';
 import { UserControlles } from "../controllers";
 import Container from 'typedi';
-const upload = multer({ dest: 'uploads/' })
+import * as path from 'path';
 
 const Front = Router();
 Front.use(express.static("public"));
+Front.use(sendViewMiddleware);
+
 
 const controller = Container.get(UserControlles);
 Front.route("/").get((req: Request, res: Response) => {
-  res.send("To aqui")
+   res.redirect("/login"); 
 });
 
-Front.route("/docs").get((req: Request, res: Response) => {
-  res.sendFile("/doc.html");
+Front.route("/docs").get(async (req: Request, res: Response) => {
+  const auth = req.query.t;
+  if (auth) {
+    const verify = await controller.auth(auth)
+
+    if (verify.auth) {
+      return res.sendView('doc.html');
+    } else {
+      return res.sendView('login.html');
+    }
+  }
+  return res.redirect('/login?status=false');
+
 })
 
 Front.route('/login').get((req: Request, res: Response) => {
-  res.sendFile("/login.html");
+  res.sendView('login.html');
 });
 
 
+
+function sendViewMiddleware(req, res, next) {
+    res.sendView = function(view) {
+        return res.sendFile("/" + view, {root: "public"});
+    }
+    next();
+}
 
 export { Front };

@@ -16,7 +16,7 @@
         <div class="content">
             <!--FORMULÁRIO DE LOGIN-->
             <div id="insert">
-                <form method="post" action="/v1/import" enctype="multipart/form-data">
+                <form method="post"  enctype="multipart/form-data" id="form">
                     <h1>Documentos</h1>
                     <p>
                         <label for="bilhetagem">Documento Bilhetagem</label>
@@ -36,5 +36,17 @@
         </div>
     </div>
 </body>
+<script>
+
+    document.getElementById('import').onclick = function (event) {
+        event.preventDefault();
+        var form = new FormData(document.getElementById('form'));
+        fetch("/v1/import", {
+            method: "POST",
+            body: form
+        });
+
+    }
+</script>
 
 </html>
