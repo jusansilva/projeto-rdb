@@ -11,10 +11,11 @@ Front.use(sendViewMiddleware);
 
 const controller = Container.get(UserControlles);
 Front.route("/").get((req: Request, res: Response) => {
-  const token = res.headers['x-access-token']
-  if(token) res.redirect(`/docs?t${token}`);
-  
-   res.redirect("/login"); 
+  // const token = res.header['x-access-token']
+  // if (token) {
+  //   res.redirect(`/docs?t${token}`);
+  // }
+  res.redirect("/login");
 });
 
 Front.route("/docs").get(async (req: Request, res: Response) => {
@@ -28,7 +29,7 @@ Front.route("/docs").get(async (req: Request, res: Response) => {
       return res.sendView('login.html');
     }
   }
-   res.set('x-access-token', auth);
+  res.set('x-access-token', auth);
   return res.redirect('/login?status=false');
 
 })
@@ -40,10 +41,10 @@ Front.route('/login').get((req: Request, res: Response) => {
 
 
 function sendViewMiddleware(req, res, next) {
-    res.sendView = function(view) {
-        return res.sendFile("/" + view, {root: "public"});
-    }
-    next();
+  res.sendView = function (view) {
+    return res.sendFile("/" + view, { root: "public" });
+  }
+  next();
 }
 
 export { Front };

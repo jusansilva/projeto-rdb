@@ -30,8 +30,9 @@ class UserControlles {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const logado = yield this.delegate.logar(body, authorization);
-                res.set({ Authorization: logado.token,
-                    teste: "to aqui" });
+                if (!logado.auth) {
+                    res.redirect('/login?status=true');
+                }
                 res.redirect(`/docs?t=${logado.token}`);
                 return logado;
             }

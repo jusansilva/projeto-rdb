@@ -16,4 +16,6 @@ User.route('/v1/logar').post((req: Request, res: Response) => {
   return controller.logar(req.body, res, authorization);
 })
 
+
+
 export { User }

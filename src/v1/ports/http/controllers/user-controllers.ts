@@ -3,7 +3,6 @@ import { UserRequest } from 'v1/adapters/request';
 import { AuthResponse } from 'v1/adapters/response';
 import { Request, Response } from 'express';
 import { UserDto } from 'v1/adapters/dtos';
-import * as request from 'request';
 export class UserControlles {
     protected readonly delegate = new UserBusinessDelegate();
 
@@ -18,9 +17,12 @@ export class UserControlles {
     }
     public async logar(body: UserRequest, res: Response, authorization?: string): Promise<AuthResponse> {
         try {
+            
             const logado = await this.delegate.logar(body, authorization);
-            res.set({Authorization: logado.token,
-                   teste: "to aqui" });
+
+            if(!logado.auth){
+                res.redirect('/login?status=true')
+            }
             res.redirect(`/docs?t=${logado.token}`)
 
             return logado;

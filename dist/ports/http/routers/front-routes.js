@@ -20,6 +20,10 @@ Front.use(express.static("public"));
 Front.use(sendViewMiddleware);
 const controller = typedi_1.default.get(controllers_1.UserControlles);
 Front.route("/").get((req, res) => {
+    // const token = res.header['x-access-token']
+    // if (token) {
+    //   res.redirect(`/docs?t${token}`);
+    // }
     res.redirect("/login");
 });
 Front.route("/docs").get((req, res) => __awaiter(void 0, void 0, void 0, function* () {

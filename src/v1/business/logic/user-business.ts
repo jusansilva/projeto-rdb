@@ -20,7 +20,6 @@ export class UserBusiness {
 
   public async logar(dto: UserDto, authorization?: string): Promise<AuthResponse> {
     try {
-
       if (authorization) {
         let verify;
         await jwt.verify(authorization, process.env.SECRET, function (err, decoded) {
