@@ -15,7 +15,7 @@ class BilhetagemImportRepository {
     create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const bilhetagem = model_1.BilhetagemImportModel.create(dto);
+                const bilhetagem = yield model_1.BilhetagemImportModel.create(dto);
                 return bilhetagem;
             }
             catch (error) {
@@ -27,15 +27,15 @@ class BilhetagemImportRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (data !== undefined && carro !== undefined) {
-                    return model_1.BilhetagemImportModel.find({ "data": data, "carro": carro });
+                    return yield model_1.BilhetagemImportModel.find({ "data": data, "carro": carro });
                 }
                 if (data !== undefined && carro === undefined) {
-                    return model_1.BilhetagemImportModel.find({ "data": data });
+                    return yield model_1.BilhetagemImportModel.find({ "data": data });
                 }
                 if (carro !== undefined && data === undefined) {
-                    return model_1.BilhetagemImportModel.find({ "carro": carro });
+                    return yield model_1.BilhetagemImportModel.find({ "carro": carro });
                 }
-                return model_1.BilhetagemImportModel.find();
+                return yield model_1.BilhetagemImportModel.find();
             }
             catch (err) {
                 throw err;

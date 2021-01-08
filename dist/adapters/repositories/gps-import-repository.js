@@ -15,7 +15,7 @@ class GpsImportRepository {
     create(dto) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const bilhetagem = model_1.GpsImportModel.create(dto);
+                const bilhetagem = yield model_1.GpsImportModel.create(dto);
                 return bilhetagem;
             }
             catch (error) {

@@ -5,7 +5,7 @@ export class BilhetagemImportRepository {
 
     public async create(dto: BilhetagemDto): Promise<IBilhetagemImportModel> {
         try {
-            const bilhetagem = BilhetagemImportModel.create(dto);
+            const bilhetagem = await BilhetagemImportModel.create(dto);
             return bilhetagem;
         } catch (error) {
             throw error;
@@ -15,15 +15,15 @@ export class BilhetagemImportRepository {
     public async find(data?: string, carro?: string): Promise<IBilhetagemImportModel[]> {
         try {
             if (data !== undefined && carro !== undefined) {
-                return BilhetagemImportModel.find({ "data": data, "carro": carro });
+                 return await BilhetagemImportModel.find({ "data": data, "carro": carro });
             }
             if (data !== undefined && carro === undefined) {
-                return BilhetagemImportModel.find({ "data": data });
+                return await BilhetagemImportModel.find({ "data": data });
             }
             if (carro !== undefined && data === undefined) {
-                return BilhetagemImportModel.find({ "carro": carro });
+                return await BilhetagemImportModel.find({ "carro": carro });
             }
-            return BilhetagemImportModel.find();
+            return await BilhetagemImportModel.find();
 
         } catch (err) {
             throw err

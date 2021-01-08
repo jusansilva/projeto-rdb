@@ -5,7 +5,7 @@ export class GpsImportRepository {
     
     public async create(dto: GpsImportDto ): Promise<IGpsImportModel> {
         try {
-            const bilhetagem = GpsImportModel.create(dto);
+            const bilhetagem = await GpsImportModel.create(dto);
             return bilhetagem;
         } catch (error) {
             throw error;
