@@ -6,7 +6,7 @@
   "scripts": {
     "build-doc": "snowboard html -o docs api.apib",
     "build": "tsc",
-    "start": "npm install & node --max-old-space-size=4096 dist/ports/http/index.js &  node dist/ports/http/index.js",
+    "start": "npm install && node --max-old-space-size=4096 dist/ports/http/index.js &&  node dist/ports/http/index.js",
     "dev": " npm install & npm run build & nodemon dist/ports/http/index.js",
     "test": "echo 'no tests defined yet.'",
     "lint": "eslint .",
@@ -32,9 +32,7 @@
     "linebyline": "^1.3.0",
     "mongoose": "^5.10.15",
     "monq": "^0.3.7",
-    "multer": "^1.4.2",
     "nodemailer": "^6.4.17",
-    "nodemon": "^2.0.7",
     "path": "^0.12.7",
     "request": "^2.88.2",
     "ts-node-dev": "^1.0.0",
