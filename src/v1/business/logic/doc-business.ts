@@ -45,7 +45,7 @@ export class DocBusiness {
       gpsDoc.on('line', async (gpsLine) => {
 
         let gpsArray = gpsLine.split("\t");
-
+        gpsDoc.pause();
         let gpsSave = await this.gpsRepository.create({
           data_final: gpsArray[0],
           AVL: gpsArray[2],
@@ -60,14 +60,16 @@ export class DocBusiness {
           updatedAt: new Date,
           createdAt: new Date
         });
+        gpsDoc.resume()
         console.log(`Gps -  ${gpsSave.carro}`)
 
-
-        await bilhetagemDoc.on('line', async (bilhetagemLine) => {
+        gpsDoc.pause();
+        bilhetagemDoc.on('line', async (bilhetagemLine) => {
           let dados = bilhetagemLine.split(',');
           if (dados[8] !== undefined) {
 
-
+            
+            bilhetagemDoc.pause();
             let bilhetagem = await this.bilhetagemRepository.create({
               carro: dados[8],
               linha: dados[16],
@@ -80,6 +82,10 @@ export class DocBusiness {
               createdAt: new Date
             });
 
+
+            
+            bilhetagemDoc.resume();
+
             console.log(`Bilhetagem - ${bilhetagem.carro}`)
             let bDate;
             let gDate;
@@ -90,6 +96,7 @@ export class DocBusiness {
                 if (bDate.getMinutes() == gDate.getMinutes()) {
                   if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
                     console.log(`criou carro: ${bilhetagem.carro} com AVL: ${gpsSave.AVL}`);
+                    bilhetagemDoc.pause();
                     await this.realationshipRepository.create(
                       {
                         data_gps: gpsSave.data_final,
@@ -104,6 +111,9 @@ export class DocBusiness {
                         ponto_notavel: gpsDoc.ponto_notavel,
                         desc_ponto_notavel: gpsDoc.desc_ponto_notavel
                       })
+                    gpsDoc.resume();
+                    bilhetagemDoc.resume();
+
                   }
                 }
               }

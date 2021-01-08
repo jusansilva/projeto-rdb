@@ -27,14 +27,16 @@ const email_envs_1 = require("../../adapters/envs/email-envs");
 const archiver = require("archiver");
 const path = require("path");
 const uuid_1 = require("uuid");
+const events_1 = require("events");
 var readline = require("readline");
+const emitter = new events_1.EventEmitter();
+emitter.setMaxListeners(0);
 let DocBusiness = class DocBusiness {
     constructor(container) {
         this.bilhetagemRepository = container.get(repositories_1.BilhetagemImportRepository);
         this.gpsRepository = container.get(repositories_1.GpsImportRepository);
         this.realationshipRepository = container.get(repositories_1.RelationshipRepository);
         this.emailUtils = container.get(email_utils_1.EmailUtils);
-        process.setMaxListeners(0);
     }
     import(dto) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -48,6 +50,7 @@ let DocBusiness = class DocBusiness {
                 });
                 gpsDoc.on('line', (gpsLine) => __awaiter(this, void 0, void 0, function* () {
                     let gpsArray = gpsLine.split("\t");
+                    gpsDoc.pause();
                     let gpsSave = yield this.gpsRepository.create({
                         data_final: gpsArray[0],
                         AVL: gpsArray[2],
@@ -62,10 +65,13 @@ let DocBusiness = class DocBusiness {
                         updatedAt: new Date,
                         createdAt: new Date
                     });
+                    gpsDoc.resume();
                     console.log(`Gps -  ${gpsSave.carro}`);
-                    yield bilhetagemDoc.on('line', (bilhetagemLine) => __awaiter(this, void 0, void 0, function* () {
+                    gpsDoc.pause();
+                    bilhetagemDoc.on('line', (bilhetagemLine) => __awaiter(this, void 0, void 0, function* () {
                         let dados = bilhetagemLine.split(',');
                         if (dados[8] !== undefined) {
+                            bilhetagemDoc.pause();
                             let bilhetagem = yield this.bilhetagemRepository.create({
                                 carro: dados[8],
                                 linha: dados[16],
@@ -77,6 +83,7 @@ let DocBusiness = class DocBusiness {
                                 updatedAt: new Date,
                                 createdAt: new Date
                             });
+                            bilhetagemDoc.resume();
                             console.log(`Bilhetagem - ${bilhetagem.carro}`);
                             let bDate;
                             let gDate;
@@ -87,6 +94,7 @@ let DocBusiness = class DocBusiness {
                                     if (bDate.getMinutes() == gDate.getMinutes()) {
                                         if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
                                             console.log(`criou carro: ${bilhetagem.carro} com AVL: ${gpsSave.AVL}`);
+                                            bilhetagemDoc.pause();
                                             yield this.realationshipRepository.create({
                                                 data_gps: gpsSave.data_final,
                                                 carro: bilhetagem.carro,
@@ -100,6 +108,8 @@ let DocBusiness = class DocBusiness {
                                                 ponto_notavel: gpsDoc.ponto_notavel,
                                                 desc_ponto_notavel: gpsDoc.desc_ponto_notavel
                                             });
+                                            gpsDoc.resume();
+                                            bilhetagemDoc.resume();
                                         }
                                     }
                                 }
