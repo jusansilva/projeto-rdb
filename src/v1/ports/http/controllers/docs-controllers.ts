@@ -5,12 +5,12 @@ import { RelationshipDto } from 'v1/adapters/dtos/import-dto';
 export class DocsControlles {
       protected readonly delegate = new DocsBusinessDelegate();
 
-      public async importData(req: ImportRequest, res: Response): Promise<void> {
+      public async importData(req: ImportRequest, res: Response, next): Promise<void> {
             try {
                   this.delegate.import(req);
             } catch (err) {
                   console.log(err);
-                  throw err;
+                  next()
             }
       }
 
