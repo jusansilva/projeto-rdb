@@ -36,10 +36,8 @@ export class DocBusiness {
       const gpsSave = [];
       const bilhetagemSave = []
       gpsDoc.on('line', async (gpsLine) => {
-        console.log("Inicio de GPS")
+       
         let gpsArray = gpsLine.split("\t");
-        gpsDoc.pause();
-
         gpsSave.push(await this.gpsRepository.create({
           data_final: gpsArray[0],
           AVL: gpsArray[2],
@@ -54,8 +52,6 @@ export class DocBusiness {
           updatedAt: new Date,
           createdAt: new Date
         }));
-        
-        gpsDoc.resume();
       })//fim gps
       
         console.log("Fim de GPS")
