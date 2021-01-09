@@ -65,7 +65,8 @@ let DocBusiness = class DocBusiness {
                 bilhetagemDoc.on('error', (e) => {
                     console.error("bilhetagem error:" + e);
                     throw e;
-                }).on("end", () => {
+                });
+                bilhetagemDoc.on("end", () => {
                     gpsDoc.on('line', (gpsLine) => __awaiter(this, void 0, void 0, function* () {
                         let gpsArray = gpsLine.split("\t");
                         gpsDoc.pause();
@@ -113,7 +114,8 @@ let DocBusiness = class DocBusiness {
                             }
                         }
                         gpsDoc.resume();
-                    })).on('end', () => __awaiter(this, void 0, void 0, function* () {
+                    }));
+                    gpsDoc.on('end', () => __awaiter(this, void 0, void 0, function* () {
                         const name = uuid_1.v4();
                         const relationship = yield this.realationshipRepository.find();
                         if (relationship) {
