@@ -15,7 +15,7 @@ ImportDocs.use(fileupload({
 ImportDocs.route("/v1/import").post((req, res, next) => {
     const token = req.body.t;
     res.redirect(`/docs?t=${token}&status=true`);
-    controller.importData({ bilhetagem: req.files.bilhetagem, gps: req.files.gps }, res);
+    controller.importData({ bilhetagem: req.files.bilhetagem, gps: req.files.gps }, res, next);
 });
 ImportDocs.route("/v1/relacao").get((req, res, next) => {
     Promise.resolve().then(function () {

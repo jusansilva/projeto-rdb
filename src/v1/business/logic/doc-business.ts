@@ -10,7 +10,7 @@ import { EmailEnvs } from "../../adapters/envs/email-envs";
 import * as archiver from 'archiver';
 import * as  path from "path";
 import { v4 as uuid } from 'uuid';
-var readline = require("readline");
+var readline = require("line-by-line");
 require('events').EventEmitter.prototype._maxListeners = 0;
 
 @Service()
@@ -31,18 +31,17 @@ export class DocBusiness {
     try {
       console.log("Inicio  de criação de documentos");
 
-      const gpsDoc = readline.createInterface({
-        input: fs.createReadStream(dto.gps.tempFilePath)
-      });
-      const bilhetagemDoc = readline.createInterface({
-        input: fs.createReadStream(dto.bilhetagem.tempFilePath)
-      });
+      const gpsDoc = new  readline(dto.gps.tempFilePath);
+      const bilhetagemDoc = new readline(dto.bilhetagem.tempFilePath);
+
       const bilhetagem = []
       bilhetagemDoc.on('line', async (bilhetagemLine) => {
         let dados = bilhetagemLine.split(',');
         if (dados[8] !== undefined) {
 
-          bilhetagem.push(await this.bilhetagemRepository.create({
+          bilhetagemDoc.pause();
+
+         await  bilhetagem.push(await this.bilhetagemRepository.create({
             carro: dados[8],
             linha: dados[16],
             data: dados[6],
@@ -53,6 +52,7 @@ export class DocBusiness {
             updatedAt: new Date,
             createdAt: new Date
           }))
+          bilhetagemDoc.resume();
 
           console.log(`Bilhetagem - ${bilhetagemLine}`)
         }
@@ -61,25 +61,27 @@ export class DocBusiness {
         console.error("bilhetagem error:" + e)
         throw e;
 
-      }).on("close", async () => {
+      })
+      bilhetagemDoc.on("end", () => {
 
-       await gpsDoc.on('line', async (gpsLine) => {
+        gpsDoc.on('line', async (gpsLine) => {
 
           let gpsArray = gpsLine.split("\t");
-          let gpsSave = await this.gpsRepository.create({
-            data_final: gpsArray[0],
-            AVL: gpsArray[2],
-            carro: gpsArray[3],
-            latitude: gpsArray[4],
-            longitude: gpsArray[5],
-            ponto_notavel: gpsArray[6],
-            desc_ponto_notavel: gpsArray[7],
-            linha: gpsArray[8],
-            sentido: gpsArray[9],
-            document: dto.gps.tempFilePath,
-            updatedAt: new Date,
-            createdAt: new Date
+          gpsDoc.pause();
+          let gpsSave = await this.gpsRepository.create({data_final: gpsArray[0],
+          AVL: gpsArray[2],
+          carro: gpsArray[3],
+          latitude: gpsArray[4],
+          longitude: gpsArray[5],
+          ponto_notavel: gpsArray[6],
+          desc_ponto_notavel: gpsArray[7],
+          linha: gpsArray[8],
+          sentido: gpsArray[9],
+          document: dto.gps.tempFilePath,
+          updatedAt: new Date,
+          createdAt: new Date
           });
+          
           console.log(`Gps -  ${gpsSave.carro}`)
 
           let bDate;
@@ -113,8 +115,10 @@ export class DocBusiness {
             }
           }
         }
+        gpsDoc.resume();
 
-        }).on('close', async () => {
+        });
+        gpsDoc.on('end', async () => {
           const name = uuid();
           const relationship = await this.realationshipRepository.find();
           if (relationship) {

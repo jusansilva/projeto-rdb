@@ -15,14 +15,14 @@ class DocsControlles {
     constructor() {
         this.delegate = new delegate_1.DocsBusinessDelegate();
     }
-    importData(req, res) {
+    importData(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 this.delegate.import(req);
             }
             catch (err) {
                 console.log(err);
-                throw err;
+                next();
             }
         });
     }

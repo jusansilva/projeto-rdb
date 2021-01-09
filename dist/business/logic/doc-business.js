@@ -27,7 +27,7 @@ const email_envs_1 = require("../../adapters/envs/email-envs");
 const archiver = require("archiver");
 const path = require("path");
 const uuid_1 = require("uuid");
-var readline = require("readline");
+var readline = require("line-by-line");
 require('events').EventEmitter.prototype._maxListeners = 0;
 let DocBusiness = class DocBusiness {
     constructor(container) {
@@ -40,17 +40,14 @@ let DocBusiness = class DocBusiness {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 console.log("Inicio  de criação de documentos");
-                const gpsDoc = readline.createInterface({
-                    input: fs.createReadStream(dto.gps.tempFilePath)
-                });
-                const bilhetagemDoc = readline.createInterface({
-                    input: fs.createReadStream(dto.bilhetagem.tempFilePath)
-                });
+                const gpsDoc = new readline(dto.gps.tempFilePath);
+                const bilhetagemDoc = new readline(dto.bilhetagem.tempFilePath);
                 const bilhetagem = [];
                 bilhetagemDoc.on('line', (bilhetagemLine) => __awaiter(this, void 0, void 0, function* () {
                     let dados = bilhetagemLine.split(',');
                     if (dados[8] !== undefined) {
-                        bilhetagem.push(yield this.bilhetagemRepository.create({
+                        bilhetagemDoc.pause();
+                        yield bilhetagem.push(yield this.bilhetagemRepository.create({
                             carro: dados[8],
                             linha: dados[16],
                             data: dados[6],
@@ -61,17 +58,18 @@ let DocBusiness = class DocBusiness {
                             updatedAt: new Date,
                             createdAt: new Date
                         }));
+                        bilhetagemDoc.resume();
                         console.log(`Bilhetagem - ${bilhetagemLine}`);
                     }
                 })); //fechou line bilhetagem
                 bilhetagemDoc.on('error', (e) => {
                     console.error("bilhetagem error:" + e);
                     throw e;
-                }).on("close", () => __awaiter(this, void 0, void 0, function* () {
-                    yield gpsDoc.on('line', (gpsLine) => __awaiter(this, void 0, void 0, function* () {
+                }).on("end", () => {
+                    gpsDoc.on('line', (gpsLine) => __awaiter(this, void 0, void 0, function* () {
                         let gpsArray = gpsLine.split("\t");
-                        let gpsSave = yield this.gpsRepository.create({
-                            data_final: gpsArray[0],
+                        gpsDoc.pause();
+                        let gpsSave = yield this.gpsRepository.create({ data_final: gpsArray[0],
                             AVL: gpsArray[2],
                             carro: gpsArray[3],
                             latitude: gpsArray[4],
@@ -114,7 +112,8 @@ let DocBusiness = class DocBusiness {
                                 }
                             }
                         }
-                    })).on('close', () => __awaiter(this, void 0, void 0, function* () {
+                        gpsDoc.resume();
+                    })).on('end', () => __awaiter(this, void 0, void 0, function* () {
                         const name = uuid_1.v4();
                         const relationship = yield this.realationshipRepository.find();
                         if (relationship) {
@@ -143,7 +142,7 @@ let DocBusiness = class DocBusiness {
                             console.log(`${dto.gps.tempFilePath} was deleted`);
                         });
                     }));
-                }));
+                });
                 gpsDoc.on('error', (e) => {
                     console.error("gps error:" + e);
                 });
