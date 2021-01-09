@@ -10,7 +10,7 @@ import { EmailEnvs } from "../../adapters/envs/email-envs";
 import * as archiver from 'archiver';
 import * as  path from "path";
 import { v4 as uuid } from 'uuid';
-var readline = require("line-by-line");
+var readline = require("readline");
 require('events').EventEmitter.prototype._maxListeners = 1000000000;
 
 @Service()
@@ -30,14 +30,153 @@ export class DocBusiness {
   public async import(dto: ImportDto): Promise<void> {
     try {
       console.log("Inicio  de criação de documentos");
+      console.log("Inicio de Bilhetagem")
+      const bilhetagemSave = await this.getBilhetagem(dto.bilhetagem);
+      console.log(bilhetagemSave);
+      console.log("Fim de Bilhetagem")
+      console.log("Inicio de Gps")
+      const gpsSave = await this.getGps(dto.gps);
+      console.log(gpsSave);
+      console.log("Fim de Bilhetagem")
 
-      const gpsDoc = new readline(dto.gps.tempFilePath);
-      const bilhetagemDoc = new readline(dto.bilhetagem.tempFilePath);
-      const gpsSave = [];
-      const bilhetagemSave = []
-      gpsDoc.on('line', async (gpsLine) => {
-       
-        let gpsArray = gpsLine.split("\t");
+
+
+
+
+      console.log("Inicio de Relação")
+      for (let i = 0; i < gpsSave.length; i++) {
+        for (let j = 0; j < bilhetagemSave.length; j++) {
+          let bDate;
+          let gDate;
+          bDate = this.dateString2Date(bilhetagemSave[j].data.trim().replace("/", "-"));
+          gDate = this.dateString2Date(gpsSave[i].data_final.trim().replace("/", "-"));
+          if (gDate?.getDate() === bDate?.getDate()) {
+            if (bDate.getHours() == gDate.getHours()) {
+              if (bDate.getMinutes() == gDate.getMinutes()) {
+                if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
+                  console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${gpsSave[i].AVL}`);
+                  await this.realationshipRepository.create(
+                    {
+                      data_gps: gpsSave[i].data_final,
+                      carro: bilhetagemSave[j].carro,
+                      linha: bilhetagemSave[j].linha,
+                      AVL: gpsSave[i].AVL,
+                      cartaoId: bilhetagemSave[j].cartaoId,
+                      transacao: bilhetagemSave[j].transacao,
+                      sentido: bilhetagemSave[j].sentido,
+                      latitude: gpsSave[i].latitude,
+                      longitude: gpsSave[i].longitude,
+                      ponto_notavel: gpsSave[i].ponto_notavel,
+                      desc_ponto_notavel: gpsSave[i].desc_ponto_notavel
+                    })
+
+                }
+              }
+            }
+          }
+        }
+      }
+      console.log("Fim de Relação")
+
+
+
+      const name = uuid();
+      console.log("Busca de Relação")
+      const relationship = await this.realationshipRepository.find();
+      console.log(`Relações encontradas: ${relationship.length}`);
+      let text = ``
+      let subject = ``;
+      let filename = "";
+      if (relationship.length > 1) {
+        const data = JSON.stringify(relationship);
+        await fs.writeFileSync(`${name}-relacao.json`, data);
+        const path = await this.getAttachments(name);
+        text = `Relação documento ${name}-relacao.json concluida com sucesso!`
+        subject = `Relação de documentos`;
+        filename = `${name}-relacao.json`
+      } else {
+        text = `Nenhuma relação encontrada. Processo concluido com sucesso!`
+        subject = `Relação de documentos`;
+        filename = null;
+      }
+      console.log(" Preparando email");
+
+      const sendemail = await this.parseEmailDto(text, subject, filename, path);
+      await this.emailUtils.sendEmail(sendemail);
+
+      //      await fs.unlink(`${name}-relacao.json`, (err) => {
+      //        if (err) throw err;
+      //        console.log(`${name}-relacao.json was deleted`);
+      //      });
+
+      //     await fs.unlink(dto.bilhetagem.tempFilePath, (err) => {
+      //       if (err) throw err;
+      //      console.log(`${dto.bilhetagem.tempFilePath} was deleted`);
+      //     });
+
+      //     await fs.unlink(dto.gps.tempFilePath, (err) => {
+      //       if (err) throw err;
+      //       console.log(`${dto.gps.tempFilePath} was deleted`);
+      //     });
+
+
+    } catch (err) {
+      console.log(err)
+      throw err;
+    }
+
+  }
+
+  public async getBilhetagem(bilhetagemFile: FileTemp): Promise<IBilhetagemImportModel[]> {
+    try {
+      const bilhetagemSave: IBilhetagemImportModel[] = []
+      const fileStream = fs.createReadStream(bilhetagemFile.tempFilePath);
+
+      const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+      });
+
+      for await (const line of rl) {
+        let forReplace = line.replace(/[""]/g, "");
+        let dados = forReplace.split(',');
+        let bilhetagem: BilhetagemDto = {
+          carro: dados[8],
+          linha: dados[16],
+          data: dados[6],
+          cartaoId: dados[23],
+          transacao: dados[24],
+          sentido: dados[25],
+          document: bilhetagemFile.tempFilePath,
+          updatedAt: new Date,
+          createdAt: new Date
+        }
+        if (dados[8] !== undefined) {
+          bilhetagemSave.push(await this.bilhetagemRepository.create(bilhetagem));
+        }
+      }
+      return await bilhetagemSave;
+
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+  }
+
+
+  public async getGps(gpsFile: FileTemp): Promise<IGpsImportModel[]> {
+    try {
+
+      const gpsSave: IGpsImportModel[] = [];
+      const fileStream = fs.createReadStream(gpsFile.tempFilePath);
+
+      const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+      });
+
+      for await (const line of rl) {
+        let gpsArray = line.split("\t");
         gpsSave.push(await this.gpsRepository.create({
           data_final: gpsArray[0],
           AVL: gpsArray[2],
@@ -48,122 +187,20 @@ export class DocBusiness {
           desc_ponto_notavel: gpsArray[7],
           linha: gpsArray[8],
           sentido: gpsArray[9],
-          document: dto.gps.tempFilePath,
+          document: gpsFile.tempFilePath,
           updatedAt: new Date,
           createdAt: new Date
         }));
-      })//fim gps
-      
-        console.log("Fim de GPS")
-        
-        bilhetagemDoc.on('error', (e) => {
-          console.error("bilhetagem error:" + e)
-          throw e;
-        });
-        
-        bilhetagemDoc.on('line', async (bilhetagemLine) => {
-          console.log("Inicio de Bilhetagem")
-          
-          let forReplace = bilhetagemLine.replace(/[""]/g, "");
-          let dados = forReplace.split(',');
-          let bilhetagem: BilhetagemDto = {
-            carro: dados[8],
-            linha: dados[16],
-            data: dados[6],
-            cartaoId: dados[23],
-            transacao: dados[24],
-            sentido: dados[25],
-            document: dto.bilhetagem.tempFilePath,
-            updatedAt: new Date,
-            createdAt: new Date
-          }
-          bilhetagemDoc.pause();
+      }
 
-          if (dados[8] !== undefined) {
-            bilhetagemSave.push(await this.bilhetagemRepository.create(bilhetagem));
-            console.log(`Bilhetagem - ${dados}`)
-          }
-          bilhetagemDoc.resume();
-          gpsDoc.on('error', (e) => {
-            console.error("gps error:" + e)
-          });
-
-        }); //fechou line bilhetagem
-
-      gpsDoc.on('end', async () => {
-        console.log("Fim de Bilhetagem")
-
-        console.log("Inicio de Relação")
-        for (let i = 0; i < gpsSave.length; i++) {
-          for (let j = 0; j < bilhetagemSave.length; j++) {
-            let bDate;
-            let gDate;
-            bDate = this.dateString2Date(bilhetagemSave[j].data.trim().replace("/", "-"));
-            gDate = this.dateString2Date(gpsSave[i].data_final.trim().replace("/", "-"));
-            if (gDate?.getDate() === bDate?.getDate()) {
-              if (bDate.getHours() == gDate.getHours()) {
-                if (bDate.getMinutes() == gDate.getMinutes()) {
-                  if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
-                    console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${gpsSave[i].AVL}`);
-                    await this.realationshipRepository.create(
-                      {
-                        data_gps: gpsSave[i].data_final,
-                        carro: bilhetagemSave[j].carro,
-                        linha: bilhetagemSave[j].linha,
-                        AVL: gpsSave[i].AVL,
-                        cartaoId: bilhetagemSave[j].cartaoId,
-                        transacao: bilhetagemSave[j].transacao,
-                        sentido: bilhetagemSave[j].sentido,
-                        latitude: gpsSave[i].latitude,
-                        longitude: gpsSave[i].longitude,
-                        ponto_notavel: gpsSave[i].ponto_notavel,
-                        desc_ponto_notavel: gpsSave[i].desc_ponto_notavel
-                      })
-
-                  }
-                }
-              }
-            }
-          }
-        }
-
-
-        const name = uuid();
-        const relationship = await this.realationshipRepository.find();
-        if (relationship) {
-          const data = JSON.stringify(relationship);
-          await fs.writeFileSync(`${name}-relacao.json`, data);
-          const path = await this.getAttachments(name);
-        }
-        const text = `Relação documento ${name}-relacao.json concluida com sucesso!`
-        const subject = `Relação de documentos`;
-        const filename = `${name}-relacao.json`
-        const sendemail = this.parseEmailDto(text, subject, filename, path);
-        await this.emailUtils.sendEmail(sendemail);
-
-        fs.unlink(`${name}-relacao.json`, (err) => {
-          if (err) throw err;
-          console.log(`${name}-relacao.json was deleted`);
-        });
-
-        fs.unlink(dto.bilhetagem.tempFilePath, (err) => {
-          if (err) throw err;
-          console.log(`${dto.bilhetagem.tempFilePath} was deleted`);
-        });
-
-        fs.unlink(dto.gps.tempFilePath, (err) => {
-          if (err) throw err;
-          console.log(`${dto.gps.tempFilePath} was deleted`);
-        });
-      });
-
-
-    } catch (err) {
-      console.log(err)
-      throw err;
+      return await gpsSave;
+    } catch (error) {
+      console.log(error)
+      throw error
     }
 
   }
+
   public async find(date?: string, carro?: string): Promise<RelationshipDto[]> {
     try {
       const relationship = await this.realationshipRepository.find(date, carro);
