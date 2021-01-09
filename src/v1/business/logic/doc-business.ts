@@ -32,11 +32,9 @@ export class DocBusiness {
       console.log("Inicio  de criação de documentos");
       console.log("Inicio de Bilhetagem")
       const bilhetagemSave = await this.getBilhetagem(dto.bilhetagem);
-      console.log(bilhetagemSave);
       console.log("Fim de Bilhetagem")
       console.log("Inicio de Gps")
       const gpsSave = await this.getGps(dto.gps);
-      console.log(gpsSave);
       console.log("Fim de Bilhetagem")
 
 
