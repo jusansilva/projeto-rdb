@@ -54,21 +54,20 @@ export class DocBusiness {
           updatedAt: new Date,
           createdAt: new Date
         }));
+        
+        gpsDoc.resume();
+      })//fim gps
+      
+        console.log("Fim de GPS")
+        
         bilhetagemDoc.on('error', (e) => {
           console.error("bilhetagem error:" + e)
           throw e;
         });
-
-        gpsDoc.resume();
-      })//fim gps
-
-      gpsDoc.on('end', async () => {
-        console.log("Fim de GPS")
-
-
+        
         bilhetagemDoc.on('line', async (bilhetagemLine) => {
-        console.log("Inicio de Bilhetagem")
-
+          console.log("Inicio de Bilhetagem")
+          
           let forReplace = bilhetagemLine.replace(/[""]/g, "");
           let dados = forReplace.split(',');
           let bilhetagem: BilhetagemDto = {
@@ -95,9 +94,7 @@ export class DocBusiness {
 
         }); //fechou line bilhetagem
 
-      });
-
-      bilhetagemDoc.on('end', async () => {
+      gpsDoc.on('end', async () => {
         console.log("Fim de Bilhetagem")
 
         console.log("Inicio de Relação")
