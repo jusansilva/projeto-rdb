@@ -6,7 +6,7 @@
   "scripts": {
     "build-doc": "snowboard html -o docs api.apib",
     "build": "tsc",
-    "start": "npm install && node --max-old-space-size=4096 dist/ports/http/index.js &&  node dist/ports/http/index.js --unhandled-rejections=strict",
+    "start": "npm install &&  node --max-old-space-size=4096 dist/ports/http/index.js --unhandled-rejections=strict",
     "dev": " npm install & npm run build & nodemon dist/ports/http/index.js",
     "test": "echo 'no tests defined yet.'",
     "lint": "eslint .",

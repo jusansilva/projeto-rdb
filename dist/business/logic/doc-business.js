@@ -181,6 +181,7 @@ let DocBusiness = class DocBusiness {
                     for (var rl_2 = __asyncValues(rl), rl_2_1; rl_2_1 = yield rl_2.next(), !rl_2_1.done;) {
                         const line = rl_2_1.value;
                         i++;
+                        console.log(i);
                         let gpsArray = line.split("\t");
                         gpsSave.push(yield this.gpsRepository.create({
                             data_final: new Date(gpsArray[0].trim() + " GMT"),

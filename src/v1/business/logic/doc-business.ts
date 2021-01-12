@@ -165,6 +165,7 @@ export class DocBusiness {
       let i = 0;
       for await (const line of rl) {
         i++
+        console.log(i);
         let gpsArray = line.split("\t");
         gpsSave.push(await this.gpsRepository.create({
           data_final: new Date(gpsArray[0].trim() + " GMT"),
