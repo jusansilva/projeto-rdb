@@ -4,7 +4,7 @@ exports.RelationshipModel = void 0;
 const mongoose = require("mongoose");
 const Schema = new mongoose.Schema({
     data_gps: {
-        type: String,
+        type: Date,
     },
     carro: {
         type: String,

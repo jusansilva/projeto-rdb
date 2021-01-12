@@ -51,37 +51,30 @@ let DocBusiness = class DocBusiness {
                 const bilhetagemSave = yield this.getBilhetagem(dto.bilhetagem);
                 console.log("Fim de Bilhetagem");
                 console.log("Inicio de Gps");
-                const gpsSave = yield this.getGps(dto.gps);
+                yield this.getGps(dto.gps);
                 console.log("Fim de Bilhetagem");
+                console.log("limpando base de Relação");
+                yield this.realationshipRepository.drop();
+                console.log("base de relação limpa");
                 console.log("Inicio de Relação");
-                for (let i = 0; i < gpsSave.length; i++) {
-                    for (let j = 0; j < bilhetagemSave.length; j++) {
-                        let bDate;
-                        let gDate;
-                        bDate = this.dateString2Date(bilhetagemSave[j].data.trim().replace("/", "-"));
-                        gDate = this.dateString2Date(gpsSave[i].data_final.trim().replace("/", "-"));
-                        if ((gDate === null || gDate === void 0 ? void 0 : gDate.getDate()) === (bDate === null || bDate === void 0 ? void 0 : bDate.getDate())) {
-                            if (bDate.getHours() == gDate.getHours()) {
-                                if (bDate.getMinutes() == gDate.getMinutes()) {
-                                    if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
-                                        console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${gpsSave[i].AVL}`);
-                                        yield this.realationshipRepository.create({
-                                            data_gps: gpsSave[i].data_final,
-                                            carro: bilhetagemSave[j].carro,
-                                            linha: bilhetagemSave[j].linha,
-                                            AVL: gpsSave[i].AVL,
-                                            cartaoId: bilhetagemSave[j].cartaoId,
-                                            transacao: bilhetagemSave[j].transacao,
-                                            sentido: bilhetagemSave[j].sentido,
-                                            latitude: gpsSave[i].latitude,
-                                            longitude: gpsSave[i].longitude,
-                                            ponto_notavel: gpsSave[i].ponto_notavel,
-                                            desc_ponto_notavel: gpsSave[i].desc_ponto_notavel
-                                        });
-                                    }
-                                }
-                            }
-                        }
+                for (let j = 0; j < bilhetagemSave.length; j++) {
+                    let relacao = yield this.gpsRepository.findRelacao(bilhetagemSave[j]);
+                    console.log(relacao);
+                    if (relacao) {
+                        console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
+                        yield this.realationshipRepository.create({
+                            data_gps: relacao.data_final,
+                            carro: bilhetagemSave[j].carro,
+                            linha: bilhetagemSave[j].linha,
+                            AVL: relacao.AVL,
+                            cartaoId: bilhetagemSave[j].cartaoId,
+                            transacao: bilhetagemSave[j].transacao,
+                            sentido: bilhetagemSave[j].sentido,
+                            latitude: relacao.latitude,
+                            longitude: relacao.longitude,
+                            ponto_notavel: relacao.ponto_notavel,
+                            desc_ponto_notavel: relacao.desc_ponto_notavel
+                        });
                     }
                 }
                 console.log("Fim de Relação");
@@ -145,7 +138,7 @@ let DocBusiness = class DocBusiness {
                         let bilhetagem = {
                             carro: dados[8],
                             linha: dados[16],
-                            data: dados[6],
+                            data: new Date(dados[6].trim() + " GMT"),
                             cartaoId: dados[23],
                             transacao: dados[24],
                             sentido: dados[25],
@@ -183,12 +176,14 @@ let DocBusiness = class DocBusiness {
                     input: fileStream,
                     crlfDelay: Infinity
                 });
+                let i = 0;
                 try {
                     for (var rl_2 = __asyncValues(rl), rl_2_1; rl_2_1 = yield rl_2.next(), !rl_2_1.done;) {
                         const line = rl_2_1.value;
+                        i++;
                         let gpsArray = line.split("\t");
                         gpsSave.push(yield this.gpsRepository.create({
-                            data_final: gpsArray[0],
+                            data_final: new Date(gpsArray[0].trim() + " GMT"),
                             AVL: gpsArray[2],
                             carro: gpsArray[3],
                             latitude: gpsArray[4],
@@ -210,7 +205,7 @@ let DocBusiness = class DocBusiness {
                     }
                     finally { if (e_2) throw e_2.error; }
                 }
-                return yield gpsSave;
+                return yield i;
             }
             catch (error) {
                 console.log(error);
@@ -223,56 +218,6 @@ let DocBusiness = class DocBusiness {
             try {
                 const relationship = yield this.realationshipRepository.find(date, carro);
                 return relationship;
-            }
-            catch (error) {
-                console.log(error);
-                throw error;
-            }
-        });
-    }
-    saveRelatioship(bilhetagem, gps, bilhetagemDocument, gpsDocument) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield this.realationshipRepository.drop();
-                console.log("começou a pesquisa bilhetagem");
-                console.log("bilhetagem concluida");
-                console.log(bilhetagem);
-                for (let a = 0; a < bilhetagem.length; a++) {
-                    console.log(`rodando ${a} de ${bilhetagem.length}`);
-                    console.log("gps pesquisando");
-                    let bDate;
-                    let gDate;
-                    gps.map((gps) => {
-                        if (gps.carro === bilhetagem[a].carro) {
-                            bDate = this.dateString2Date(bilhetagem[a].data.trim().replace("/", "-"));
-                            gDate = this.dateString2Date(gps.data_final.trim().replace("/", "-"));
-                            if ((gDate === null || gDate === void 0 ? void 0 : gDate.getDate()) === (bDate === null || bDate === void 0 ? void 0 : bDate.getDate())) {
-                                if (bDate.getHours() == gDate.getHours()) {
-                                    if (bDate.getMinutes() == gDate.getMinutes()) {
-                                        if (bDate.getSeconds() > (gDate.getSeconds() - 10) && bDate.getSeconds() < (gDate.getSeconds() + 10)) {
-                                            console.log(`criou carro: ${bilhetagem[a].carro} com AVL: ${gps.AVL}`);
-                                            this.realationshipRepository.create({
-                                                data_gps: gps.data_final,
-                                                carro: bilhetagem[a].carro,
-                                                linha: bilhetagem[a].linha,
-                                                AVL: gps.AVL,
-                                                cartaoId: bilhetagem[a].cartaoId,
-                                                transacao: bilhetagem[a].transacao,
-                                                sentido: bilhetagem[a].sentido,
-                                                latitude: gps.latitude,
-                                                longitude: gps.longitude,
-                                                ponto_notavel: gps.ponto_notavel,
-                                                desc_ponto_notavel: gps.desc_ponto_notavel
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    });
-                }
-                console.log('terminou');
-                return "dados estao sendo processados";
             }
             catch (error) {
                 console.log(error);
@@ -330,76 +275,6 @@ let DocBusiness = class DocBusiness {
             transacao: model.transacao,
             sentido: model.sentido
         };
-    }
-    formatDocGps(file) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                console.log("inicio de leitura gps");
-                const docGps = fs.readFileSync(file.tempFilePath, { encoding: 'utf-8' });
-                const gpsLinhas = docGps.split(/\n/);
-                const gpsDto = [];
-                for (let i = 0; i < gpsLinhas.length; i++) {
-                    const gpsArray = gpsLinhas[i].split("\t");
-                    gpsDto.push({
-                        data_final: gpsArray[0],
-                        AVL: gpsArray[2],
-                        carro: gpsArray[3],
-                        latitude: gpsArray[4],
-                        longitude: gpsArray[5],
-                        ponto_notavel: gpsArray[6],
-                        desc_ponto_notavel: gpsArray[7],
-                        linha: gpsArray[8],
-                        sentido: gpsArray[9],
-                        document: file.tempFilePath
-                    });
-                }
-                console.log("fim de leitura gps");
-                return gpsDto;
-            }
-            catch (err) {
-                throw err;
-            }
-        });
-    }
-    formatDocBilhetagem(file) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                console.log("inicio de leitura bilhetagem");
-                const doc = fs.readFileSync(file.tempFilePath, { encoding: 'utf8' });
-                const documentArray = doc.replace(/["]/g, '').split(/\n/);
-                const arrayDocument = [];
-                for (let i = 0; i < documentArray.length; i++) {
-                    let dados = documentArray[i].split(',');
-                    if (dados[8] !== undefined) {
-                        arrayDocument.push({
-                            carro: dados[8],
-                            linha: dados[16],
-                            data: dados[6],
-                            cartaoId: dados[23],
-                            transacao: dados[24],
-                            sentido: dados[25],
-                            document: file.tempFilePath
-                        });
-                    }
-                }
-                console.log("fim de leitura bilhetagem");
-                return arrayDocument;
-            }
-            catch (error) {
-                throw error;
-            }
-        });
-    }
-    dateString2Date(dateString, convert = false) {
-        var dt = dateString === null || dateString === void 0 ? void 0 : dateString.split(/\-|\s/g);
-        let time;
-        if (dt.length > 3) {
-            time = dt[3];
-        }
-        else {
-            time = dt[2];
-        }
-        return new Date(dt.slice(0, 2).join('-') + ' ' + time);
     }
 };
 DocBusiness = __decorate([

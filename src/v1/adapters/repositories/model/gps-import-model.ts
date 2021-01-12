@@ -3,7 +3,7 @@ import * as mongoose from "mongoose";
 export interface IGpsImportModel extends mongoose.Document {
   carro?: string;
   linha?: string;
-  data_final?: string;
+  data_final?: Date;
   AVL?: string;
   cartaoId?: string;
   transacao?: string;
@@ -20,7 +20,7 @@ export interface IGpsImportModel extends mongoose.Document {
 const Schema = new mongoose.Schema(
   {
     data_final: {
-      type: String,
+      type: Date,
     },
     AVL: {
       type: String,

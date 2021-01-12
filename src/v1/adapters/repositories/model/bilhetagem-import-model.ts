@@ -3,7 +3,7 @@ import * as mongoose from "mongoose";
 export interface IBilhetagemImportModel extends mongoose.Document {
   carro?: string;
   linha?: string;
-  data?: string;
+  data?: Date;
   cartaoId?: string;
   transacao?: string;
   sentido?: string;
@@ -21,7 +21,7 @@ const Schema = new mongoose.Schema(
       type: String,
     },
     data: {
-      type: String,
+      type: Date,
     },
     cartaoId: {
       type: String,

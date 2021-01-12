@@ -42,6 +42,20 @@ class GpsImportRepository {
             }
         });
     }
+    findRelacao(bilhetagem) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const datePlus = new Date(bilhetagem.data);
+            datePlus.setMinutes(datePlus.getMinutes() + 10);
+            const dateMine = new Date(bilhetagem.data);
+            dateMine.setMinutes(dateMine.getMinutes() - 10);
+            console.log(datePlus, dateMine);
+            return yield model_1.GpsImportModel.findOne({
+                carro: bilhetagem.carro,
+                linha: bilhetagem.linha,
+                data_final: { "$gte": dateMine, "$lte": datePlus }
+            });
+        });
+    }
 }
 exports.GpsImportRepository = GpsImportRepository;
 //# sourceMappingURL=gps-import-repository.js.map

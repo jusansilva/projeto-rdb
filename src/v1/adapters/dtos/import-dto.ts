@@ -17,7 +17,7 @@ export interface FileTemp extends File {
 export interface BilhetagemDto {
     carro?: string;
     linha?: string;
-    data?: string;
+    data?: Date;
     cartaoId?: string;
     transacao?: string;
     sentido?: string;
@@ -27,7 +27,7 @@ export interface BilhetagemDto {
 }
 
 export interface GpsImportDto {
-    data_final: string;
+    data_final: Date;
     AVL: string;
     carro: string;
     latitude: string;
@@ -42,7 +42,7 @@ export interface GpsImportDto {
 }
 
 export interface RelationshipDto {
-    data_gps: string;
+    data_gps: Date;
     carro?: string;
     linha: string;
     AVL: string;

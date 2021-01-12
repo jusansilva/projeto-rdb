@@ -4,7 +4,7 @@ exports.GpsImportModel = void 0;
 const mongoose = require("mongoose");
 const Schema = new mongoose.Schema({
     data_final: {
-        type: String,
+        type: Date,
     },
     AVL: {
         type: String,

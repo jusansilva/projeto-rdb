@@ -10,7 +10,7 @@ const Schema = new mongoose.Schema({
         type: String,
     },
     data: {
-        type: String,
+        type: Date,
     },
     cartaoId: {
         type: String,
