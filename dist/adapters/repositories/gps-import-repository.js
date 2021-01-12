@@ -51,8 +51,7 @@ class GpsImportRepository {
             console.log(datePlus.toISOString(), dateMine.toISOString());
             return yield model_1.GpsImportModel.findOne({
                 carro: bilhetagem.carro,
-                linha: bilhetagem.linha,
-                data_final: { "$gte": dateMine.toISOString(), "$lte": datePlus.toISOString() }
+                data_final: { $gte: dateMine.toISOString(), $lte: datePlus.toISOString() }
             });
         });
     }
