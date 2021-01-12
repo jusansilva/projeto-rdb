@@ -48,11 +48,11 @@ class GpsImportRepository {
             datePlus.setMinutes(datePlus.getMinutes() + 10);
             const dateMine = new Date(bilhetagem.data);
             dateMine.setMinutes(dateMine.getMinutes() - 10);
-            console.log(datePlus, dateMine);
+            console.log(datePlus.toISOString(), dateMine.toISOString());
             return yield model_1.GpsImportModel.findOne({
                 carro: bilhetagem.carro,
                 linha: bilhetagem.linha,
-                data_final: { "$gte": dateMine, "$lte": datePlus }
+                data_final: { "$gte": dateMine.toISOString(), "$lte": datePlus.toISOString() }
             });
         });
     }
