@@ -24,7 +24,7 @@ export class BilhetagemImportRepository {
     public async find(data?: string, carro?: string): Promise<IBilhetagemImportModel[]> {
         try {
             if (data !== undefined && carro !== undefined) {
-                 return await BilhetagemImportModel.find({ "data": data, "carro": carro });
+                return await BilhetagemImportModel.find({ "data": data, "carro": carro });
             }
             if (data !== undefined && carro === undefined) {
                 return await BilhetagemImportModel.find({ "data": data });
@@ -36,6 +36,17 @@ export class BilhetagemImportRepository {
 
         } catch (err) {
             throw err
+        }
+    }
+
+    public async findDocument(document: string): Promise<IBilhetagemImportModel[]> {
+        try {
+            const model = await BilhetagemImportModel.find({ document: document });
+
+            return model
+        } catch (error) {
+            throw error;
+
         }
     }
 
@@ -66,11 +77,11 @@ export class BilhetagemImportRepository {
             }
             const bilhetagem = BilhetagemImportModel.find({ document: document });
             console.log(bilhetagem);
-            return bilhetagem 
+            return bilhetagem
 
 
         } catch (err) {
-
+            throw err;
         }
     }
 }

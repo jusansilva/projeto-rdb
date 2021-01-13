@@ -42,7 +42,7 @@ let DocBusiness = class DocBusiness {
             try {
                 console.log("Inicio  de criação de documentos");
                 console.log("Inicio de Bilhetagem");
-                const bilhetagemSave = yield Promise.all(yield this.getBilhetagem(dto.bilhetagem));
+                yield Promise.all(yield this.getBilhetagem(dto.bilhetagem));
                 console.log("Fim de Bilhetagem");
                 console.log("Inicio de Gps");
                 yield Promise.all(yield this.getGps(dto.gps));
@@ -51,9 +51,9 @@ let DocBusiness = class DocBusiness {
                 yield this.realationshipRepository.drop();
                 console.log("base de relação limpa");
                 console.log("Inicio de Relação");
+                const bilhetagemSave = yield this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
                 for (let j = 0; j < bilhetagemSave.length; j++) {
-                    let relacao = yield this.gpsRepository.findRelacao(bilhetagemSave[j]);
-                    console.log(relacao);
+                    let relacao = yield this.gpsRepository.findRelacao(bilhetagemSave[j], dto.gps.name);
                     if (relacao) {
                         console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
                         yield this.realationshipRepository.create({
@@ -116,11 +116,11 @@ let DocBusiness = class DocBusiness {
                         let bilhetagem = {
                             carro: dados[8],
                             linha: dados[16],
-                            data: new Date(dados[6].trim() + " GMT"),
+                            data: new Date(dados[22].trim() + " GMT"),
                             cartaoId: dados[23],
                             transacao: dados[24],
                             sentido: dados[25],
-                            document: bilhetagemFile.tempFilePath,
+                            document: bilhetagemFile.name,
                             updatedAt: new Date,
                             createdAt: new Date
                         };
@@ -138,7 +138,7 @@ let DocBusiness = class DocBusiness {
                             console.log(`${i} Bilhetagem foram salvos`);
                             return bilhetagemRetorno;
                         }
-                        if (bilhetagemSave.length > 20) {
+                        if (bilhetagemSave.length == 100) {
                             yield this.bilhetagemRepository.createMany(bilhetagemSave);
                             while (bilhetagemSave.length) {
                                 bilhetagemSave.pop();
@@ -175,7 +175,7 @@ let DocBusiness = class DocBusiness {
                             desc_ponto_notavel: gpsArray[7],
                             linha: gpsArray[8],
                             sentido: gpsArray[9],
-                            document: gpsFile.tempFilePath,
+                            document: gpsFile.name,
                             updatedAt: new Date,
                             createdAt: new Date
                         });
@@ -191,7 +191,7 @@ let DocBusiness = class DocBusiness {
                             console.log(`${i} gps salvos`);
                             return false;
                         }
-                        if (gpstransfer.length > 20) {
+                        if (gpstransfer.length == 100) {
                             let save = yield this.gpsRepository.createMany(gpstransfer);
                             save.map(gps => {
                                 gpsSave.push(gps);

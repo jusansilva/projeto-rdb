@@ -39,17 +39,16 @@ export class GpsImportRepository {
         }
     }
 
-    public async findRelacao(bilhetagem: IBilhetagemImportModel): Promise<IGpsImportModel> {
-        const datePlus = new Date(bilhetagem.data)
-        datePlus.setMinutes(datePlus.getMinutes() + 10);
+    public async findRelacao(bilhetagem: IBilhetagemImportModel, document: string): Promise<IGpsImportModel> {
+        const datePlus = new Date(bilhetagem.data);
+        datePlus.setTime(datePlus.getTime() + 20000 * 60);
         
-        const dateMine = new Date(bilhetagem.data)
-        dateMine.setMinutes(dateMine.getMinutes() - 10);
-
-        console.log(datePlus.toISOString(), dateMine.toISOString());
+        const dateMine = new Date(bilhetagem.data);
+        dateMine.setTime(dateMine.getTime() - 20000 * 60);
         return await GpsImportModel.findOne({
             carro: bilhetagem.carro,
-            data_final: { $gte: dateMine.toISOString(), $lte: datePlus.toISOString() }
+            document: document,
+            data_final: { $gte: dateMine, $lt: datePlus }
         })
 
     }

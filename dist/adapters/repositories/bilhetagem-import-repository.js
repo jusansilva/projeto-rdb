@@ -53,6 +53,17 @@ class BilhetagemImportRepository {
             }
         });
     }
+    findDocument(document) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const model = yield model_1.BilhetagemImportModel.find({ document: document });
+                return model;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
     findRelationship(date, carro, document) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -85,6 +96,7 @@ class BilhetagemImportRepository {
                 return bilhetagem;
             }
             catch (err) {
+                throw err;
             }
         });
     }

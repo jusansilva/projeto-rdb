@@ -34,7 +34,7 @@ export class DocBusiness {
     try {
       console.log("Inicio  de criação de documentos");
       console.log("Inicio de Bilhetagem")
-      const bilhetagemSave = await Promise.all(await this.getBilhetagem(dto.bilhetagem));
+       await Promise.all(await this.getBilhetagem(dto.bilhetagem));
       console.log("Fim de Bilhetagem")
       console.log("Inicio de Gps")
       await Promise.all(await this.getGps(dto.gps));
@@ -43,9 +43,9 @@ export class DocBusiness {
       await this.realationshipRepository.drop();
       console.log("base de relação limpa")
       console.log("Inicio de Relação")
+      const bilhetagemSave = await this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
       for (let j = 0; j < bilhetagemSave.length; j++) {
-        let relacao = await this.gpsRepository.findRelacao(bilhetagemSave[j]);
-        console.log(relacao);
+        let relacao = await this.gpsRepository.findRelacao(bilhetagemSave[j], dto.gps.name);
         if (relacao) {
           console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
           await this.realationshipRepository.create(
@@ -114,11 +114,11 @@ export class DocBusiness {
         let bilhetagem: BilhetagemDto = {
           carro: dados[8],
           linha: dados[16],
-          data: new Date(dados[6].trim() + " GMT"),
+          data: new Date(dados[22].trim() + " GMT"),
           cartaoId: dados[23],
           transacao: dados[24],
           sentido: dados[25],
-          document: bilhetagemFile.tempFilePath,
+          document: bilhetagemFile.name,
           updatedAt: new Date,
           createdAt: new Date
         }
@@ -139,7 +139,7 @@ export class DocBusiness {
           return bilhetagemRetorno;
         }
 
-        if (bilhetagemSave.length > 20) {
+        if (bilhetagemSave.length == 100) {
           await this.bilhetagemRepository.createMany(bilhetagemSave)
           while(bilhetagemSave.length) {
             bilhetagemSave.pop();
@@ -170,6 +170,9 @@ export class DocBusiness {
         lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
 
         let gpsArray = line.split("\t");
+        
+        
+
         i++;
         gpstransfer.push({
           data_final: new Date(gpsArray[0].trim() + " GMT"),
@@ -181,7 +184,7 @@ export class DocBusiness {
           desc_ponto_notavel: gpsArray[7],
           linha: gpsArray[8],
           sentido: gpsArray[9],
-          document: gpsFile.tempFilePath,
+          document: gpsFile.name,
           updatedAt: new Date,
           createdAt: new Date
         });
@@ -200,7 +203,7 @@ export class DocBusiness {
 
         }
 
-        if(gpstransfer.length > 20){
+        if(gpstransfer.length == 100){
           let save = await this.gpsRepository.createMany(gpstransfer);
           save.map(gps => {
             gpsSave.push(gps)

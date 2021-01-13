@@ -53,16 +53,16 @@ class GpsImportRepository {
             }
         });
     }
-    findRelacao(bilhetagem) {
+    findRelacao(bilhetagem, document) {
         return __awaiter(this, void 0, void 0, function* () {
             const datePlus = new Date(bilhetagem.data);
-            datePlus.setMinutes(datePlus.getMinutes() + 10);
+            datePlus.setTime(datePlus.getTime() + 20000 * 60);
             const dateMine = new Date(bilhetagem.data);
-            dateMine.setMinutes(dateMine.getMinutes() - 10);
-            console.log(datePlus.toISOString(), dateMine.toISOString());
+            dateMine.setTime(dateMine.getTime() - 20000 * 60);
             return yield model_1.GpsImportModel.findOne({
                 carro: bilhetagem.carro,
-                data_final: { $gte: dateMine.toISOString(), $lte: datePlus.toISOString() }
+                document: document,
+                data_final: { $gte: dateMine, $lt: datePlus }
             });
         });
     }
