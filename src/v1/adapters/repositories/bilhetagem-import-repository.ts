@@ -12,6 +12,15 @@ export class BilhetagemImportRepository {
         }
     }
 
+    public async createMany(dto: BilhetagemDto[]): Promise<IBilhetagemImportModel[]> {
+        try {
+            const bilhetagem = await BilhetagemImportModel.insertMany(dto);
+            return bilhetagem;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async find(data?: string, carro?: string): Promise<IBilhetagemImportModel[]> {
         try {
             if (data !== undefined && carro !== undefined) {

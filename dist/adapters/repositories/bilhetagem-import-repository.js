@@ -23,6 +23,17 @@ class BilhetagemImportRepository {
             }
         });
     }
+    createMany(dto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const bilhetagem = yield model_1.BilhetagemImportModel.insertMany(dto);
+                return bilhetagem;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
     find(data, carro) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

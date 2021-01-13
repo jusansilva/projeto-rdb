@@ -17,13 +17,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __asyncValues = (this && this.__asyncValues) || function (o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator], i;
-    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocBusiness = void 0;
 const typedi_1 = require("typedi");
@@ -35,6 +28,7 @@ const archiver = require("archiver");
 const path = require("path");
 const uuid_1 = require("uuid");
 var readline = require("readline");
+const lineReader = require('line-reader');
 require('events').EventEmitter.prototype._maxListeners = 1000000000;
 let DocBusiness = class DocBusiness {
     constructor(container) {
@@ -48,10 +42,10 @@ let DocBusiness = class DocBusiness {
             try {
                 console.log("Inicio  de criação de documentos");
                 console.log("Inicio de Bilhetagem");
-                const bilhetagemSave = yield this.getBilhetagem(dto.bilhetagem);
+                const bilhetagemSave = yield Promise.all(yield this.getBilhetagem(dto.bilhetagem));
                 console.log("Fim de Bilhetagem");
                 console.log("Inicio de Gps");
-                yield this.getGps(dto.gps);
+                yield Promise.all(yield this.getGps(dto.gps));
                 console.log("Fim de Bilhetagem");
                 console.log("limpando base de Relação");
                 yield this.realationshipRepository.drop();
@@ -101,18 +95,6 @@ let DocBusiness = class DocBusiness {
                 console.log(" Preparando email");
                 const sendemail = yield this.parseEmailDto(text, subject, filename, path);
                 yield this.emailUtils.sendEmail(sendemail);
-                //      await fs.unlink(`${name}-relacao.json`, (err) => {
-                //        if (err) throw err;
-                //        console.log(`${name}-relacao.json was deleted`);
-                //      });
-                //     await fs.unlink(dto.bilhetagem.tempFilePath, (err) => {
-                //       if (err) throw err;
-                //      console.log(`${dto.bilhetagem.tempFilePath} was deleted`);
-                //     });
-                //     await fs.unlink(dto.gps.tempFilePath, (err) => {
-                //       if (err) throw err;
-                //       console.log(`${dto.gps.tempFilePath} was deleted`);
-                //     });
             }
             catch (err) {
                 console.log(err);
@@ -121,20 +103,16 @@ let DocBusiness = class DocBusiness {
         });
     }
     getBilhetagem(bilhetagemFile) {
-        var e_1, _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const bilhetagemSave = [];
-                const fileStream = fs.createReadStream(bilhetagemFile.tempFilePath);
-                const rl = readline.createInterface({
-                    input: fileStream,
-                    crlfDelay: Infinity
-                });
-                try {
-                    for (var rl_1 = __asyncValues(rl), rl_1_1; rl_1_1 = yield rl_1.next(), !rl_1_1.done;) {
-                        const line = rl_1_1.value;
+                let bilhetagemSave = [];
+                const bilhetagemRetorno = [];
+                let i = 0;
+                return new Promise((resolve, rejects) => {
+                    lineReader.eachLine(bilhetagemFile.tempFilePath, (line, last) => __awaiter(this, void 0, void 0, function* () {
                         let forReplace = line.replace(/[""]/g, "");
                         let dados = forReplace.split(',');
+                        i++;
                         let bilhetagem = {
                             carro: dados[8],
                             linha: dados[16],
@@ -147,18 +125,28 @@ let DocBusiness = class DocBusiness {
                             createdAt: new Date
                         };
                         if (dados[8] !== undefined) {
-                            bilhetagemSave.push(yield this.bilhetagemRepository.create(bilhetagem));
+                            bilhetagemSave.push(bilhetagem);
                         }
-                    }
-                }
-                catch (e_1_1) { e_1 = { error: e_1_1 }; }
-                finally {
-                    try {
-                        if (rl_1_1 && !rl_1_1.done && (_a = rl_1.return)) yield _a.call(rl_1);
-                    }
-                    finally { if (e_1) throw e_1.error; }
-                }
-                return yield bilhetagemSave;
+                        if (last) {
+                            const retorno = yield this.bilhetagemRepository.createMany(bilhetagemSave);
+                            yield retorno.map(bilhetagem => {
+                                bilhetagemRetorno.push(bilhetagem);
+                            });
+                            while (bilhetagemSave.length) {
+                                bilhetagemSave.pop();
+                            }
+                            console.log(`${i} Bilhetagem foram salvos`);
+                            return bilhetagemRetorno;
+                        }
+                        if (bilhetagemSave.length > 20) {
+                            yield this.bilhetagemRepository.createMany(bilhetagemSave);
+                            while (bilhetagemSave.length) {
+                                bilhetagemSave.pop();
+                            }
+                        }
+                    }));
+                    resolve(bilhetagemRetorno);
+                });
             }
             catch (error) {
                 console.log(error);
@@ -167,23 +155,17 @@ let DocBusiness = class DocBusiness {
         });
     }
     getGps(gpsFile) {
-        var e_2, _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const gpsSave = [];
+                let gpstransfer = [];
                 const fileStream = fs.createReadStream(gpsFile.tempFilePath);
-                const rl = readline.createInterface({
-                    input: fileStream,
-                    crlfDelay: Infinity
-                });
                 let i = 0;
-                try {
-                    for (var rl_2 = __asyncValues(rl), rl_2_1; rl_2_1 = yield rl_2.next(), !rl_2_1.done;) {
-                        const line = rl_2_1.value;
-                        i++;
-                        console.log(i);
+                return new Promise((resolve, rejects) => {
+                    lineReader.eachLine(gpsFile.tempFilePath, (line, last) => __awaiter(this, void 0, void 0, function* () {
                         let gpsArray = line.split("\t");
-                        gpsSave.push(yield this.gpsRepository.create({
+                        i++;
+                        gpstransfer.push({
                             data_final: new Date(gpsArray[0].trim() + " GMT"),
                             AVL: gpsArray[2],
                             carro: gpsArray[3],
@@ -196,17 +178,30 @@ let DocBusiness = class DocBusiness {
                             document: gpsFile.tempFilePath,
                             updatedAt: new Date,
                             createdAt: new Date
-                        }));
-                    }
-                }
-                catch (e_2_1) { e_2 = { error: e_2_1 }; }
-                finally {
-                    try {
-                        if (rl_2_1 && !rl_2_1.done && (_a = rl_2.return)) yield _a.call(rl_2);
-                    }
-                    finally { if (e_2) throw e_2.error; }
-                }
-                return yield i;
+                        });
+                        if (last) {
+                            let save = yield this.gpsRepository.createMany(gpstransfer);
+                            resolve(save.map(gps => {
+                                gpsSave.push(gps);
+                            }));
+                            while (gpstransfer.length) {
+                                gpstransfer.pop();
+                            }
+                            console.log(gpstransfer);
+                            console.log(`${i} gps salvos`);
+                            return false;
+                        }
+                        if (gpstransfer.length > 20) {
+                            let save = yield this.gpsRepository.createMany(gpstransfer);
+                            save.map(gps => {
+                                gpsSave.push(gps);
+                            });
+                            while (gpstransfer.length) {
+                                gpstransfer.pop();
+                            }
+                        }
+                    }));
+                });
             }
             catch (error) {
                 console.log(error);

@@ -12,6 +12,15 @@ export class GpsImportRepository {
         }
     }
 
+    public async createMany(dto: GpsImportDto[]): Promise<IGpsImportModel[]> {
+        try {
+            const bilhetagem = await GpsImportModel.insertMany(dto);
+            return bilhetagem;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async find(data?: string, carro?: string, document?: string, skip: number = 0): Promise<IGpsImportModel[]> {
         try {
             if (data !== undefined && carro !== undefined) {

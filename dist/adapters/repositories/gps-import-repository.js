@@ -23,6 +23,17 @@ class GpsImportRepository {
             }
         });
     }
+    createMany(dto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const bilhetagem = yield model_1.GpsImportModel.insertMany(dto);
+                return bilhetagem;
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+    }
     find(data, carro, document, skip = 0) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
