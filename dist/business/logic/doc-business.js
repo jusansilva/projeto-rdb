@@ -57,7 +57,7 @@ let DocBusiness = class DocBusiness {
                     if (relacao) {
                         console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
                         yield this.realationshipRepository.create({
-                            data_gps: relacao.data_final,
+                            data_gps: `${relacao.data_final.getDay()}/${relacao.data_final.getMonth()}/${relacao.data_final.getFullYear()} ${relacao.data_final.getTime()}`,
                             carro: bilhetagemSave[j].carro,
                             linha: bilhetagemSave[j].linha,
                             AVL: relacao.AVL,
@@ -213,13 +213,29 @@ let DocBusiness = class DocBusiness {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const relationship = yield this.realationshipRepository.find(date, carro);
-                return relationship;
+                const relacao = relationship.map(rel => this.parseRelacaoDto(rel));
+                return relacao;
             }
             catch (error) {
                 console.log(error);
                 throw error;
             }
         });
+    }
+    parseRelacaoDto(model) {
+        return {
+            data_gps: model.data_gps,
+            carro: model.carro,
+            linha: model.linha,
+            AVL: model.AVL,
+            cartaoId: model.cartaoId,
+            transacao: model.transacao,
+            sentido: model.sentido,
+            latitude: model.latitude,
+            longitude: model.longitude,
+            ponto_notavel: model.ponto_notavel,
+            desc_ponto_notavel: model.desc_ponto_notavel
+        };
     }
     parseEmailDto(text, subject, filename, path) {
         const Attachments = path ? {

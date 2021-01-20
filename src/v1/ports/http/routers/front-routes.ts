@@ -38,6 +38,9 @@ Front.route('/login').get((req: Request, res: Response) => {
   res.sendView('login.html');
 });
 
+Front.route('/response').get((req: Request, res: Response) => {
+  res.sendView('/response.html');
+})
 
 
 function sendViewMiddleware(req, res, next) {

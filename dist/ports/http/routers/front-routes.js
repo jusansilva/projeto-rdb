@@ -43,6 +43,9 @@ Front.route("/docs").get((req, res) => __awaiter(void 0, void 0, void 0, functio
 Front.route('/login').get((req, res) => {
     res.sendView('login.html');
 });
+Front.route('/response').get((req, res) => {
+    res.sendView('/response.html');
+});
 function sendViewMiddleware(req, res, next) {
     res.sendView = function (view) {
         return res.sendFile("/" + view, { root: "public" });

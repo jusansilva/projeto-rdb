@@ -17,19 +17,19 @@
             <!--FORMULÁRIO DE LOGIN-->
             <div id="insert">
                 <form method="post" action="/v1/import" enctype="multipart/form-data" id="form">
-                    <h1>Documentos</h1>
+                    <h1>Arquivos</h1>
                     <p>
-                        <label for="bilhetagem">Documento Bilhetagem</label>
+                        <label for="bilhetagem">Arquivo Bilhetagem</label>
                         <input id="bilhetagem" name="bilhetagem" accept=".csv" required="required" type="file" placeholder="only doc .csv" />
                     </p>
 
                     <p>
-                        <label for="gps">Documento GPS</label>
+                        <label for="gps">Arquivo GPS</label>
                         <input id="gps" name="gps" accept=".txt" required="required" type="file" placeholder="only doc .txt"/>
                     </p>
 
                     <p>
-                        <input type="submit" value="import" id="import" />
+                        <input type="submit" value="Importar" id="import" />
                     </p>
                     <input type="hidden" name="t" id="t">
                 </form>
@@ -49,7 +49,8 @@
     });
 
     if(data.status){
-        alert("Quando estiver processado os dados você receberá um email de confimação!")
+        alert("Quando estiver processado os dados você receberá um email de confimação!");
+        window.location.href = "/response";
     }
 
     document.getElementById('t').value = data.t;

@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
 
 export interface IRelationshipModel extends mongoose.Document {
-    data_gps: Date;
+    data_gps: string;
     carro?: string;
     linha: string;
     AVL: string;
@@ -17,7 +17,7 @@ export interface IRelationshipModel extends mongoose.Document {
 const Schema = new mongoose.Schema(
     {
         data_gps: {
-            type: Date,
+            type: String,
         },
         carro: {
             type: String,
