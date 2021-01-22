@@ -50,7 +50,7 @@ export class DocBusiness {
           console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
           await this.realationshipRepository.create(
             {
-              data_gps: `${relacao.data_final.getDay()}/${relacao.data_final.getMonth()}/${relacao.data_final.getFullYear()} ${relacao.data_final.getTime()}`,
+              data_gps: `${relacao.data_final.getDay()}/${relacao.data_final.getMonth()}/${relacao.data_final.getFullYear()} ${relacao.data_final.getHours()}:${relacao.data_final.getMinutes()}:${relacao.data_final.getSeconds()}`,
               carro: bilhetagemSave[j].carro,
               linha: bilhetagemSave[j].linha,
               AVL: relacao.AVL,
@@ -62,8 +62,6 @@ export class DocBusiness {
               ponto_notavel: relacao.ponto_notavel,
               desc_ponto_notavel: relacao.desc_ponto_notavel
             })
-
-
         }
       }
       console.log("Fim de Relação")
