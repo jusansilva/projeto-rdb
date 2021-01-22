@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-
+<html>
 <head>
     <meta charset="UTF-8" />
     <title>RDB</title>
@@ -20,17 +19,21 @@
                     <h1>Arquivos</h1>
                     <p>
                         <label for="bilhetagem">Arquivo Bilhetagem</label>
-                        <input id="bilhetagem" name="bilhetagem" accept=".csv" required="required" type="file" placeholder="only doc .csv" />
+                        <input id="bilhetagem" name="bilhetagem" accept=".csv" required="required" type="file"
+                            placeholder="only doc .csv" />
                     </p>
 
                     <p>
                         <label for="gps">Arquivo GPS</label>
-                        <input id="gps" name="gps" accept=".txt" required="required" type="file" placeholder="only doc .txt"/>
+                        <input id="gps" name="gps" accept=".txt" required="required" type="file"
+                            placeholder="only doc .txt" />
                     </p>
 
                     <p>
+                        <input type="button" value="Ver Relatório"  id="relatorio" />
                         <input type="submit" value="Importar" id="import" />
                     </p>
+                   
                     <input type="hidden" name="t" id="t">
                 </form>
             </div>
@@ -38,6 +41,10 @@
     </div>
 </body>
 <script>
+     document.getElementById("relatorio").onclick = function(){
+        return window.location.href = "/response";
+        };
+   
     var query = location.search.slice(1);
     var partes = query.split('&');
     var data = {};
@@ -48,10 +55,13 @@
         data[chave] = valor;
     });
 
-    if(data.status){
+    if (data.status) {
         alert("Quando estiver processado os dados você receberá um email de confimação!");
         window.location.href = "/response";
     }
+
+
+
 
     document.getElementById('t').value = data.t;
 </script>
