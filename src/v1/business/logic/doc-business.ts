@@ -43,9 +43,11 @@ export class DocBusiness {
       await this.realationshipRepository.drop();
       console.log("base de relação limpa")
       console.log("Inicio de Relação")
+      await this.realationshipRepository.drop();
       const bilhetagemSave = await this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
       for (let j = 0; j < bilhetagemSave.length; j++) {
         let relacao = await this.gpsRepository.findRelacao(bilhetagemSave[j], dto.gps.name);
+        console.log(`${relacao.data_final.getHours()}:${relacao.data_final.getMinutes()}:${relacao.data_final.getSeconds()}`);
         if (relacao) {
           console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
           await this.realationshipRepository.create(

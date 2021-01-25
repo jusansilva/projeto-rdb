@@ -54,6 +54,7 @@ let DocBusiness = class DocBusiness {
                 const bilhetagemSave = yield this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
                 for (let j = 0; j < bilhetagemSave.length; j++) {
                     let relacao = yield this.gpsRepository.findRelacao(bilhetagemSave[j], dto.gps.name);
+                    console.log(`${relacao.data_final.getHours()}:${relacao.data_final.getMinutes()}:${relacao.data_final.getSeconds()}`);
                     if (relacao) {
                         console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
                         yield this.realationshipRepository.create({

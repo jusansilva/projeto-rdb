@@ -15,12 +15,12 @@ export class UserRepository {
 
     public async updateToken(token: string, email: string): Promise<IUserModel> {
         try {
-            const updated = await UserModel.update({ email: email }, { token: token });
+            const updated = await UserModel.updateOne({ email: email }, { token: token });
             return updated;
         } catch (error) {
             console.log(error);
             return error
-        }
+        }s
     }
 
     public async create(dto: UserDto): Promise<IUserModel> {

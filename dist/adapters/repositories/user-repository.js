@@ -27,13 +27,14 @@ class UserRepository {
     updateToken(token, email) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const updated = yield model_1.UserModel.update({ email: email }, { token: token });
+                const updated = yield model_1.UserModel.updateOne({ email: email }, { token: token });
                 return updated;
             }
             catch (error) {
                 console.log(error);
                 return error;
             }
+            s;
         });
     }
     create(dto) {
