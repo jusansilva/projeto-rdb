@@ -56,7 +56,7 @@ class BilhetagemImportRepository {
     findDocument(document) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const model = yield model_1.BilhetagemImportModel.find({ document: document });
+                const model = yield model_1.BilhetagemImportModel.find({ document: document }, { timeout: false });
                 return model;
             }
             catch (error) {

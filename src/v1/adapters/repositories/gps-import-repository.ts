@@ -49,7 +49,7 @@ export class GpsImportRepository {
             carro: bilhetagem.carro,
             document: document,
             data_final: { $gte: dateMine, $lt: datePlus }
-        })
+        },{ timeout: false })
 
     }
 }

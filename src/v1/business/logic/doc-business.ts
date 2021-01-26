@@ -43,7 +43,6 @@ export class DocBusiness {
       await this.realationshipRepository.drop();
       console.log("base de relação limpa")
       console.log("Inicio de Relação")
-      await this.realationshipRepository.drop();
       const bilhetagemSave = await this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
       let relacoes: RelationshipDto[] = [];
       for (let j = 0; j < bilhetagemSave.length; j++) {

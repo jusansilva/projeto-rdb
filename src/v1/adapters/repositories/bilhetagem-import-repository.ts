@@ -41,7 +41,7 @@ export class BilhetagemImportRepository {
 
     public async findDocument(document: string): Promise<IBilhetagemImportModel[]> {
         try {
-            const model = await BilhetagemImportModel.find({ document: document });
+            const model = await BilhetagemImportModel.find({ document: document },{ timeout: false });
 
             return model
         } catch (error) {

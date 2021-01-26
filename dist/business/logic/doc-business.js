@@ -51,7 +51,6 @@ let DocBusiness = class DocBusiness {
                 yield this.realationshipRepository.drop();
                 console.log("base de relação limpa");
                 console.log("Inicio de Relação");
-                yield this.realationshipRepository.drop();
                 const bilhetagemSave = yield this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
                 let relacoes = [];
                 for (let j = 0; j < bilhetagemSave.length; j++) {
