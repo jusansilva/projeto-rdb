@@ -20,7 +20,7 @@ export class UserRepository {
         } catch (error) {
             console.log(error);
             return error
-        }s
+        }
     }
 
     public async create(dto: UserDto): Promise<IUserModel> {

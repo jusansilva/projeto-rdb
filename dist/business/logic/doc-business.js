@@ -51,13 +51,14 @@ let DocBusiness = class DocBusiness {
                 yield this.realationshipRepository.drop();
                 console.log("base de relação limpa");
                 console.log("Inicio de Relação");
+                yield this.realationshipRepository.drop();
                 const bilhetagemSave = yield this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
+                let relacoes = [];
                 for (let j = 0; j < bilhetagemSave.length; j++) {
                     let relacao = yield this.gpsRepository.findRelacao(bilhetagemSave[j], dto.gps.name);
-                    console.log(`${relacao.data_final.getHours()}:${relacao.data_final.getMinutes()}:${relacao.data_final.getSeconds()}`);
                     if (relacao) {
                         console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
-                        yield this.realationshipRepository.create({
+                        relacoes.push({
                             data_gps: `${relacao.data_final.getDay()}/${relacao.data_final.getMonth()}/${relacao.data_final.getFullYear()} ${relacao.data_final.getHours()}:${relacao.data_final.getMinutes()}:${relacao.data_final.getSeconds()}`,
                             carro: bilhetagemSave[j].carro,
                             linha: bilhetagemSave[j].linha,
@@ -70,6 +71,14 @@ let DocBusiness = class DocBusiness {
                             ponto_notavel: relacao.ponto_notavel,
                             desc_ponto_notavel: relacao.desc_ponto_notavel
                         });
+                        if (j === bilhetagemSave.length) {
+                            yield this.realationshipRepository.createMany(relacoes);
+                            break;
+                        }
+                        if (relacoes.length > 20) {
+                            yield this.realationshipRepository.createMany(relacoes);
+                            relacoes = [];
+                        }
                     }
                 }
                 console.log("Fim de Relação");

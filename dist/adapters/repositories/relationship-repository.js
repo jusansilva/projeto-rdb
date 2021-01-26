@@ -24,6 +24,18 @@ class RelationshipRepository {
             }
         });
     }
+    createMany(dto) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const relationship = yield model_1.RelationshipModel.createMany(dto);
+                return relationship;
+            }
+            catch (error) {
+                console.log(error);
+                throw error;
+            }
+        });
+    }
     find(data, carro) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

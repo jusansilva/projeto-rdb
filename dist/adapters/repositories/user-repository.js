@@ -34,7 +34,6 @@ class UserRepository {
                 console.log(error);
                 return error;
             }
-            s;
         });
     }
     create(dto) {

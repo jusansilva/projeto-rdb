@@ -13,6 +13,16 @@ export class RelationshipRepository {
         }
     }
 
+    public async createMany(dto: RelationshipDto[]): Promise<IRelationshipModel[]> {
+        try {
+            const relationship = await RelationshipModel.createMany(dto);
+            return relationship;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+    }
+
     public async find(data?: string, carro?: string): Promise<IRelationshipModel[]> {
         try {
             if (data !== undefined && carro !== undefined) {

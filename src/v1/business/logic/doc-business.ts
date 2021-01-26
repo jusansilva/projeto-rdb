@@ -45,12 +45,13 @@ export class DocBusiness {
       console.log("Inicio de Relação")
       await this.realationshipRepository.drop();
       const bilhetagemSave = await this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
+      let relacoes: RelationshipDto[] = [];
       for (let j = 0; j < bilhetagemSave.length; j++) {
         let relacao = await this.gpsRepository.findRelacao(bilhetagemSave[j], dto.gps.name);
-        console.log(`${relacao.data_final.getHours()}:${relacao.data_final.getMinutes()}:${relacao.data_final.getSeconds()}`);
         if (relacao) {
           console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
-          await this.realationshipRepository.create(
+
+          relacoes.push(
             {
               data_gps: `${relacao.data_final.getDay()}/${relacao.data_final.getMonth()}/${relacao.data_final.getFullYear()} ${relacao.data_final.getHours()}:${relacao.data_final.getMinutes()}:${relacao.data_final.getSeconds()}`,
               carro: bilhetagemSave[j].carro,
@@ -63,7 +64,18 @@ export class DocBusiness {
               longitude: relacao.longitude,
               ponto_notavel: relacao.ponto_notavel,
               desc_ponto_notavel: relacao.desc_ponto_notavel
-            })
+            });
+          if (j === bilhetagemSave.length) {
+            await this.realationshipRepository.createMany(relacoes);
+            break;
+          }
+
+          if (relacoes.length > 20) {
+            await this.realationshipRepository.createMany(relacoes);
+            relacoes = [];
+          }
+
+
         }
       }
       console.log("Fim de Relação")
@@ -122,7 +134,7 @@ export class DocBusiness {
             updatedAt: new Date,
             createdAt: new Date
           }
-            bilhetagemSave.push(bilhetagem);
+          bilhetagemSave.push(bilhetagem);
 
           if (last) {
             const retorno = await this.bilhetagemRepository.createMany(bilhetagemSave);
@@ -230,21 +242,21 @@ export class DocBusiness {
     }
   }
 
-public parseRelacaoDto(model : IRelationshipModel):RelationshipDto{
-  return {
-    data_gps: model.data_gps,
-    carro: model.carro,
-    linha: model.linha,
-    AVL: model.AVL,
-    cartaoId: model.cartaoId,
-    transacao: model.transacao,
-    sentido: model.sentido,
-    latitude: model.latitude,
-    longitude: model.longitude,
-    ponto_notavel: model.ponto_notavel,
-    desc_ponto_notavel: model.desc_ponto_notavel
+  public parseRelacaoDto(model: IRelationshipModel): RelationshipDto {
+    return {
+      data_gps: model.data_gps,
+      carro: model.carro,
+      linha: model.linha,
+      AVL: model.AVL,
+      cartaoId: model.cartaoId,
+      transacao: model.transacao,
+      sentido: model.sentido,
+      latitude: model.latitude,
+      longitude: model.longitude,
+      ponto_notavel: model.ponto_notavel,
+      desc_ponto_notavel: model.desc_ponto_notavel
+    }
   }
-}
 
   public parseEmailDto(text: string, subject: string, filename: string, path?: any): EmailDto {
     const Attachments = path ? {
