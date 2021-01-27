@@ -12,6 +12,7 @@ import * as  path from "path";
 import { v4 as uuid } from 'uuid';
 import { resolve } from "path";
 import { rejects } from "assert";
+import { UserBusinessDelegate } from "../delegate";
 var readline = require("readline");
 const lineReader = require('line-reader');
 require('events').EventEmitter.prototype._maxListeners = 1000000000;
@@ -171,7 +172,7 @@ export class DocBusiness {
 
   public async getGps(gpsFile: FileTemp): Promise<any> {
     try {
-
+      const nameId = uuid(); 
       const gpsSave: IGpsImportModel[] = [];
       let gpstransfer: GpsImportDto[] = [];
       const fileStream = fs.createReadStream(gpsFile.tempFilePath);
@@ -195,7 +196,7 @@ export class DocBusiness {
             desc_ponto_notavel: gpsArray[7],
             linha: gpsArray[8],
             sentido: gpsArray[9],
-            document: gpsFile.name,
+            document: `${nameId}-${gpsFile.name}`,
             updatedAt: new Date,
             createdAt: new Date
           });
