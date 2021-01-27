@@ -41,12 +41,12 @@ export class BilhetagemImportRepository {
 
     public async findDocument(document: string): Promise<IBilhetagemImportModel[]> {
         try {
-            const model = await BilhetagemImportModel.find({ document: document },{ timeout: false });
+            const model = await BilhetagemImportModel.find({ document: document });
 
             return model
         } catch (error) {
+            console.log(error);
             throw error;
-
         }
     }
 

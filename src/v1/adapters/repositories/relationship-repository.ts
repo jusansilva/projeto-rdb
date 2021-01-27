@@ -15,7 +15,7 @@ export class RelationshipRepository {
 
     public async createMany(dto: RelationshipDto[]): Promise<IRelationshipModel[]> {
         try {
-            const relationship = await RelationshipModel.createMany(dto);
+            const relationship = await RelationshipModel.insertMany(dto);
             return relationship;
         } catch (error) {
             console.log(error)

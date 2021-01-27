@@ -27,7 +27,7 @@ class RelationshipRepository {
     createMany(dto) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const relationship = yield model_1.RelationshipModel.createMany(dto);
+                const relationship = yield model_1.RelationshipModel.insertMany(dto);
                 return relationship;
             }
             catch (error) {
