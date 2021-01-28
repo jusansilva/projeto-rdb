@@ -38,46 +38,48 @@ export class DocBusiness {
       await Promise.all(await this.getBilhetagem(dto.bilhetagem));
       console.log("Fim de Bilhetagem")
       console.log("Inicio de Gps")
-      await Promise.all(await this.getGps(dto.gps));
-      console.log("Fim de Fim de GPS");
-      console.log("limpando base de Relação")
-      await this.realationshipRepository.drop();
-      console.log("base de relação limpa")
-      console.log("Inicio de Relação")
-      const bilhetagemSave = await this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
+      const resultGps = await this.getGps(dto.gps);
+      if (resultGps === 1) {
+        console.log("Fim de Fim de GPS");
+        console.log("limpando base de Relação")
+        await this.realationshipRepository.drop();
+        console.log("base de relação limpa")
+        console.log("Inicio de Relação")
+        const bilhetagemSave = await this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
 
-      let relacoes: RelationshipDto[] = [];
-      for (let j = 0; j < bilhetagemSave.length; j++) {
-        let relacao = await this.gpsRepository.findRelacao(bilhetagemSave[j], dto.gps.name);
-        console.log(relacao, j)
-        if (relacao) {
-          console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
+        let relacoes: RelationshipDto[] = [];
+        for (let j = 0; j < bilhetagemSave.length; j++) {
+          let relacao = await this.gpsRepository.findRelacao(bilhetagemSave[j], dto.gps.name);
+          console.log(relacao, j)
+          if (relacao) {
+            console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
 
-          relacoes.push(
-            {
-              data_gps: `${this.adicionaZero(relacao.data_final.getDay())}/${this.adicionaZero(relacao.data_final.getMonth()+1)}/${relacao.data_final.getFullYear()} ${this.adicionaZero(relacao.data_final.getHours())}:${this.adicionaZero(relacao.data_final.getMinutes())}:${this.adicionaZero(relacao.data_final.getSeconds())}`,
-              carro: bilhetagemSave[j].carro,
-              linha: bilhetagemSave[j].linha,
-              AVL: relacao.AVL,
-              cartaoId: bilhetagemSave[j].cartaoId,
-              transacao: bilhetagemSave[j].transacao,
-              sentido: bilhetagemSave[j].sentido,
-              latitude: relacao.latitude,
-              longitude: relacao.longitude,
-              ponto_notavel: relacao.ponto_notavel,
-              desc_ponto_notavel: relacao.desc_ponto_notavel
-            });
-          if (j === bilhetagemSave.length) {
-            await this.realationshipRepository.createMany(relacoes);
-            break;
+            relacoes.push(
+              {
+                data_gps: `${this.adicionaZero(relacao.data_final.getDay())}/${this.adicionaZero(relacao.data_final.getMonth() + 1)}/${relacao.data_final.getFullYear()} ${this.adicionaZero(relacao.data_final.getHours())}:${this.adicionaZero(relacao.data_final.getMinutes())}:${this.adicionaZero(relacao.data_final.getSeconds())}`,
+                carro: bilhetagemSave[j].carro,
+                linha: bilhetagemSave[j].linha,
+                AVL: relacao.AVL,
+                cartaoId: bilhetagemSave[j].cartaoId,
+                transacao: bilhetagemSave[j].transacao,
+                sentido: bilhetagemSave[j].sentido,
+                latitude: relacao.latitude,
+                longitude: relacao.longitude,
+                ponto_notavel: relacao.ponto_notavel,
+                desc_ponto_notavel: relacao.desc_ponto_notavel
+              });
+            if (j === bilhetagemSave.length) {
+              await this.realationshipRepository.createMany(relacoes);
+              break;
+            }
+
+            if (relacoes.length > 20) {
+              await this.realationshipRepository.createMany(relacoes);
+              relacoes = [];
+            }
+
+
           }
-
-          if (relacoes.length > 20) {
-            await this.realationshipRepository.createMany(relacoes);
-            relacoes = [];
-          }
-
-
         }
       }
       console.log("Fim de Relação")
@@ -174,7 +176,7 @@ export class DocBusiness {
     try {
       let i = 0;
       let count = 0;
-      const nameId = uuid(); 
+      const nameId = uuid();
       const gpsSave: IGpsImportModel[] = [];
       let gpstransfer: GpsImportDto[] = [];
       const fileStream = fs.createReadStream(gpsFile.tempFilePath);
@@ -307,12 +309,12 @@ export class DocBusiness {
       sentido: model.sentido
     }
   }
-  public adicionaZero(numero){
-    if (numero <= 9) 
-        return "0" + numero;
+  public adicionaZero(numero) {
+    if (numero <= 9)
+      return "0" + numero;
     else
-        return numero; 
-}
+      return numero;
+  }
 
 
 
