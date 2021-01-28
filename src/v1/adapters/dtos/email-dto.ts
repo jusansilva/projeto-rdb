@@ -17,7 +17,10 @@ export interface EmailDto {
         Attachments: {
             filename: string,
             path: string
-        };
+        },
+        tls:{
+            ciphers: string
+        }
     };
 
 }

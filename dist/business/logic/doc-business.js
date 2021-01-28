@@ -256,7 +256,10 @@ let DocBusiness = class DocBusiness {
                 to: email_envs_1.EmailEnvs.destinatario.to,
                 subject: subject,
                 text: text,
-                Attachments
+                Attachments,
+                tls: {
+                    ciphers: 'SSLv3'
+                }
             }
         };
     }

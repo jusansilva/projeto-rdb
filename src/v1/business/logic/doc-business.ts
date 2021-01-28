@@ -104,6 +104,7 @@ export class DocBusiness {
         subject = `Relação de documentos`;
         filename = null;
       }
+
       console.log(" Preparando email");
 
       const sendemail = await this.parseEmailDto(text, subject, filename, path);
@@ -268,7 +269,10 @@ export class DocBusiness {
         to: EmailEnvs.destinatario.to,
         subject: subject,
         text: text,
-        Attachments
+        Attachments,
+        tls:{
+          ciphers: 'SSLv3'
+        } 
       }
     }
   }
