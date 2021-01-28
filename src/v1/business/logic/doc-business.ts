@@ -220,6 +220,7 @@ export class DocBusiness {
             console.log(`${count} gps salvos momentaneos`)
           }
         });
+        resolve(1);
       })
     } catch (error) {
       console.log(error)
