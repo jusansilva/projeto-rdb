@@ -211,9 +211,6 @@ export class DocBusiness {
           if (gpstransfer.length == 100) {
             count = count + 100;
             let save = await this.gpsRepository.createMany(gpstransfer);
-            await save.map(gps => {
-              gpsSave.push(gps);
-            })
             console.log(`${count} gps momentaneo`)
             while (gpstransfer.length) {
               gpstransfer.pop();
