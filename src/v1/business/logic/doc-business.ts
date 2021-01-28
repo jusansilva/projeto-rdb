@@ -217,7 +217,6 @@ export class DocBusiness {
             while (gpstransfer.length) {
               gpstransfer.pop();
             }
-            console.log(`${count} gps salvos momentaneos`)
           }
         });
        return  resolve(1);
