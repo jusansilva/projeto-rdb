@@ -199,7 +199,7 @@ let DocBusiness = class DocBusiness {
                             const contaFinal = (i * 100) + gpstransfer.length;
                             console.log(`${contaFinal} , conta do I`);
                             console.log(`${count} gps salvos`);
-                            return 1;
+                            return resolve(1);
                         }
                         if (gpstransfer.length == 100) {
                             count = count + 100;
@@ -209,7 +209,6 @@ let DocBusiness = class DocBusiness {
                             }
                         }
                     }));
-                    return resolve(1);
                 });
             }
             catch (error) {
