@@ -205,7 +205,7 @@ export class DocBusiness {
               gpstransfer.pop();
             }
             console.log(`${count} gps salvos`)
-            return gpsSave;
+            return false;
           }
 
           if (gpstransfer.length == 100) {
