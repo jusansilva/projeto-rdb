@@ -174,7 +174,7 @@ let DocBusiness = class DocBusiness {
                 const gpsSave = [];
                 let gpstransfer = [];
                 const fileStream = fs.createReadStream(gpsFile.tempFilePath);
-                return new Promise((resolve, rejects) => {
+                new Promise((resolve, rejects) => {
                     lineReader.eachLine(gpsFile.tempFilePath, (line, last) => __awaiter(this, void 0, void 0, function* () {
                         let gpsArray = line.split("\t");
                         i++;
@@ -209,9 +209,9 @@ let DocBusiness = class DocBusiness {
                             while (gpstransfer.length) {
                                 gpstransfer.pop();
                             }
-                            console.log(`${count} gps salvos momentaneos`);
                         }
                     }));
+                    return resolve(1);
                 });
             }
             catch (error) {
