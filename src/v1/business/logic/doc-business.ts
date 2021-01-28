@@ -179,7 +179,7 @@ export class DocBusiness {
       const gpsSave: IGpsImportModel[] = [];
       let gpstransfer: GpsImportDto[] = [];
       const fileStream = fs.createReadStream(gpsFile.tempFilePath);
-      new Promise((resolve, rejects) => {
+      return new Promise((resolve, rejects) => {
         lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
           let gpsArray = line.split("\t");
           i++;
