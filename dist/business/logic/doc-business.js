@@ -251,7 +251,7 @@ let DocBusiness = class DocBusiness {
                 host: email_envs_1.EmailEnvs.host,
                 // service: EmailEnvs.service,
                 port: email_envs_1.EmailEnvs.port,
-                secureConnection: email_envs_1.EmailEnvs.secure,
+                secureConnection: true,
                 auth: {
                     user: email_envs_1.EmailEnvs.auth.user,
                     pass: email_envs_1.EmailEnvs.auth.pass
