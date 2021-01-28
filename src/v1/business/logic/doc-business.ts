@@ -180,7 +180,7 @@ export class DocBusiness {
       const gpsSave: IGpsImportModel[] = [];
       let gpstransfer: GpsImportDto[] = [];
       const fileStream = fs.createReadStream(gpsFile.tempFilePath);
-      return new Promise((resolve, rejects) => {
+      new Promise((resolve, rejects) => {
         lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
           let gpsArray = line.split("\t");
           i++;
@@ -220,8 +220,10 @@ export class DocBusiness {
             console.log(`${count} gps salvos momentaneos`)
           }
         });
-        resolve(1);
+       return  resolve(1);
       })
+
+      
     } catch (error) {
       console.log(error)
       throw error
