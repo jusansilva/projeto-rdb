@@ -123,7 +123,8 @@ export class DocBusiness {
       let bilhetagemSave: BilhetagemDto[] = []
       const bilhetagemRetorno: IBilhetagemImportModel[] = [];
       let i = 0;
-      return new Promise(lineReader.eachLine(bilhetagemFile.tempFilePath, async (line, last) => {
+      return new Promise((resolve) => {
+        lineReader.eachLine(bilhetagemFile.tempFilePath, async (line, last) => {
           let forReplace = line.replace(/[""]/g, "");
           let dados = forReplace.split(',');
           i++;
@@ -149,7 +150,7 @@ export class DocBusiness {
               bilhetagemSave.pop();
             }
             console.log(`${i} Bilhetagem foram salvos`)
-            return bilhetagemRetorno;
+            resolve(bilhetagemRetorno);
           }
 
           if (bilhetagemSave.length == 100) {
@@ -159,7 +160,8 @@ export class DocBusiness {
             }
           }
 
-      }))
+        })
+      })
 
     } catch (error) {
       console.log(error)
@@ -176,43 +178,45 @@ export class DocBusiness {
       const gpsSave: IGpsImportModel[] = [];
       let gpstransfer: GpsImportDto[] = [];
       const fileStream = fs.createReadStream(gpsFile.tempFilePath);
-      return new Promise(lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
-          let gpsArray = line.split("\t");
-          i++;
-          gpstransfer.push({
-            data_final: new Date(gpsArray[0].trim() + " GMT"),
-            AVL: gpsArray[2],
-            carro: gpsArray[3],
-            latitude: gpsArray[4],
-            longitude: gpsArray[5],
-            ponto_notavel: gpsArray[6],
-            desc_ponto_notavel: gpsArray[7],
-            linha: gpsArray[8],
-            sentido: gpsArray[9],
-            document: `${nameId}-${gpsFile.name}`,
-            updatedAt: new Date,
-            createdAt: new Date
-          });
+      return new Promise((resolve) => {
+        lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
+        let gpsArray = line.split("\t");
+        i++;
+        gpstransfer.push({
+          data_final: new Date(gpsArray[0].trim() + " GMT"),
+          AVL: gpsArray[2],
+          carro: gpsArray[3],
+          latitude: gpsArray[4],
+          longitude: gpsArray[5],
+          ponto_notavel: gpsArray[6],
+          desc_ponto_notavel: gpsArray[7],
+          linha: gpsArray[8],
+          sentido: gpsArray[9],
+          document: `${nameId}-${gpsFile.name}`,
+          updatedAt: new Date,
+          createdAt: new Date
+        });
 
-          if (last) {
-            let save = await this.gpsRepository.createMany(gpstransfer);
-            count = count + gpstransfer.length;
-            while (gpstransfer.length) {
-              gpstransfer.pop();
-            }
-            console.log(`${count} gps salvos`)
-            return false;
+        if (last) {
+          let save = await this.gpsRepository.createMany(gpstransfer);
+          count = count + gpstransfer.length;
+          while (gpstransfer.length) {
+            gpstransfer.pop();
           }
+          console.log(`${count} gps salvos`)
+          resolve(false);
+        }
 
-          if (gpstransfer.length == 100) {
-            count = count + 100;
-            await this.gpsRepository.createMany(gpstransfer);
-            console.log(`${count} gps momentaneo`)
-            while (gpstransfer.length) {
-              gpstransfer.pop();
-            }
+        if (gpstransfer.length == 100) {
+          count = count + 100;
+          await this.gpsRepository.createMany(gpstransfer);
+          console.log(`${count} gps momentaneo`)
+          while (gpstransfer.length) {
+            gpstransfer.pop();
           }
-        }))
+        }
+      })
+    })
     } catch (error) {
       console.log(error)
       throw error
@@ -270,9 +274,9 @@ export class DocBusiness {
         subject: subject,
         text: text,
         Attachments,
-        tls:{
+        tls: {
           ciphers: 'SSLv3'
-        } 
+        }
       }
     }
   }
