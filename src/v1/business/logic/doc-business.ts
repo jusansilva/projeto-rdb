@@ -262,7 +262,7 @@ export class DocBusiness {
         host: EmailEnvs.host,
        // service: EmailEnvs.service,
         port: EmailEnvs.port,
-        secure: EmailEnvs.secure,
+        secureConnection: EmailEnvs.secure,
         auth: {
           user: EmailEnvs.auth.user,
           pass: EmailEnvs.auth.pass

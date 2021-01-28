@@ -3,7 +3,7 @@ export interface EmailDto {
         host: string,
         //service: string,
         port: number,
-        secure: boolean,
+        secureConnection: boolean,
         auth: {
             user: string,
             pass: string
