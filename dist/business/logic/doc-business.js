@@ -208,7 +208,6 @@ let DocBusiness = class DocBusiness {
                             }
                         }
                     }));
-                    resolve(gpsSave);
                 });
             }
             catch (error) {

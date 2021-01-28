@@ -217,7 +217,6 @@ export class DocBusiness {
             }
           }
         });
-        resolve(gpsSave);
       })
 
 
