@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "lint:api": "snowboard lint api.apib",
     "eslint": "eslint --no-error-on-unmatched-pattern $(git diff --name-only origin/develop)",
-    "debug": "tsc && node dist/ports/http/index.js"
+    "debug": "tsc && node dist/ports/http/index.js",
+    "postinstall": "grunt"
   },
   "author": "Jusan Magno",
   "license": "MIT",
