@@ -264,7 +264,7 @@ let DocBusiness = class DocBusiness {
                 text: text,
                 Attachments,
                 tls: {
-                    rejectUnauthorized: false,
+                    ciphers: 'SSLv3',
                 }
             }
         };

@@ -18,7 +18,7 @@ interface EmailEnvs {
 const EmailEnvs: EmailEnvs = {
     host: process.env.EMAIL_HOST,
     service: process.env.EMAIL_SERVICE,
-    port: Number(process.env.EMAIL_PORT),
+    port: Number(process.env.EMAIL_PORT) || 587,
     secure: Boolean(process.env.EMAIL_SECURE) || false,
     auth: {
         user: process.env.EMAIL_USER,
