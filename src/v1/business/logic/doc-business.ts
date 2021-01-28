@@ -179,9 +179,9 @@ export class DocBusiness {
 
       let i = 0;
       return new Promise((resolve, rejects) => {
+        let count = 0;
         lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
           let gpsArray = line.split("\t");
-          let count = 0;
           i++;
           gpstransfer.push({
             data_final: new Date(gpsArray[0].trim() + " GMT"),
