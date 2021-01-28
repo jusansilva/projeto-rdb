@@ -118,7 +118,7 @@ let DocBusiness = class DocBusiness {
             let bilhetagemSave = [];
             const bilhetagemRetorno = [];
             let i = 0;
-            return lineReader.eachLine(bilhetagemFile.tempFilePath, (line, last) => __awaiter(this, void 0, void 0, function* () {
+            return new Promise(lineReader.eachLine(bilhetagemFile.tempFilePath, (line, last) => __awaiter(this, void 0, void 0, function* () {
                 let forReplace = line.replace(/[""]/g, "");
                 let dados = forReplace.split(',');
                 i++;
@@ -151,7 +151,7 @@ let DocBusiness = class DocBusiness {
                         bilhetagemSave.pop();
                     }
                 }
-            }));
+            })));
         }
         catch (error) {
             console.log(error);
@@ -159,53 +159,55 @@ let DocBusiness = class DocBusiness {
         }
     }
     getGps(gpsFile) {
-        try {
-            let i = 0;
-            let count = 0;
-            const nameId = uuid_1.v4();
-            const gpsSave = [];
-            let gpstransfer = [];
-            const fileStream = fs.createReadStream(gpsFile.tempFilePath);
-            return lineReader.eachLine(gpsFile.tempFilePath, (line, last) => __awaiter(this, void 0, void 0, function* () {
-                let gpsArray = line.split("\t");
-                i++;
-                gpstransfer.push({
-                    data_final: new Date(gpsArray[0].trim() + " GMT"),
-                    AVL: gpsArray[2],
-                    carro: gpsArray[3],
-                    latitude: gpsArray[4],
-                    longitude: gpsArray[5],
-                    ponto_notavel: gpsArray[6],
-                    desc_ponto_notavel: gpsArray[7],
-                    linha: gpsArray[8],
-                    sentido: gpsArray[9],
-                    document: `${nameId}-${gpsFile.name}`,
-                    updatedAt: new Date,
-                    createdAt: new Date
-                });
-                if (last) {
-                    let save = yield this.gpsRepository.createMany(gpstransfer);
-                    count = count + gpstransfer.length;
-                    while (gpstransfer.length) {
-                        gpstransfer.pop();
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let i = 0;
+                let count = 0;
+                const nameId = uuid_1.v4();
+                const gpsSave = [];
+                let gpstransfer = [];
+                const fileStream = fs.createReadStream(gpsFile.tempFilePath);
+                return new Promise(lineReader.eachLine(gpsFile.tempFilePath, (line, last) => __awaiter(this, void 0, void 0, function* () {
+                    let gpsArray = line.split("\t");
+                    i++;
+                    gpstransfer.push({
+                        data_final: new Date(gpsArray[0].trim() + " GMT"),
+                        AVL: gpsArray[2],
+                        carro: gpsArray[3],
+                        latitude: gpsArray[4],
+                        longitude: gpsArray[5],
+                        ponto_notavel: gpsArray[6],
+                        desc_ponto_notavel: gpsArray[7],
+                        linha: gpsArray[8],
+                        sentido: gpsArray[9],
+                        document: `${nameId}-${gpsFile.name}`,
+                        updatedAt: new Date,
+                        createdAt: new Date
+                    });
+                    if (last) {
+                        let save = yield this.gpsRepository.createMany(gpstransfer);
+                        count = count + gpstransfer.length;
+                        while (gpstransfer.length) {
+                            gpstransfer.pop();
+                        }
+                        console.log(`${count} gps salvos`);
+                        return false;
                     }
-                    console.log(`${count} gps salvos`);
-                    return false;
-                }
-                if (gpstransfer.length == 100) {
-                    count = count + 100;
-                    yield this.gpsRepository.createMany(gpstransfer);
-                    console.log(`${count} gps momentaneo`);
-                    while (gpstransfer.length) {
-                        gpstransfer.pop();
+                    if (gpstransfer.length == 100) {
+                        count = count + 100;
+                        yield this.gpsRepository.createMany(gpstransfer);
+                        console.log(`${count} gps momentaneo`);
+                        while (gpstransfer.length) {
+                            gpstransfer.pop();
+                        }
                     }
-                }
-            }));
-        }
-        catch (error) {
-            console.log(error);
-            throw error;
-        }
+                })));
+            }
+            catch (error) {
+                console.log(error);
+                throw error;
+            }
+        });
     }
     find(date, carro) {
         return __awaiter(this, void 0, void 0, function* () {
