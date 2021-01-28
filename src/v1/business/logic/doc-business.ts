@@ -205,11 +205,11 @@ export class DocBusiness {
               gpstransfer.pop();
             }
             console.log(`${count} gps salvos`)
-            return false;
+            return 1;
           }
 
           if (gpstransfer.length == 100) {
-            count = count+100;
+            count = count + 100;
             let save = await this.gpsRepository.createMany(gpstransfer);
             while (gpstransfer.length) {
               gpstransfer.pop();
