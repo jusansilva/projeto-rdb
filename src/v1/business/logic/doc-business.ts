@@ -35,10 +35,10 @@ export class DocBusiness {
     try {
       console.log("Inicio  de criação de documentos");
       console.log("Inicio de Bilhetagem")
-      await Promise.all(await this.getBilhetagem(dto.bilhetagem));
+      await Promise.all(this.getBilhetagem(dto.bilhetagem));
       console.log("Fim de Bilhetagem")
       console.log("Inicio de Gps")
-      await Promise.all(await this.getGps(dto.gps));
+      await Promise.all(this.getGps(dto.gps));
       console.log("Fim de Fim de GPS");
       console.log("limpando base de Relação")
       await this.realationshipRepository.drop();
@@ -116,7 +116,7 @@ export class DocBusiness {
 
   }
 
-  public async getBilhetagem(bilhetagemFile: FileTemp): Promise<IBilhetagemImportModel[]> {
+  public getBilhetagem(bilhetagemFile: FileTemp): any {
     try {
       const firstName = uuid();
       let bilhetagemSave: BilhetagemDto[] = []
@@ -171,7 +171,7 @@ export class DocBusiness {
   }
 
 
-  public async getGps(gpsFile: FileTemp): Promise<any> {
+  public getGps(gpsFile: FileTemp): any {
     try {
       let i = 0;
       let count = 0;
@@ -210,7 +210,7 @@ export class DocBusiness {
 
           if (gpstransfer.length == 100) {
             count = count + 100;
-            let save = await this.gpsRepository.createMany(gpstransfer);
+            await this.gpsRepository.createMany(gpstransfer);
             console.log(`${count} gps momentaneo`)
             while (gpstransfer.length) {
               gpstransfer.pop();
