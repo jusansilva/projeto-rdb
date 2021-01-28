@@ -122,8 +122,7 @@ export class DocBusiness {
       let bilhetagemSave: BilhetagemDto[] = []
       const bilhetagemRetorno: IBilhetagemImportModel[] = [];
       let i = 0;
-      return new Promise((resolve, rejects) => {
-        lineReader.eachLine(bilhetagemFile.tempFilePath, async (line, last) => {
+      return lineReader.eachLine(bilhetagemFile.tempFilePath, async (line, last) => {
           let forReplace = line.replace(/[""]/g, "");
           let dados = forReplace.split(',');
           i++;
@@ -159,9 +158,6 @@ export class DocBusiness {
             }
           }
 
-        });
-
-        resolve(bilhetagemRetorno);
       })
 
     } catch (error) {
@@ -179,8 +175,7 @@ export class DocBusiness {
       const gpsSave: IGpsImportModel[] = [];
       let gpstransfer: GpsImportDto[] = [];
       const fileStream = fs.createReadStream(gpsFile.tempFilePath);
-      return new Promise((resolve, rejects) => {
-        lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
+      return lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
           let gpsArray = line.split("\t");
           i++;
           gpstransfer.push({
@@ -217,9 +212,6 @@ export class DocBusiness {
             }
           }
         });
-      })
-
-
     } catch (error) {
       console.log(error)
       throw error
