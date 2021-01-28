@@ -35,10 +35,10 @@ export class DocBusiness {
     try {
       console.log("Inicio  de criação de documentos");
       console.log("Inicio de Bilhetagem")
-      await Promise.all(this.getBilhetagem(dto.bilhetagem));
+      await this.getBilhetagem(dto.bilhetagem);
       console.log("Fim de Bilhetagem")
       console.log("Inicio de Gps")
-      await Promise.all(this.getGps(dto.gps));
+      await this.getGps(dto.gps);
       console.log("Fim de Fim de GPS");
       console.log("limpando base de Relação")
       await this.realationshipRepository.drop();
