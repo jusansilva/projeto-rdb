@@ -204,14 +204,16 @@ export class DocBusiness {
             while (gpstransfer.length) {
               gpstransfer.pop();
             }
-            const contaFinal = (i * 100) + gpstransfer.length;
-            console.log(`${contaFinal} , conta do I`);
             console.log(`${count} gps salvos`)
+            return gpsSave;
           }
 
           if (gpstransfer.length == 100) {
             count = count + 100;
             let save = await this.gpsRepository.createMany(gpstransfer);
+            await save.map(gps => {
+              gpsSave.push(gps);
+            })
             while (gpstransfer.length) {
               gpstransfer.pop();
             }
