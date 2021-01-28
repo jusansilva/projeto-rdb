@@ -249,7 +249,7 @@ let DocBusiness = class DocBusiness {
         return {
             remetente: {
                 host: email_envs_1.EmailEnvs.host,
-                service: email_envs_1.EmailEnvs.service,
+                // service: EmailEnvs.service,
                 port: email_envs_1.EmailEnvs.port,
                 secure: email_envs_1.EmailEnvs.secure,
                 auth: {

@@ -1,7 +1,7 @@
 export interface EmailDto {
     remetente: {
         host: string,
-        service: string,
+        //service: string,
         port: number,
         secure: boolean,
         auth: {
