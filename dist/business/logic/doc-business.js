@@ -174,6 +174,7 @@ let DocBusiness = class DocBusiness {
                 return new Promise((resolve, rejects) => {
                     lineReader.eachLine(gpsFile.tempFilePath, (line, last) => __awaiter(this, void 0, void 0, function* () {
                         let gpsArray = line.split("\t");
+                        let count = 0;
                         i++;
                         gpstransfer.push({
                             data_final: new Date(gpsArray[0].trim() + " GMT"),
@@ -191,24 +192,20 @@ let DocBusiness = class DocBusiness {
                         });
                         if (last) {
                             let save = yield this.gpsRepository.createMany(gpstransfer);
-                            resolve(save.map(gps => {
-                                gpsSave.push(gps);
-                            }));
+                            count = count + gpstransfer.length;
                             while (gpstransfer.length) {
                                 gpstransfer.pop();
                             }
-                            console.log(gpstransfer);
-                            console.log(`${i} gps salvos`);
+                            console.log(`${count} gps salvos`);
                             return false;
                         }
                         if (gpstransfer.length == 100) {
+                            count = count + 100;
                             let save = yield this.gpsRepository.createMany(gpstransfer);
-                            save.map(gps => {
-                                gpsSave.push(gps);
-                            });
                             while (gpstransfer.length) {
                                 gpstransfer.pop();
                             }
+                            console.log(`${count} gps salvos momentaneos`);
                         }
                     }));
                 });
