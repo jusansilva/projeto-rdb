@@ -207,7 +207,7 @@ export class DocBusiness {
             const contaFinal = (i * 100) + gpstransfer.length;
             console.log(`${contaFinal} , conta do I`);
             console.log(`${count} gps salvos`)
-            return resolve(1);
+            return resolve(true);
           }
 
           if (gpstransfer.length == 100) {
