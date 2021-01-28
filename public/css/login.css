@@ -13,9 +13,9 @@ a{
 /* esconde as ancoras da tela */
 a.links{
   display: none;
-}
+} 
 .content{
-  width: 500px;
+  width: 400px;
   min-height: 560px;    
   margin: 0px auto;
   position: relative;   
@@ -67,7 +67,14 @@ textarea:-moz-placeholder{
 input {
   outline: none;
 }
- 
+
+form>p>input{
+  width: 92%!important;
+}
+
+form.arquivo>p>input{
+  width: 100%!important;
+}
 /*estilo dos input,  menos o checkbox */
 input:not([type="checkbox"]){
   width: 100%;
@@ -172,10 +179,10 @@ input[type="button"]:hover{
 #login{
   position: absolute;
   top: 0px;
-  width: 88%;   
+  width: 80%;
   padding: 18px 6% 60px 6%;
   margin: 0 0 35px 0;
-  background: #f7f7f7;
+  background-color:rgb(247, 247, 247,0.2);
   border: 1px solid rgba(147, 184, 189,0.8);
    
   -webkit-box-shadow: 5px;
@@ -256,8 +263,9 @@ input[type="button"]:hover{
 
 #bg {
   position: fixed; 
-  top: 0; 
+  top: 5px; 
   left: 0; 
+  height:100%;
 
   /* Preserve aspet ratio */
   min-width: 100%;

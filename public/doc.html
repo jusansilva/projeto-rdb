@@ -15,7 +15,7 @@
         <div class="content">
             <!--FORMULÁRIO DE LOGIN-->
             <div id="insert">
-                <form method="post" action="/v1/import" enctype="multipart/form-data" id="form">
+                <form method="post" action="/v1/import" enctype="multipart/form-data" id="form" class="arquivo">
                     <h1>Arquivos</h1>
                     <p>
                         <label for="bilhetagem">Arquivo Bilhetagem</label>
@@ -30,8 +30,8 @@
                     </p>
 
                     <p>
-                        <input type="button" value="Ver Relatório"  id="relatorio" />
                         <input type="submit" value="Importar" id="import" />
+                        <input type="button" value="Ver Relatório"  id="relatorio" />
                     </p>
                    
                     <input type="hidden" name="t" id="t">

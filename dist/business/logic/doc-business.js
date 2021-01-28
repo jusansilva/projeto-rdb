@@ -166,6 +166,7 @@ let DocBusiness = class DocBusiness {
     getGps(gpsFile) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const nameId = uuid_1.v4();
                 const gpsSave = [];
                 let gpstransfer = [];
                 const fileStream = fs.createReadStream(gpsFile.tempFilePath);
@@ -184,7 +185,7 @@ let DocBusiness = class DocBusiness {
                             desc_ponto_notavel: gpsArray[7],
                             linha: gpsArray[8],
                             sentido: gpsArray[9],
-                            document: gpsFile.name,
+                            document: `${nameId}-${gpsFile.name}`,
                             updatedAt: new Date,
                             createdAt: new Date
                         });
