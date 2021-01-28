@@ -214,6 +214,7 @@ export class DocBusiness {
             await save.map(gps => {
               gpsSave.push(gps);
             })
+            console.log(`${count} gps momentaneo`)
             while (gpstransfer.length) {
               gpstransfer.pop();
             }
