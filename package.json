@@ -11,6 +11,7 @@
     "test": "echo 'no tests defined yet.'",
     "lint": "eslint .",
     "lint:api": "snowboard lint api.apib",
+    "grunt": "grunt",
     "eslint": "eslint --no-error-on-unmatched-pattern $(git diff --name-only origin/develop)",
     "debug": "tsc && node dist/ports/http/index.js",
     "postinstall": "grunt"
