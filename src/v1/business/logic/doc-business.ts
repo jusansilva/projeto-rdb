@@ -172,13 +172,12 @@ export class DocBusiness {
 
   public async getGps(gpsFile: FileTemp): Promise<any> {
     try {
+      let i = 0;
+      let count = 0;
       const nameId = uuid(); 
       const gpsSave: IGpsImportModel[] = [];
       let gpstransfer: GpsImportDto[] = [];
       const fileStream = fs.createReadStream(gpsFile.tempFilePath);
-
-      let i = 0;
-      let count = 0;
       return new Promise((resolve, rejects) => {
         lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
           let gpsArray = line.split("\t");
@@ -204,6 +203,8 @@ export class DocBusiness {
             while (gpstransfer.length) {
               gpstransfer.pop();
             }
+            const contaFinal = (i * 100) + gpstransfer.length;
+            console.log(`${contaFinal} , conta do I`);
             console.log(`${count} gps salvos`)
             return 1;
           }
