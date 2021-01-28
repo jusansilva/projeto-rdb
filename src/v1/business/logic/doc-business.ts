@@ -178,8 +178,8 @@ export class DocBusiness {
       const fileStream = fs.createReadStream(gpsFile.tempFilePath);
 
       let i = 0;
+      let count = 0;
       return new Promise((resolve, rejects) => {
-        let count = 0;
         lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
           let gpsArray = line.split("\t");
           i++;
