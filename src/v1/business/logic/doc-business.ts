@@ -276,6 +276,7 @@ export class DocBusiness {
         Attachments,
         tls: {
           ciphers: 'SSLv3',
+          rejectUnauthorized: false,
         }
       }
     }

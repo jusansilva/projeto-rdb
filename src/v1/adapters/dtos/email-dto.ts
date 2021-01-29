@@ -18,7 +18,8 @@ export interface EmailDto {
             filename: string,
             path: string
         },
-        tls: {  ciphers: string }
+        tls: {  ciphers: string,
+            rejectUnauthorized: boolean }
     };
 
 }
