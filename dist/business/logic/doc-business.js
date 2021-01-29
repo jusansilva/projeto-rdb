@@ -36,6 +36,7 @@ let DocBusiness = class DocBusiness {
         this.gpsRepository = container.get(repositories_1.GpsImportRepository);
         this.realationshipRepository = container.get(repositories_1.RelationshipRepository);
         this.emailUtils = container.get(email_utils_1.EmailUtils);
+        this.uuid = uuid_1.v4();
     }
     import(dto) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -51,10 +52,10 @@ let DocBusiness = class DocBusiness {
                 yield this.realationshipRepository.drop();
                 console.log("base de relação limpa");
                 console.log("Inicio de Relação");
-                const bilhetagemSave = yield this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
+                const bilhetagemSave = yield this.bilhetagemRepository.findDocument(`${this.uuid}-${dto.bilhetagem.name}`);
                 let relacoes = [];
                 for (let j = 0; j < bilhetagemSave.length; j++) {
-                    let relacao = yield this.gpsRepository.findRelacao(bilhetagemSave[j], dto.gps.name);
+                    let relacao = yield this.gpsRepository.findRelacao(bilhetagemSave[j], `${this.uuid}-${dto.gps.name}`);
                     console.log(relacao, j);
                     if (relacao) {
                         console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
@@ -130,7 +131,7 @@ let DocBusiness = class DocBusiness {
                         cartaoId: dados[23],
                         transacao: dados[24],
                         sentido: dados[25],
-                        document: `${firstName}-${bilhetagemFile.name}`,
+                        document: `${this.uuid}-${bilhetagemFile.name}`,
                         updatedAt: new Date,
                         createdAt: new Date
                     };
@@ -183,7 +184,7 @@ let DocBusiness = class DocBusiness {
                             desc_ponto_notavel: gpsArray[7],
                             linha: gpsArray[8],
                             sentido: gpsArray[9],
-                            document: `${nameId}-${gpsFile.name}`,
+                            document: `${this.uuid}-${gpsFile.name}`,
                             updatedAt: new Date,
                             createdAt: new Date
                         });

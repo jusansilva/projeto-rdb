@@ -23,11 +23,13 @@ export class DocBusiness {
   protected readonly gpsRepository: GpsImportRepository;
   protected readonly realationshipRepository: RelationshipRepository;
   protected readonly emailUtils: EmailUtils;
+  protected readonly uuid: string;
   constructor(container: ContainerInstance) {
     this.bilhetagemRepository = container.get(BilhetagemImportRepository);
     this.gpsRepository = container.get(GpsImportRepository)
     this.realationshipRepository = container.get(RelationshipRepository);
     this.emailUtils = container.get(EmailUtils);
+    this.uuid = uuid();
 
   }
 
@@ -44,11 +46,11 @@ export class DocBusiness {
       await this.realationshipRepository.drop();
       console.log("base de relação limpa")
       console.log("Inicio de Relação")
-      const bilhetagemSave = await this.bilhetagemRepository.findDocument(dto.bilhetagem.name);
+      const bilhetagemSave = await this.bilhetagemRepository.findDocument(`${this.uuid}-${dto.bilhetagem.name}`);
 
       let relacoes: RelationshipDto[] = [];
       for (let j = 0; j < bilhetagemSave.length; j++) {
-        let relacao = await this.gpsRepository.findRelacao(bilhetagemSave[j], dto.gps.name);
+        let relacao = await this.gpsRepository.findRelacao(bilhetagemSave[j], `${this.uuid}-${dto.gps.name}`);
         console.log(relacao, j)
         if (relacao) {
           console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
@@ -135,7 +137,7 @@ export class DocBusiness {
             cartaoId: dados[23],
             transacao: dados[24],
             sentido: dados[25],
-            document: `${firstName}-${bilhetagemFile.name}`,
+            document: `${this.uuid}-${bilhetagemFile.name}`,
             updatedAt: new Date,
             createdAt: new Date
           }
@@ -192,7 +194,7 @@ export class DocBusiness {
           desc_ponto_notavel: gpsArray[7],
           linha: gpsArray[8],
           sentido: gpsArray[9],
-          document: `${nameId}-${gpsFile.name}`,
+          document: `${this.uuid}-${gpsFile.name}`,
           updatedAt: new Date,
           createdAt: new Date
         });
