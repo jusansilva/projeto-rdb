@@ -269,6 +269,7 @@ export class DocBusiness {
         }
       },
       destinatario: {
+        pool: true,
         from: EmailEnvs.destinatario.from,
         to: EmailEnvs.destinatario.to,
         subject: subject,

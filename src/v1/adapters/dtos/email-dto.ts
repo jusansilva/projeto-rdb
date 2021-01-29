@@ -10,6 +10,7 @@ export interface EmailDto {
         }
     };
     destinatario: {
+        pool: boolean,
         from: string,
         to: string,
         subject: string,

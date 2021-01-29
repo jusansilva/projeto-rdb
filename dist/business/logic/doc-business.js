@@ -258,6 +258,7 @@ let DocBusiness = class DocBusiness {
                 }
             },
             destinatario: {
+                pool: true,
                 from: email_envs_1.EmailEnvs.destinatario.from,
                 to: email_envs_1.EmailEnvs.destinatario.to,
                 subject: subject,
