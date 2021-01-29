@@ -1,6 +1,8 @@
 export interface EmailDto {
     remetente: {
         host: string,
+        pool?: boolean,
+        secure?: boolean,
         //service: string,
         port: number,
         secureConnection: boolean,
@@ -10,7 +12,6 @@ export interface EmailDto {
         }
     };
     destinatario: {
-        pool: boolean,
         from: string,
         to: string,
         subject: string,

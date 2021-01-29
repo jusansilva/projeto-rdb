@@ -248,17 +248,18 @@ let DocBusiness = class DocBusiness {
         } : null;
         return {
             remetente: {
+                pool: true,
                 host: email_envs_1.EmailEnvs.host,
                 // service: EmailEnvs.service,
                 port: email_envs_1.EmailEnvs.port,
                 secureConnection: false,
+                secure: true,
                 auth: {
                     user: email_envs_1.EmailEnvs.auth.user,
                     pass: email_envs_1.EmailEnvs.auth.pass
                 }
             },
             destinatario: {
-                pool: true,
                 from: email_envs_1.EmailEnvs.destinatario.from,
                 to: email_envs_1.EmailEnvs.destinatario.to,
                 subject: subject,

@@ -259,17 +259,18 @@ export class DocBusiness {
     } : null;
     return {
       remetente: {
+        pool: true,
         host: EmailEnvs.host,
        // service: EmailEnvs.service,
         port: EmailEnvs.port,
         secureConnection: false,
+        secure: true,
         auth: {
           user: EmailEnvs.auth.user,
           pass: EmailEnvs.auth.pass
         }
       },
       destinatario: {
-        pool: true,
         from: EmailEnvs.destinatario.from,
         to: EmailEnvs.destinatario.to,
         subject: subject,
