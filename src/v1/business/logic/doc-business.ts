@@ -113,16 +113,12 @@ export class DocBusiness {
 
   public getBilhetagem(bilhetagemFile: FileTemp): any {
     try {
-      const firstName = uuid();
-      let bilhetagemSave: BilhetagemDto[] = []
-      const bilhetagemRetorno: IBilhetagemImportModel[] = [];
-      let i = 0;
+      const lineReader = readline.createReadStream(bilhetagemFile.tempFilePath);
       return new Promise((resolve) => {
-        lineReader.eachLine(bilhetagemFile.tempFilePath, async (line, last) => {
+        lineReader.on("line", async (line, count) => {
           let forReplace = line.replace(/[""]/g, "");
           let dados = forReplace.split(',');
-          i++;
-          let bilhetagem: BilhetagemDto = {
+          const bilhetagem: BilhetagemDto = {
             carro: dados[8],
             linha: dados[16],
             data: new Date(dados[22].trim() + " GMT"),
@@ -133,16 +129,12 @@ export class DocBusiness {
             updatedAt: new Date,
             createdAt: new Date
           }
-          bilhetagemSave.push(bilhetagem);
 
-          if (last) {
-            const retorno = await this.bilhetagemRepository.createMany(bilhetagemSave);
-            await retorno.map(bilhetagem => {
-              bilhetagemRetorno.push(bilhetagem);
-            })
-            console.log(`${i} Bilhetagem foram salvos`)
-            resolve(bilhetagemRetorno);
-          }
+
+          await this.bilhetagemRepository.create(bilhetagem);
+
+          console.log(`${count} Bilhetagem foram salvos`)
+          resolve(true);
         })
       })
 
@@ -155,38 +147,32 @@ export class DocBusiness {
 
   public async getGps(gpsFile: FileTemp): Promise<any> {
     try {
-      let i = 0;
-      let count = 0;
+
       const gpsSave: IGpsImportModel[] = [];
-      let gpstransfer: GpsImportDto[] = [];
-      const fileStream = fs.createReadStream(gpsFile.tempFilePath);
+
+      const lineReader = fs.createReadStream(gpsFile.tempFilePath);
       return new Promise((resolve) => {
-        lineReader.eachLine(gpsFile.tempFilePath, async (line, last) => {
-        let gpsArray = line.split("\t");
-        i++;
-        gpstransfer.push({
-          data_final: new Date(gpsArray[0].trim() + " GMT"),
-          AVL: gpsArray[2],
-          carro: gpsArray[3],
-          latitude: gpsArray[4],
-          longitude: gpsArray[5],
-          ponto_notavel: gpsArray[6],
-          desc_ponto_notavel: gpsArray[7],
-          linha: gpsArray[8],
-          sentido: gpsArray[9],
-          document: `${this.uuid}-${gpsFile.name}`,
-          updatedAt: new Date,
-          createdAt: new Date
-        });
-        console.log(i);
-        if (last) {
-          await this.gpsRepository.createMany(gpstransfer);
-          count = count + gpstransfer.length;
-          console.log(`${count} gps salvos`)
-          resolve(gpstransfer);
-        }
+        lineReader.on("line", async (line, count) => {
+          let gpsArray = line.split("\t");
+          const gpstransfer: GpsImportDto = {
+            data_final: new Date(gpsArray[0].trim() + " GMT"),
+            AVL: gpsArray[2],
+            carro: gpsArray[3],
+            latitude: gpsArray[4],
+            longitude: gpsArray[5],
+            ponto_notavel: gpsArray[6],
+            desc_ponto_notavel: gpsArray[7],
+            linha: gpsArray[8],
+            sentido: gpsArray[9],
+            document: `${this.uuid}-${gpsFile.name}`,
+            updatedAt: new Date,
+            createdAt: new Date
+          }
+            await this.gpsRepository.create(gpstransfer);
+            console.log(`${count} gps salvos`)
+            resolve(true);
+        })
       })
-    })
     } catch (error) {
       console.log(error)
       throw error
@@ -231,7 +217,7 @@ export class DocBusiness {
       remetente: {
         pool: true,
         host: EmailEnvs.host,
-       // service: EmailEnvs.service,
+        // service: EmailEnvs.service,
         port: EmailEnvs.port,
         secureConnection: false,
         secure: true,
@@ -247,10 +233,11 @@ export class DocBusiness {
         text: text,
         Attachments,
         tls: {
-          ciphers:'SSLv3',
+          ciphers: 'SSLv3',
           secure: false,
           ignoreTLS: true,
-          rejectUnauthorized: false        }
+          rejectUnauthorized: false
+        }
       }
     }
   }

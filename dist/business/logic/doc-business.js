@@ -110,16 +110,12 @@ let DocBusiness = class DocBusiness {
     }
     getBilhetagem(bilhetagemFile) {
         try {
-            const firstName = uuid_1.v4();
-            let bilhetagemSave = [];
-            const bilhetagemRetorno = [];
-            let i = 0;
+            const lineReader = readline.createReadStream(bilhetagemFile.tempFilePath);
             return new Promise((resolve) => {
-                lineReader.eachLine(bilhetagemFile.tempFilePath, (line, last) => __awaiter(this, void 0, void 0, function* () {
+                lineReader.on("line", (line, count) => __awaiter(this, void 0, void 0, function* () {
                     let forReplace = line.replace(/[""]/g, "");
                     let dados = forReplace.split(',');
-                    i++;
-                    let bilhetagem = {
+                    const bilhetagem = {
                         carro: dados[8],
                         linha: dados[16],
                         data: new Date(dados[22].trim() + " GMT"),
@@ -130,15 +126,9 @@ let DocBusiness = class DocBusiness {
                         updatedAt: new Date,
                         createdAt: new Date
                     };
-                    bilhetagemSave.push(bilhetagem);
-                    if (last) {
-                        const retorno = yield this.bilhetagemRepository.createMany(bilhetagemSave);
-                        yield retorno.map(bilhetagem => {
-                            bilhetagemRetorno.push(bilhetagem);
-                        });
-                        console.log(`${i} Bilhetagem foram salvos`);
-                        resolve(bilhetagemRetorno);
-                    }
+                    yield this.bilhetagemRepository.create(bilhetagem);
+                    console.log(`${count} Bilhetagem foram salvos`);
+                    resolve(true);
                 }));
             });
         }
@@ -150,16 +140,12 @@ let DocBusiness = class DocBusiness {
     getGps(gpsFile) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let i = 0;
-                let count = 0;
                 const gpsSave = [];
-                let gpstransfer = [];
-                const fileStream = fs.createReadStream(gpsFile.tempFilePath);
+                const lineReader = fs.createReadStream(gpsFile.tempFilePath);
                 return new Promise((resolve) => {
-                    lineReader.eachLine(gpsFile.tempFilePath, (line, last) => __awaiter(this, void 0, void 0, function* () {
+                    lineReader.on("line", (line, count) => __awaiter(this, void 0, void 0, function* () {
                         let gpsArray = line.split("\t");
-                        i++;
-                        gpstransfer.push({
+                        const gpstransfer = {
                             data_final: new Date(gpsArray[0].trim() + " GMT"),
                             AVL: gpsArray[2],
                             carro: gpsArray[3],
@@ -172,14 +158,10 @@ let DocBusiness = class DocBusiness {
                             document: `${this.uuid}-${gpsFile.name}`,
                             updatedAt: new Date,
                             createdAt: new Date
-                        });
-                        console.log(i);
-                        if (last) {
-                            yield this.gpsRepository.createMany(gpstransfer);
-                            count = count + gpstransfer.length;
-                            console.log(`${count} gps salvos`);
-                            resolve(gpstransfer);
-                        }
+                        };
+                        yield this.gpsRepository.create(gpstransfer);
+                        console.log(`${count} gps salvos`);
+                        resolve(true);
                     }));
                 });
             }
