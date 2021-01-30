@@ -51,7 +51,6 @@ export class DocBusiness {
       let relacoes: RelationshipDto[] = [];
       for (let j = 0; j < bilhetagemSave.length; j++) {
         let relacao = await this.gpsRepository.findRelacao(bilhetagemSave[j], `${this.uuid}-${dto.gps.name}`);
-        console.log(relacao, j)
         if (relacao) {
           console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
 
@@ -73,13 +72,6 @@ export class DocBusiness {
             await this.realationshipRepository.createMany(relacoes);
             break;
           }
-
-          if (relacoes.length > 20) {
-            await this.realationshipRepository.createMany(relacoes);
-            relacoes = [];
-          }
-
-
         }
       }
 
@@ -148,20 +140,9 @@ export class DocBusiness {
             await retorno.map(bilhetagem => {
               bilhetagemRetorno.push(bilhetagem);
             })
-            while (bilhetagemSave.length) {
-              bilhetagemSave.pop();
-            }
             console.log(`${i} Bilhetagem foram salvos`)
             resolve(bilhetagemRetorno);
           }
-
-          if (bilhetagemSave.length == 100) {
-            await this.bilhetagemRepository.createMany(bilhetagemSave)
-            while (bilhetagemSave.length) {
-              bilhetagemSave.pop();
-            }
-          }
-
         })
       })
 
@@ -202,20 +183,8 @@ export class DocBusiness {
         if (last) {
           let save = await this.gpsRepository.createMany(gpstransfer);
           count = count + gpstransfer.length;
-          while (gpstransfer.length) {
-            gpstransfer.pop();
-          }
           console.log(`${count} gps salvos`)
           resolve(false);
-        }
-
-        if (gpstransfer.length == 100) {
-          count = count + 100;
-          await this.gpsRepository.createMany(gpstransfer);
-          console.log(`${count} gps momentaneo`)
-          while (gpstransfer.length) {
-            gpstransfer.pop();
-          }
         }
       })
     })
