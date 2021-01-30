@@ -13,7 +13,7 @@ import { v4 as uuid } from 'uuid';
 import { resolve } from "path";
 import { rejects } from "assert";
 import { UserBusinessDelegate } from "../delegate";
-var readline = require("readline");
+var readline = require("linebyline");
 const lineReader = require('line-reader');
 require('events').EventEmitter.prototype._maxListeners = 1000000000;
 
@@ -113,7 +113,7 @@ export class DocBusiness {
 
   public getBilhetagem(bilhetagemFile: FileTemp): any {
     try {
-      const lineReader = readline.createReadStream(bilhetagemFile.tempFilePath);
+      const lineReader = fs.createReadStream(bilhetagemFile.tempFilePath);
       return new Promise((resolve) => {
         lineReader.on("line", async (line, count) => {
           let forReplace = line.replace(/[""]/g, "");
@@ -147,9 +147,6 @@ export class DocBusiness {
 
   public async getGps(gpsFile: FileTemp): Promise<any> {
     try {
-
-      const gpsSave: IGpsImportModel[] = [];
-
       const lineReader = fs.createReadStream(gpsFile.tempFilePath);
       return new Promise((resolve) => {
         lineReader.on("line", async (line, count) => {

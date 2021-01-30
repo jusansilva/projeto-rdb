@@ -27,7 +27,7 @@ const email_envs_1 = require("../../adapters/envs/email-envs");
 const archiver = require("archiver");
 const path = require("path");
 const uuid_1 = require("uuid");
-var readline = require("readline");
+var readline = require("linebyline");
 const lineReader = require('line-reader');
 require('events').EventEmitter.prototype._maxListeners = 1000000000;
 let DocBusiness = class DocBusiness {
@@ -110,7 +110,7 @@ let DocBusiness = class DocBusiness {
     }
     getBilhetagem(bilhetagemFile) {
         try {
-            const lineReader = readline.createReadStream(bilhetagemFile.tempFilePath);
+            const lineReader = fs.createReadStream(bilhetagemFile.tempFilePath);
             return new Promise((resolve) => {
                 lineReader.on("line", (line, count) => __awaiter(this, void 0, void 0, function* () {
                     let forReplace = line.replace(/[""]/g, "");
@@ -140,7 +140,6 @@ let DocBusiness = class DocBusiness {
     getGps(gpsFile) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const gpsSave = [];
                 const lineReader = fs.createReadStream(gpsFile.tempFilePath);
                 return new Promise((resolve) => {
                     lineReader.on("line", (line, count) => __awaiter(this, void 0, void 0, function* () {
