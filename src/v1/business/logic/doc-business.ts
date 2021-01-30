@@ -37,10 +37,10 @@ export class DocBusiness {
     try {
       console.log("Inicio  de criação de documentos");
       console.log("Inicio de Bilhetagem")
-      await Promise.all([await this.getBilhetagem(dto.bilhetagem)]);
+      await this.getBilhetagem(dto.bilhetagem)
       console.log("Fim de Bilhetagem")
       console.log("Inicio de Gps")
-      await Promise.all([await this.getGps(dto.gps)]);
+      await this.getGps(dto.gps);
       console.log("Fim de Fim de GPS");
       console.log("limpando base de Relação")
       await this.realationshipRepository.drop();
@@ -165,9 +165,9 @@ export class DocBusiness {
             updatedAt: new Date,
             createdAt: new Date
           }
-            await this.gpsRepository.create(gpstransfer);
-            console.log(`${count} gps salvos`)
-            resolve(true);
+          await this.gpsRepository.create(gpstransfer);
+          console.log(`${count} gps salvos`)
+          resolve(true);
         })
       })
     } catch (error) {

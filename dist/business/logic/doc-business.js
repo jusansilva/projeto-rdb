@@ -43,10 +43,10 @@ let DocBusiness = class DocBusiness {
             try {
                 console.log("Inicio  de criação de documentos");
                 console.log("Inicio de Bilhetagem");
-                yield Promise.all([yield this.getBilhetagem(dto.bilhetagem)]);
+                yield this.getBilhetagem(dto.bilhetagem);
                 console.log("Fim de Bilhetagem");
                 console.log("Inicio de Gps");
-                yield Promise.all([yield this.getGps(dto.gps)]);
+                yield this.getGps(dto.gps);
                 console.log("Fim de Fim de GPS");
                 console.log("limpando base de Relação");
                 yield this.realationshipRepository.drop();
