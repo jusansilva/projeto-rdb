@@ -157,7 +157,6 @@ export class DocBusiness {
     try {
       let i = 0;
       let count = 0;
-      const nameId = uuid();
       const gpsSave: IGpsImportModel[] = [];
       let gpstransfer: GpsImportDto[] = [];
       const fileStream = fs.createReadStream(gpsFile.tempFilePath);
@@ -179,12 +178,12 @@ export class DocBusiness {
           updatedAt: new Date,
           createdAt: new Date
         });
-
+        console.log(i);
         if (last) {
-          let save = await this.gpsRepository.createMany(gpstransfer);
+          await this.gpsRepository.createMany(gpstransfer);
           count = count + gpstransfer.length;
           console.log(`${count} gps salvos`)
-          resolve(false);
+          resolve(gpstransfer);
         }
       })
     })

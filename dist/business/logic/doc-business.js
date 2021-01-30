@@ -152,7 +152,6 @@ let DocBusiness = class DocBusiness {
             try {
                 let i = 0;
                 let count = 0;
-                const nameId = uuid_1.v4();
                 const gpsSave = [];
                 let gpstransfer = [];
                 const fileStream = fs.createReadStream(gpsFile.tempFilePath);
@@ -174,11 +173,12 @@ let DocBusiness = class DocBusiness {
                             updatedAt: new Date,
                             createdAt: new Date
                         });
+                        console.log(i);
                         if (last) {
-                            let save = yield this.gpsRepository.createMany(gpstransfer);
+                            yield this.gpsRepository.createMany(gpstransfer);
                             count = count + gpstransfer.length;
                             console.log(`${count} gps salvos`);
-                            resolve(false);
+                            resolve(gpstransfer);
                         }
                     }));
                 });
