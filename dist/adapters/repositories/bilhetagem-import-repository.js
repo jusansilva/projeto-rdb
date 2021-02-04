@@ -13,15 +13,13 @@ exports.BilhetagemImportRepository = void 0;
 const model_1 = require("./model");
 class BilhetagemImportRepository {
     create(dto) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const bilhetagem = yield model_1.BilhetagemImportModel.create(dto);
-                return bilhetagem;
-            }
-            catch (error) {
-                throw error;
-            }
-        });
+        try {
+            const bilhetagem = model_1.BilhetagemImportModel.create(dto);
+            return bilhetagem;
+        }
+        catch (error) {
+            throw error;
+        }
     }
     createMany(dto) {
         return __awaiter(this, void 0, void 0, function* () {

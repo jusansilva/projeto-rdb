@@ -2,7 +2,7 @@ import { Container, Service, ContainerInstance } from "typedi";
 import * as fs from "fs";
 import { ImportDto, BilhetagemDto, GpsImportDto, RelationshipDto, FileTemp } from "../../adapters/dtos/import-dto";
 import { BilhetagemImportRepository, GpsImportRepository, RelationshipRepository } from "../../adapters/repositories";
-import { IBilhetagemImportModel } from "../../adapters/repositories/model/bilhetagem-import-model";
+import { BilhetagemImportModel, IBilhetagemImportModel } from "../../adapters/repositories/model/bilhetagem-import-model";
 import { IRelationshipModel, IGpsImportModel } from "../../adapters/repositories/model";
 import { EmailUtils } from "../../utils/email-utils";
 import { EmailDto } from "../../adapters/dtos";
@@ -13,7 +13,7 @@ import { v4 as uuid } from 'uuid';
 import { resolve } from "path";
 import { rejects } from "assert";
 import { UserBusinessDelegate } from "../delegate";
-var readline = require("linebyline");
+const readline = require('linebyline');
 const lineReader = require('line-reader');
 require('events').EventEmitter.prototype._maxListeners = 1000000000;
 
@@ -36,42 +36,97 @@ export class DocBusiness {
   public async import(dto: ImportDto): Promise<void> {
     try {
       console.log("Inicio  de criação de documentos");
-      console.log("Inicio de Bilhetagem")
-      await this.getBilhetagem(dto.bilhetagem)
-      console.log("Fim de Bilhetagem")
-      console.log("Inicio de Gps")
-      await this.getGps(dto.gps);
-      console.log("Fim de Fim de GPS");
+      console.log("Salvando docs")
+      let bilhetagemCount = 0;
+      let j = 0
+      const bilhetes = fs.readFileSync(dto.bilhetagem.tempFilePath, 'utf-8').toString().split(/\n/);
+      let bisave: BilhetagemDto[] = []
+      for (const bilhete of bilhetes) {
+        bilhetagemCount++;
+        j++;
+        let forReplace = bilhete.replace(/[""]/g, "");
+        let dados = forReplace.split(',');
+        if (dados[22]) {
+          bisave.push({
+            carro: dados[8],
+            linha: dados[16],
+            data: new Date(dados[22] + " GMT"),
+            cartaoId: dados[23],
+            transacao: dados[24],
+            sentido: dados[25],
+            document: `${this.uuid}-${dto.bilhetagem.name}`,
+            updatedAt: new Date,
+            createdAt: new Date
+          })
+          if (bilhetagemCount === 1000 || j == bilhetes.length - 1) {
+            await this.bilhetagemRepository.createMany(bisave);
+            console.log(`${j} bilhetagem salvos`)
+            bilhetagemCount = 0;
+            bisave = [];
+          }
+        }
+      }
+
+
+      const gps = fs.readFileSync(dto.gps.tempFilePath).toString().split(/\n/)
+      let save: GpsImportDto[] = []
+      let gpsCount = 0;
+      let i = 0
+      console.log(gps.length);
+      for (const line of gps) {
+        gpsCount++;
+        i++;
+        let gpsArray = line.split(/[\t\n]/);
+        if (gpsArray[0]) {
+
+          save.push({
+            data_final: new Date(gpsArray[0] + " GMT"),
+            AVL: gpsArray[2],
+            carro: gpsArray[3],
+            latitude: gpsArray[4],
+            longitude: gpsArray[5],
+            ponto_notavel: gpsArray[6],
+            desc_ponto_notavel: gpsArray[7],
+            linha: gpsArray[8],
+            sentido: gpsArray[9],
+            document: `${this.uuid}-${dto.gps.name}`,
+            updatedAt: new Date,
+            createdAt: new Date
+          })
+
+          if (gpsCount === 100000 || i == gps.length) {
+            await this.gpsRepository.createMany(save);
+            console.log(`${i} Gps salvos`)
+            gpsCount = 0;
+            save = [];
+          }
+
+        }
+      }
+      console.log("Fim de docs")
       console.log("limpando base de Relação")
       await this.realationshipRepository.drop();
       console.log("base de relação limpa")
       console.log("Inicio de Relação")
       const bilhetagemSave = await this.bilhetagemRepository.findDocument(`${this.uuid}-${dto.bilhetagem.name}`);
-
-      let relacoes: RelationshipDto[] = [];
-      for (let j = 0; j < bilhetagemSave.length; j++) {
-        let relacao = await this.gpsRepository.findRelacao(bilhetagemSave[j], `${this.uuid}-${dto.gps.name}`);
+      for (const bilhetegemON of bilhetagemSave) {
+        let relacao = await this.gpsRepository.findRelacao(bilhetegemON, `${this.uuid}-${dto.gps.name}`);
         if (relacao) {
-          console.log(`criou carro: ${bilhetagemSave[j].carro} com AVL: ${relacao.AVL}`);
+          console.log(`criou carro: ${bilhetegemON.carro} com AVL: ${relacao.AVL}`);
 
-          relacoes.push(
-            {
-              data_gps: `${this.adicionaZero(relacao.data_final.getDay())}/${this.adicionaZero(relacao.data_final.getMonth() + 1)}/${relacao.data_final.getFullYear()} ${this.adicionaZero(relacao.data_final.getHours())}:${this.adicionaZero(relacao.data_final.getMinutes())}:${this.adicionaZero(relacao.data_final.getSeconds())}`,
-              carro: bilhetagemSave[j].carro,
-              linha: bilhetagemSave[j].linha,
-              AVL: relacao.AVL,
-              cartaoId: bilhetagemSave[j].cartaoId,
-              transacao: bilhetagemSave[j].transacao,
-              sentido: bilhetagemSave[j].sentido,
-              latitude: relacao.latitude,
-              longitude: relacao.longitude,
-              ponto_notavel: relacao.ponto_notavel,
-              desc_ponto_notavel: relacao.desc_ponto_notavel
-            });
-          if (j === bilhetagemSave.length) {
-            await this.realationshipRepository.createMany(relacoes);
-            break;
-          }
+          await this.realationshipRepository.create({
+            data_gps: `${this.adicionaZero(relacao.data_final.getDay())}/${this.adicionaZero(relacao.data_final.getMonth() + 1)}/${relacao.data_final.getFullYear()} ${this.adicionaZero(relacao.data_final.getHours())}:${this.adicionaZero(relacao.data_final.getMinutes())}:${this.adicionaZero(relacao.data_final.getSeconds())}`,
+            carro: bilhetegemON.carro,
+            linha: bilhetegemON.linha,
+            AVL: relacao.AVL,
+            cartaoId: bilhetegemON.cartaoId,
+            transacao: bilhetegemON.transacao,
+            sentido: bilhetegemON.sentido,
+            latitude: relacao.latitude,
+            longitude: relacao.longitude,
+            ponto_notavel: relacao.ponto_notavel,
+            desc_ponto_notavel: relacao.desc_ponto_notavel
+          });
         }
       }
 
@@ -111,71 +166,6 @@ export class DocBusiness {
 
   }
 
-  public getBilhetagem(bilhetagemFile: FileTemp): any {
-    try {
-      const lineReader = fs.createReadStream(bilhetagemFile.tempFilePath);
-      return new Promise((resolve) => {
-        lineReader.on("line", async (line, count) => {
-          let forReplace = line.replace(/[""]/g, "");
-          let dados = forReplace.split(',');
-          const bilhetagem: BilhetagemDto = {
-            carro: dados[8],
-            linha: dados[16],
-            data: new Date(dados[22].trim() + " GMT"),
-            cartaoId: dados[23],
-            transacao: dados[24],
-            sentido: dados[25],
-            document: `${this.uuid}-${bilhetagemFile.name}`,
-            updatedAt: new Date,
-            createdAt: new Date
-          }
-
-
-          await this.bilhetagemRepository.create(bilhetagem);
-
-          console.log(`${count} Bilhetagem foram salvos`)
-          resolve(true);
-        })
-      })
-
-    } catch (error) {
-      console.log(error)
-      throw error
-    }
-  }
-
-
-  public async getGps(gpsFile: FileTemp): Promise<any> {
-    try {
-      const lineReader = fs.createReadStream(gpsFile.tempFilePath);
-      return new Promise((resolve) => {
-        lineReader.on("line", async (line, count) => {
-          let gpsArray = line.split("\t");
-          const gpstransfer: GpsImportDto = {
-            data_final: new Date(gpsArray[0].trim() + " GMT"),
-            AVL: gpsArray[2],
-            carro: gpsArray[3],
-            latitude: gpsArray[4],
-            longitude: gpsArray[5],
-            ponto_notavel: gpsArray[6],
-            desc_ponto_notavel: gpsArray[7],
-            linha: gpsArray[8],
-            sentido: gpsArray[9],
-            document: `${this.uuid}-${gpsFile.name}`,
-            updatedAt: new Date,
-            createdAt: new Date
-          }
-          await this.gpsRepository.create(gpstransfer);
-          console.log(`${count} gps salvos`)
-          resolve(true);
-        })
-      })
-    } catch (error) {
-      console.log(error)
-      throw error
-    }
-
-  }
 
   public async find(date?: string, carro?: string): Promise<RelationshipDto[]> {
     try {

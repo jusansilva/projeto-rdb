@@ -3,9 +3,9 @@ import { GpsImportDto } from "../dtos/import-dto";
 
 export class GpsImportRepository {
 
-    public async create(dto: GpsImportDto): Promise<IGpsImportModel> {
+    public  create(dto: GpsImportDto): IGpsImportModel {
         try {
-            const bilhetagem = await GpsImportModel.create(dto);
+            const bilhetagem =  GpsImportModel.create(dto);
             return bilhetagem;
         } catch (error) {
             throw error;

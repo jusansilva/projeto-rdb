@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <meta charset="UTF-8" />
     <title>RDB</title>
@@ -15,7 +16,8 @@
         <div class="content">
             <!--FORMULÁRIO DE LOGIN-->
             <div id="insert">
-                <form method="post" action="/v1/import" enctype="multipart/form-data" id="form" class="arquivo">
+                <form method="post" action="/v1/import" enctype="multipart/form-data" id="form"
+                    class="arquivo">
                     <h1>Arquivos</h1>
                     <p>
                         <label for="bilhetagem">Arquivo Bilhetagem</label>
@@ -31,9 +33,9 @@
 
                     <p>
                         <input type="submit" value="Importar" id="import" />
-                        <input type="button" value="Ver Relatório"  id="relatorio" />
+                        <input type="button" value="Ver Relatório" id="relatorio" />
                     </p>
-                   
+
                     <input type="hidden" name="t" id="t">
                 </form>
             </div>
@@ -41,10 +43,10 @@
     </div>
 </body>
 <script>
-     document.getElementById("relatorio").onclick = function(){
+    document.getElementById("relatorio").onclick = function () {
         return window.location.href = "/response";
-        };
-   
+    };
+
     var query = location.search.slice(1);
     var partes = query.split('&');
     var data = {};
@@ -60,8 +62,7 @@
         window.location.href = "/response";
     }
 
-
-
+    
 
     document.getElementById('t').value = data.t;
 </script>

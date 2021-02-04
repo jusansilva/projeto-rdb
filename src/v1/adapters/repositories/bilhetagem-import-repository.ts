@@ -3,9 +3,9 @@ import { BilhetagemDto } from "../dtos/import-dto";
 
 export class BilhetagemImportRepository {
 
-    public async create(dto: BilhetagemDto): Promise<IBilhetagemImportModel> {
+    public create(dto: BilhetagemDto): IBilhetagemImportModel {
         try {
-            const bilhetagem = await BilhetagemImportModel.create(dto);
+            const bilhetagem = BilhetagemImportModel.create(dto);
             return bilhetagem;
         } catch (error) {
             throw error;
