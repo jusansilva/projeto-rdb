@@ -111,7 +111,6 @@ let DocBusiness = class DocBusiness {
                 console.log("Inicio de Relação");
                 const bilhetagemSave = yield this.bilhetagemRepository.findDocument(`${this.uuid}-${dto.bilhetagem.name}`);
                 for (const bilhetegemON of bilhetagemSave) {
-                    console.log(bilhetegemON);
                     let relacao = yield this.gpsRepository.findRelacao(bilhetegemON, `${this.uuid}-${dto.gps.name}`);
                     if (relacao) {
                         console.log(`criou carro: ${bilhetegemON.carro} com AVL: ${relacao.AVL}`);
