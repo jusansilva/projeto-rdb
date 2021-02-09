@@ -70,7 +70,7 @@ export class DocBusiness {
             updatedAt: new Date,
             createdAt: new Date
           })
-          if (bilhetagemCount === 100000 || j == bilhetes.length - 1) {
+          if (j == bilhetes.length - 1) {
             await this.bilhetagemRepository.createMany(bisaveCru);
             console.log(`${j} bilhetagem salvos`)
             bilhetagemCount = 0;
@@ -122,7 +122,7 @@ export class DocBusiness {
             createdAt: new Date
           })
 
-          if (gpsCount === 100000 || i == gps.length -1) {
+          if (i == gps.length -1) {
             await this.gpsRepository.createMany(saveG);
             console.log(`${i} Gps salvos`)
             gpsCount = 0;
