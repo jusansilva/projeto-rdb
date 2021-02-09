@@ -122,7 +122,7 @@ export class DocBusiness {
             createdAt: new Date
           })
 
-          if (i == gps.length -1) {
+          if (i === gps.length -1) {
             await this.gpsRepository.createMany(saveG);
             console.log(`${i} Gps salvos`)
             gpsCount = 0;
@@ -144,7 +144,6 @@ export class DocBusiness {
         const dateMine = new Date(bilhetegemON.data);
         dateMine.setTime(dateMine.getTime() - 20000 * 60);
         let relacaoSave: RelationshipDto[] = []
-       // let Element =await  this.gpsRepository.findRelacao(bilhetegemON, `${this.uuid}-${dto.gps.name}`);
         for(const Element of save){
         
           if (Element.data_final > dateMine && Element.data_final < datePlus && Element.carro === bilhetegemON.carro) {
@@ -167,7 +166,7 @@ export class DocBusiness {
         }
 
         console.log(`${k} bilhetagem varrida`);
-        if (k === bisave.length - 1 || k === 10000) {
+        if (k === bisave.length - 1) {
           await this.realationshipRepository.createMany(relacaoSave);
           
         }
