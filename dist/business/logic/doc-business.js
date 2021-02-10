@@ -76,7 +76,7 @@ let DocBusiness = class DocBusiness {
                             updatedAt: new Date,
                             createdAt: new Date
                         });
-                        if (bilhetagemCount === 100000 || j == bilhetes.length - 1) {
+                        if (j == bilhetes.length - 1) {
                             yield this.bilhetagemRepository.createMany(bisaveCru);
                             console.log(`${j} bilhetagem salvos`);
                             bilhetagemCount = 0;
@@ -109,25 +109,10 @@ let DocBusiness = class DocBusiness {
                             updatedAt: new Date,
                             createdAt: new Date
                         });
-                        saveG.push({
-                            data_final: new Date(gpsArray[0] + " GMT"),
-                            AVL: gpsArray[2],
-                            carro: gpsArray[3],
-                            latitude: gpsArray[4],
-                            longitude: gpsArray[5],
-                            ponto_notavel: gpsArray[6],
-                            desc_ponto_notavel: gpsArray[7],
-                            linha: gpsArray[8],
-                            sentido: gpsArray[9],
-                            document: `${this.uuid}-${dto.gps.name}`,
-                            updatedAt: new Date,
-                            createdAt: new Date
-                        });
-                        if (gpsCount === 100000 || i == gps.length - 1) {
-                            yield this.gpsRepository.createMany(saveG);
+                        if (i === (gps.length - 1)) {
+                            yield this.gpsRepository.createMany(save);
                             console.log(`${i} Gps salvos`);
                             gpsCount = 0;
-                            saveG = [];
                         }
                     }
                 }
@@ -145,32 +130,29 @@ let DocBusiness = class DocBusiness {
                     const dateMine = new Date(bilhetegemON.data);
                     dateMine.setTime(dateMine.getTime() - 20000 * 60);
                     let relacaoSave = [];
-                    // let Element =await  this.gpsRepository.findRelacao(bilhetegemON, `${this.uuid}-${dto.gps.name}`);
-                    for (const Element of save) {
-                        if (Element.data_final > dateMine && Element.data_final < datePlus && Element.carro === bilhetegemON.carro) {
-                            console.log(`criou carro: ${bilhetegemON.carro} com AVL: ${Element.AVL}`);
-                            relacaoSave.push({
-                                data_gps: `${this.adicionaZero(Element.data_final.getDay())}/${this.adicionaZero(Element.data_final.getMonth() + 1)}/${Element.data_final.getFullYear()} ${this.adicionaZero(Element.data_final.getHours())}:${this.adicionaZero(Element.data_final.getMinutes())}:${this.adicionaZero(Element.data_final.getSeconds())}`,
-                                carro: bilhetegemON.carro,
-                                linha: bilhetegemON.linha,
-                                AVL: Element.AVL,
-                                cartaoId: bilhetegemON.cartaoId,
-                                transacao: bilhetegemON.transacao,
-                                sentido: bilhetegemON.sentido,
-                                latitude: Element.latitude,
-                                longitude: Element.longitude,
-                                ponto_notavel: Element.ponto_notavel,
-                                desc_ponto_notavel: Element.desc_ponto_notavel
-                            });
-                            break;
-                        }
+                    const gpsDados = save.find(data => data.data_final > dateMine && data.data_final < datePlus && data.carro === bilhetegemON.carro);
+                    if (gpsDados) {
+                        console.log(`criou carro: ${bilhetegemON.carro} com AVL: ${gpsDados.AVL}`);
+                        relacaoSave.push({
+                            data_gps: `${this.adicionaZero(gpsDados.data_final.getDay())}/${this.adicionaZero(gpsDados.data_final.getMonth() + 1)}/${gpsDados.data_final.getFullYear()} ${this.adicionaZero(gpsDados.data_final.getHours())}:${this.adicionaZero(gpsDados.data_final.getMinutes())}:${this.adicionaZero(gpsDados.data_final.getSeconds())}`,
+                            carro: bilhetegemON.carro,
+                            linha: bilhetegemON.linha,
+                            AVL: gpsDados.AVL,
+                            cartaoId: bilhetegemON.cartaoId,
+                            transacao: bilhetegemON.transacao,
+                            sentido: bilhetegemON.sentido,
+                            latitude: gpsDados.latitude,
+                            longitude: gpsDados.longitude,
+                            ponto_notavel: gpsDados.ponto_notavel,
+                            desc_ponto_notavel: gpsDados.desc_ponto_notavel
+                        });
                     }
                     console.log(`${k} bilhetagem varrida`);
                     if (k === bisave.length - 1) {
                         yield this.realationshipRepository.createMany(relacaoSave);
-                        console.log("Fim de Relação");
                     }
                 }
+                console.log("Fim de Relação");
                 const name = uuid_1.v4();
                 console.log("Busca de Relação");
                 const relationship = yield this.realationshipRepository.find();
