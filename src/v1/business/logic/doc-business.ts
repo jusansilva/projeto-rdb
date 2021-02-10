@@ -35,30 +35,22 @@ export class DocBusiness {
 
   public async import(dto: ImportDto): Promise<void> {
     try {
+      console.log("limpando base de Relação")
+      await this.realationshipRepository.drop();
+      console.log("base de relação limpa")
       console.log("Inicio  de criação de documentos");
       console.log("Salvando docs")
       let bilhetagemCount = 0;
       let j = 0
       const bilhetes = fs.readFileSync(dto.bilhetagem.tempFilePath, 'utf-8').toString().split(/\n/);
       let bisave: BilhetagemDto[] = [];
-      let bisaveCru: BilhetagemDto[] = [];
+      let relacaoSave: RelationshipDto[] = []
       for (const bilhete of bilhetes) {
         bilhetagemCount++;
         j++;
         let forReplace = bilhete.replace(/[""]/g, "");
         let dados = forReplace.split(',');
         if (dados[22]) {
-          bisaveCru.push({
-            carro: dados[8],
-            linha: dados[16],
-            data: new Date(dados[22] + " GMT"),
-            cartaoId: dados[23],
-            transacao: dados[24],
-            sentido: dados[25],
-            document: `${this.uuid}-${dto.bilhetagem.name}`,
-            updatedAt: new Date,
-            createdAt: new Date
-          })
           bisave.push({
             carro: dados[8],
             linha: dados[16],
@@ -71,10 +63,9 @@ export class DocBusiness {
             createdAt: new Date
           })
           if (j == bilhetes.length - 1) {
-            await this.bilhetagemRepository.createMany(bisaveCru);
+            await this.bilhetagemRepository.createMany(bisave);
             console.log(`${j} bilhetagem salvos`)
             bilhetagemCount = 0;
-            bisaveCru = [];
           }
         }
       }
@@ -82,16 +73,16 @@ export class DocBusiness {
 
       const gps = fs.readFileSync(dto.gps.tempFilePath).toString().split(/\n/)
       let save: GpsImportDto[] = [];
-      let saveG: GpsImportDto[] = []
       let gpsCount = 0;
       let i = 0
+      let k = 0
       console.log(gps.length);
       for (const line of gps) {
         gpsCount++;
         i++;
         let gpsArray = line.split(/[\t\n]/);
         if (gpsArray[0]) {
-          save.push({
+          let gpsConst = {
             data_final: new Date(gpsArray[0] + " GMT"),
             AVL: gpsArray[2],
             carro: gpsArray[3],
@@ -104,60 +95,50 @@ export class DocBusiness {
             document: `${this.uuid}-${dto.gps.name}`,
             updatedAt: new Date,
             createdAt: new Date
-          })
+          }
+
+          k++
+          const datePlus = new Date(gpsConst.data_final);
+          datePlus.setTime(datePlus.getTime() + 20000 * 60);
+          const dateMine = new Date(gpsConst.data_final);
+          dateMine.setTime(dateMine.getTime() - 20000 * 60);
+          let bilhetegemON = bisave.find(data => data.data > dateMine && data.data < datePlus && data.carro === gpsConst.carro)
+          if (bilhetegemON) {
+            relacaoSave.push({
+              data_gps: `${this.adicionaZero(gpsConst.data_final.getDay())}/${this.adicionaZero(gpsConst.data_final.getMonth() + 1)}/${gpsConst.data_final.getFullYear()} ${this.adicionaZero(gpsConst.data_final.getHours())}:${this.adicionaZero(gpsConst.data_final.getMinutes())}:${this.adicionaZero(gpsConst.data_final.getSeconds())}`,
+              carro: bilhetegemON.carro,
+              linha: bilhetegemON.linha,
+              AVL: gpsConst.AVL,
+              cartaoId: bilhetegemON.cartaoId,
+              transacao: bilhetegemON.transacao,
+              sentido: bilhetegemON.sentido,
+              latitude: gpsConst.latitude,
+              longitude: gpsConst.longitude,
+              ponto_notavel: gpsConst.ponto_notavel,
+              desc_ponto_notavel: gpsConst.desc_ponto_notavel
+            })
+          }
 
 
-          if (i === (gps.length - 1)) {
-            await this.gpsRepository.createMany(save);
-            console.log(`${i} Gps salvos`)
-            gpsCount = 0;
+          let index = bisave.indexOf(bilhetegemON);
+          bisave.splice(index, 1)
+          console.log(`faltam: ${bisave.length}`);
+
+          save.push(gpsConst)
+
+          if (bisave.length === 0 || i === (gps.length -1)) {
+            break;
           }
         }
       }
+      console.log(`${save.length} Gps salvos`)
+      await this.gpsRepository.createMany(save);
+      
+      console.log(`Salvando Relação`);
+      await this.realationshipRepository.createMany(relacaoSave);
+      console.log(`${relacaoSave.length} Relações salvos`)
       console.log("Fim de docs")
-      console.log("limpando base de Relação")
-      await this.realationshipRepository.drop();
-      console.log("base de relação limpa")
-      console.log("Inicio de Relação")
-      let k = 0
-      console.log(bisave.length);
-      for (const bilhetegemON of bisave) {
-        k++
-        const datePlus = new Date(bilhetegemON.data);
-        datePlus.setTime(datePlus.getTime() + 20000 * 60);
-        const dateMine = new Date(bilhetegemON.data);
-        dateMine.setTime(dateMine.getTime() - 20000 * 60);
-        let relacaoSave: RelationshipDto[] = []
-        let gpsDados = save.find(data => data.data_final > dateMine && data.data_final < datePlus && data.carro === bilhetegemON.carro)
-        if (gpsDados) {
-          console.log(`criou carro: ${bilhetegemON.carro} com AVL: ${gpsDados.AVL}`);
-          relacaoSave.push({
-            data_gps: `${this.adicionaZero(gpsDados.data_final.getDay())}/${this.adicionaZero(gpsDados.data_final.getMonth() + 1)}/${gpsDados.data_final.getFullYear()} ${this.adicionaZero(gpsDados.data_final.getHours())}:${this.adicionaZero(gpsDados.data_final.getMinutes())}:${this.adicionaZero(gpsDados.data_final.getSeconds())}`,
-            carro: bilhetegemON.carro,
-            linha: bilhetegemON.linha,
-            AVL: gpsDados.AVL,
-            cartaoId: bilhetegemON.cartaoId,
-            transacao: bilhetegemON.transacao,
-            sentido: bilhetegemON.sentido,
-            latitude: gpsDados.latitude,
-            longitude: gpsDados.longitude,
-            ponto_notavel: gpsDados.ponto_notavel,
-            desc_ponto_notavel: gpsDados.desc_ponto_notavel
-          })
-        }
 
-
-        console.log(`${k} bilhetagem varrida`);
-        if (k === bisave.length - 1) {
-          await this.realationshipRepository.createMany(relacaoSave);
-
-        }
-
-      }
-
-
-
-      console.log("Fim de Relação")
       const name = uuid();
       console.log("Busca de Relação")
       const relationship = await this.realationshipRepository.find();
