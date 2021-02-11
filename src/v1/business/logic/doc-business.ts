@@ -125,15 +125,14 @@ export class DocBusiness {
           console.log(`faltam: ${bisave.length}`);
 
           save.push(gpsConst)
-
-          if (bisave.length === 0 || i === (gps.length -1)) {
-            break;
-          }
+        }
+        if ((bisave.length) === 0 || i === (gps.length -1)) {
+          break;      
         }
       }
+      
       console.log(`${save.length} Gps salvos`)
       await this.gpsRepository.createMany(save);
-      
       console.log(`Salvando Relação`);
       await this.realationshipRepository.createMany(relacaoSave);
       console.log(`${relacaoSave.length} Relações salvos`)

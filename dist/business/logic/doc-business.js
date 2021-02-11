@@ -125,21 +125,17 @@ let DocBusiness = class DocBusiness {
                         bisave.splice(index, 1);
                         console.log(`faltam: ${bisave.length}`);
                         save.push(gpsConst);
-                        if (bisave.length === 0 || i === (gps.length - 1)) {
-                            yield this.gpsRepository.createMany(save);
-                            console.log(`${i} Gps salvos`);
-                            break;
-                        }
+                    }
+                    if ((bisave.length) === 0 || i === (gps.length - 1)) {
+                        break;
                     }
                 }
+                console.log(`${save.length} Gps salvos`);
+                yield this.gpsRepository.createMany(save);
                 console.log(`Salvando Relação`);
                 yield this.realationshipRepository.createMany(relacaoSave);
+                console.log(`${relacaoSave.length} Relações salvos`);
                 console.log("Fim de docs");
-                // console.log("Inicio de Relação")
-                //console.log(bisave.length);
-                //  for (const bilhetegemON of bisave) {
-                //}
-                console.log("Fim de Relação");
                 const name = uuid_1.v4();
                 console.log("Busca de Relação");
                 const relationship = yield this.realationshipRepository.find();
