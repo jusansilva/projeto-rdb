@@ -17,7 +17,7 @@ const readline = require('linebyline');
 const lineReader = require('line-reader');
 require('events').EventEmitter.prototype._maxListeners = 1000000000;
 
-@Service()
+  @Service()
 export class DocBusiness {
   protected readonly bilhetagemRepository: BilhetagemImportRepository;
   protected readonly gpsRepository: GpsImportRepository;
@@ -104,8 +104,9 @@ export class DocBusiness {
           dateMine.setTime(dateMine.getTime() - 20000 * 60);
           let bilhetegemON = bisave.find(data => data.data > dateMine && data.data < datePlus && data.carro === gpsConst.carro)
           if (bilhetegemON) {
+            let dataNow = new Date(bilhetegemON.data);
             relacaoSave.push({
-              data_gps: `${this.adicionaZero(gpsConst.data_final.getDay())}/${this.adicionaZero(gpsConst.data_final.getMonth() + 1)}/${gpsConst.data_final.getFullYear()} ${this.adicionaZero(gpsConst.data_final.getHours())}:${this.adicionaZero(gpsConst.data_final.getMinutes())}:${this.adicionaZero(gpsConst.data_final.getSeconds())}`,
+              data_gps: `${this.adicionaZero(dataNow.getDate())}/${this.adicionaZero(dataNow.getMonth() + 1)}/${dataNow.getFullYear()} ${this.adicionaZero(dataNow.getHours() + 3)}:${this.adicionaZero(dataNow.getMinutes())}:${this.adicionaZero(dataNow.getSeconds())}`,
               carro: bilhetegemON.carro,
               linha: bilhetegemON.linha,
               AVL: gpsConst.AVL,
