@@ -123,6 +123,7 @@ export class DocBusiness {
 
           let index = bisave.indexOf(bilhetegemON);
           bisave.splice(index, 1)
+          if((bisave.length/100) === 0 )
           console.log(`faltam: ${bisave.length}`);
 
           save.push(gpsConst)
