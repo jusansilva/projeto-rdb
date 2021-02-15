@@ -104,8 +104,9 @@ export class DocBusiness {
           dateMine.setTime(dateMine.getTime() - 20000 * 60);
           let bilhetegemON = bisave.find(data => data.data > dateMine && data.data < datePlus && data.carro === gpsConst.carro)
           if (bilhetegemON) {
+            let dataNow = new Date(bilhetegemON.data);
             relacaoSave.push({
-              data_gps: `${this.adicionaZero(bilhetegemON.data.getDate())}/${this.adicionaZero(bilhetegemON.data.getMonth() + 1)}/${bilhetegemON.data.getFullYear()} ${this.adicionaZero(gpsConst.data_final.getHours())}:${this.adicionaZero(gpsConst.data_final.getMinutes())}:${this.adicionaZero(gpsConst.data_final.getSeconds())}`,
+              data_gps: `${this.adicionaZero(dataNow.getDate())}/${this.adicionaZero(dataNow.getMonth() + 1)}/${dataNow.getFullYear()} ${this.adicionaZero(dataNow.getHours())}:${this.adicionaZero(dataNow.getMinutes())}:${this.adicionaZero(dataNow.getSeconds())}`,
               carro: bilhetegemON.carro,
               linha: bilhetegemON.linha,
               AVL: gpsConst.AVL,
