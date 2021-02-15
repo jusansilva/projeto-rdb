@@ -106,7 +106,7 @@ export class DocBusiness {
           if (bilhetegemON) {
             let dataNow = new Date(bilhetegemON.data);
             relacaoSave.push({
-              data_gps: `${this.adicionaZero(dataNow.getDate())}/${this.adicionaZero(dataNow.getMonth() + 1)}/${dataNow.getFullYear()} ${this.adicionaZero(dataNow.getHours())}:${this.adicionaZero(dataNow.getMinutes())}:${this.adicionaZero(dataNow.getSeconds())}`,
+              data_gps: `${this.adicionaZero(dataNow.getDate())}/${this.adicionaZero(dataNow.getMonth() + 1)}/${dataNow.getFullYear()} ${this.adicionaZero(dataNow.getHours() + 3)}:${this.adicionaZero(dataNow.getMinutes())}:${this.adicionaZero(dataNow.getSeconds())}`,
               carro: bilhetegemON.carro,
               linha: bilhetegemON.linha,
               AVL: gpsConst.AVL,
