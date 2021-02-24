@@ -106,7 +106,7 @@ export class DocBusiness {
           if (bilhetegemON) {
             let dataNow = new Date(bilhetegemON.data);
             relacaoSave.push({
-              data_gps: `${this.adicionaZero(dataNow.getDate())}/${this.adicionaZero(dataNow.getMonth() + 1)}/${dataNow.getFullYear()} ${this.adicionaZero(dataNow.getHours() + 3)}:${this.adicionaZero(dataNow.getMinutes())}:${this.adicionaZero(dataNow.getSeconds())}`,
+              data_gps: `${this.adicionaZero(dataNow.getDate())}/${this.adicionaZero(dataNow.getMonth() + 1)}/${dataNow.getFullYear()} ${this.timeResouve(dataNow.getHours() + 3)}:${this.adicionaZero(dataNow.getMinutes())}:${this.adicionaZero(dataNow.getSeconds())}`,
               carro: bilhetegemON.carro,
               linha: bilhetegemON.linha,
               AVL: gpsConst.AVL,
@@ -123,6 +123,7 @@ export class DocBusiness {
 
           let index = bisave.indexOf(bilhetegemON);
           bisave.splice(index, 1)
+          if((bisave.length/100) === 0 )
           console.log(`faltam: ${bisave.length}`);
 
           save.push(gpsConst)
@@ -266,6 +267,15 @@ export class DocBusiness {
       return "0" + numero;
     else
       return numero;
+  }
+
+  public timeResouve(numero) {
+    if (numero <= 9)
+    return "0" + numero;
+    if(numero === 24)
+    return "00";
+  else
+    return numero;
   }
 
 

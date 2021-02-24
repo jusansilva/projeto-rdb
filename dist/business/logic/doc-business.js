@@ -107,8 +107,9 @@ let DocBusiness = class DocBusiness {
                         dateMine.setTime(dateMine.getTime() - 20000 * 60);
                         let bilhetegemON = bisave.find(data => data.data > dateMine && data.data < datePlus && data.carro === gpsConst.carro);
                         if (bilhetegemON) {
+                            let dataNow = new Date(bilhetegemON.data);
                             relacaoSave.push({
-                                data_gps: `${this.adicionaZero(gpsConst.data_final.getDay())}/${this.adicionaZero(gpsConst.data_final.getMonth() + 1)}/${gpsConst.data_final.getFullYear()} ${this.adicionaZero(gpsConst.data_final.getHours())}:${this.adicionaZero(gpsConst.data_final.getMinutes())}:${this.adicionaZero(gpsConst.data_final.getSeconds())}`,
+                                data_gps: `${this.adicionaZero(dataNow.getDate())}/${this.adicionaZero(dataNow.getMonth() + 1)}/${dataNow.getFullYear()} ${this.timeResouve(dataNow.getHours() + 3)}:${this.adicionaZero(dataNow.getMinutes())}:${this.adicionaZero(dataNow.getSeconds())}`,
                                 carro: bilhetegemON.carro,
                                 linha: bilhetegemON.linha,
                                 AVL: gpsConst.AVL,
@@ -123,7 +124,8 @@ let DocBusiness = class DocBusiness {
                         }
                         let index = bisave.indexOf(bilhetegemON);
                         bisave.splice(index, 1);
-                        console.log(`faltam: ${bisave.length}`);
+                        if ((bisave.length / 100) === 0)
+                            console.log(`faltam: ${bisave.length}`);
                         save.push(gpsConst);
                     }
                     if ((bisave.length) === 0 || i === (gps.length - 1)) {
@@ -256,6 +258,14 @@ let DocBusiness = class DocBusiness {
     adicionaZero(numero) {
         if (numero <= 9)
             return "0" + numero;
+        else
+            return numero;
+    }
+    timeResouve(numero) {
+        if (numero <= 9)
+            return "0" + numero;
+        if (numero === 24)
+            return "00";
         else
             return numero;
     }
