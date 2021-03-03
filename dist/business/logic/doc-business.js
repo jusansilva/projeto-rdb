@@ -102,14 +102,15 @@ let DocBusiness = class DocBusiness {
                         };
                         k++;
                         const datePlus = new Date(gpsConst.data_final);
-                        datePlus.setTime(datePlus.getTime() + 20000 * 60);
+                        datePlus.setTime(datePlus.getTime() + 40000 * 60);
                         const dateMine = new Date(gpsConst.data_final);
-                        dateMine.setTime(dateMine.getTime() - 20000 * 60);
+                        dateMine.setTime(dateMine.getTime() - 40000 * 60);
                         let bilhetegemON = bisave.find(data => data.data > dateMine && data.data < datePlus && data.carro === gpsConst.carro);
                         if (bilhetegemON) {
                             let dataNow = new Date(bilhetegemON.data);
                             relacaoSave.push({
-                                data_gps: `${this.adicionaZero(dataNow.getDate())}/${this.adicionaZero(dataNow.getMonth() + 1)}/${dataNow.getFullYear()} ${this.timeResouve(dataNow.getHours() + 3)}:${this.adicionaZero(dataNow.getMinutes())}:${this.adicionaZero(dataNow.getSeconds())}`,
+                                //data_gps: `${this.adicionaZero(dataNow.getDate())}/${this.adicionaZero(dataNow.getMonth() + 1)}/${dataNow.getFullYear()} ${this.timeResouve(dataNow.getHours() + 3)}:${this.adicionaZero(dataNow.getMinutes())}:${this.adicionaZero(dataNow.getSeconds())}`,
+                                data_gps: dataNow.toLocaleDateString(['ban', 'id']),
                                 carro: bilhetegemON.carro,
                                 linha: bilhetegemON.linha,
                                 AVL: gpsConst.AVL,
