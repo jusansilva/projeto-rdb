@@ -54,7 +54,7 @@ export class DocBusiness {
           bisave.push({
             carro: dados[8],
             linha: dados[16],
-            data: new Date(dados[22] + " GMT"),
+            data: new Date(dados[22]),
             cartaoId: dados[23],
             transacao: dados[24],
             sentido: dados[25],
@@ -83,7 +83,7 @@ export class DocBusiness {
         let gpsArray = line.split(/[\t\n]/);
         if (gpsArray[0]) {
           let gpsConst = {
-            data_final: new Date(gpsArray[0] + " GMT"),
+            data_final: new Date(gpsArray[0]),
             AVL: gpsArray[2],
             carro: gpsArray[3],
             latitude: gpsArray[4],
@@ -99,15 +99,15 @@ export class DocBusiness {
 
           k++
           const datePlus = new Date(gpsConst.data_final);
-          datePlus.setTime(datePlus.getTime() + 40000 * 60);
+          datePlus.setTime(datePlus.getTime() + 20000 * 60);
           const dateMine = new Date(gpsConst.data_final);
-          dateMine.setTime(dateMine.getTime() - 40000 * 60);
-          let bilhetegemON = bisave.find(data => data.data > dateMine && data.data < datePlus && data.carro === gpsConst.carro)
+          dateMine.setTime(dateMine.getTime() - 20000 * 60);
+          let bilhetegemON = bisave.find(data =>  data.carro === gpsConst.carro && data.data >= dateMine && data.data <= datePlus)
           if (bilhetegemON) {
-            let dataNow = new Date(bilhetegemON.data);
+            //let dataNow = new Date(bilhetegemON.data);
             relacaoSave.push({
               //data_gps: `${this.adicionaZero(dataNow.getDate())}/${this.adicionaZero(dataNow.getMonth() + 1)}/${dataNow.getFullYear()} ${this.timeResouve(dataNow.getHours() + 3)}:${this.adicionaZero(dataNow.getMinutes())}:${this.adicionaZero(dataNow.getSeconds())}`,
-              data_gps: dataNow.toLocaleDateString(['ban', 'id']),
+              data_gps: bilhetegemON.data.toLocaleDateString(),
               carro: bilhetegemON.carro,
               linha: bilhetegemON.linha,
               AVL: gpsConst.AVL,

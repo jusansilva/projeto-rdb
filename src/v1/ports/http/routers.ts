@@ -1,6 +1,5 @@
 import { Express } from "express";
 import { v1 } from "./routers/index";
-import * as express from "express";
 import * as  bodyParser from 'body-parser';
 import { Healht } from "./routers/health-routes";
 import { Front } from "./routers/front-routes";
